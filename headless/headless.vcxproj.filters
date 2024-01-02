@@ -93,6 +93,9 @@
     <ClCompile Include="sickapi\src\VisionaryTMiniData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="snap7\snap7.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sickapi\src\AuthenticationLegacy.h">
@@ -182,5 +185,15 @@
     <ClInclude Include="sickapi\src\VisionaryTMiniData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="snap7\snap7.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="snap7\snap7.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="snap7\snap7.exp" />
+    <CopyFileToFolders Include="snap7\snap7.dll" />
   </ItemGroup>
 </Project>

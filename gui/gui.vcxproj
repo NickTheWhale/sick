@@ -17,7 +17,6 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -53,27 +52,24 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
-
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Label="Shared" >
+  <ImportGroup Label="Shared">
   </ImportGroup>
-    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    </ImportGroup>
-    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    </ImportGroup>
-    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    </ImportGroup>
-    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    </ImportGroup>
-
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -106,12 +102,14 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SERCURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)\imgui;$(ProjectDir)\sickapi\src;$(BOOST_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d12.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -120,18 +118,92 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SERCURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)\imgui;$(ProjectDir)\sickapi\src;$(BOOST_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d12.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-
-  <ItemGroup></ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="imgui\imgui.cpp" />
+    <ClCompile Include="imgui\imgui_demo.cpp" />
+    <ClCompile Include="imgui\imgui_draw.cpp" />
+    <ClCompile Include="imgui\imgui_impl_dx12.cpp" />
+    <ClCompile Include="imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="imgui\imgui_tables.cpp" />
+    <ClCompile Include="imgui\imgui_widgets.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="sickapi\include\libs\smart_ptr\src\sp_collector.cpp" />
+    <ClCompile Include="sickapi\include\libs\smart_ptr\src\sp_debug_hooks.cpp" />
+    <ClCompile Include="sickapi\src\AuthenticationLegacy.cpp" />
+    <ClCompile Include="sickapi\src\AuthenticationSecure.cpp" />
+    <ClCompile Include="sickapi\src\CoLa2ProtocolHandler.cpp" />
+    <ClCompile Include="sickapi\src\CoLaBProtocolHandler.cpp" />
+    <ClCompile Include="sickapi\src\CoLaCommand.cpp" />
+    <ClCompile Include="sickapi\src\CoLaParameterReader.cpp" />
+    <ClCompile Include="sickapi\src\CoLaParameterWriter.cpp" />
+    <ClCompile Include="sickapi\src\ControlSession.cpp" />
+    <ClCompile Include="sickapi\src\FrameGrabberBase.cpp" />
+    <ClCompile Include="sickapi\src\IAuthentication.cpp" />
+    <ClCompile Include="sickapi\src\IProtocolHandler.cpp" />
+    <ClCompile Include="sickapi\src\MD5.cpp" />
+    <ClCompile Include="sickapi\src\PointCloudPlyWriter.cpp" />
+    <ClCompile Include="sickapi\src\SHA256.cpp" />
+    <ClCompile Include="sickapi\src\TcpSocket.cpp" />
+    <ClCompile Include="sickapi\src\UdpSocket.cpp" />
+    <ClCompile Include="sickapi\src\VisionaryAutoIPScan.cpp" />
+    <ClCompile Include="sickapi\src\VisionaryControl.cpp" />
+    <ClCompile Include="sickapi\src\VisionaryData.cpp" />
+    <ClCompile Include="sickapi\src\VisionaryDataStream.cpp" />
+    <ClCompile Include="sickapi\src\VisionarySData.cpp" />
+    <ClCompile Include="sickapi\src\VisionaryTData.cpp" />
+    <ClCompile Include="sickapi\src\VisionaryTMiniData.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="imgui\imconfig.h" />
+    <ClInclude Include="imgui\imgui.h" />
+    <ClInclude Include="imgui\imgui_impl_dx12.h" />
+    <ClInclude Include="imgui\imgui_impl_win32.h" />
+    <ClInclude Include="imgui\imgui_internal.h" />
+    <ClInclude Include="imgui\imstb_rectpack.h" />
+    <ClInclude Include="imgui\imstb_textedit.h" />
+    <ClInclude Include="imgui\imstb_truetype.h" />
+    <ClInclude Include="sickapi\src\AuthenticationLegacy.h" />
+    <ClInclude Include="sickapi\src\AuthenticationSecure.h" />
+    <ClInclude Include="sickapi\src\CoLa2ProtocolHandler.h" />
+    <ClInclude Include="sickapi\src\CoLaBProtocolHandler.h" />
+    <ClInclude Include="sickapi\src\CoLaCommand.h" />
+    <ClInclude Include="sickapi\src\CoLaCommandType.h" />
+    <ClInclude Include="sickapi\src\CoLaError.h" />
+    <ClInclude Include="sickapi\src\CoLaParameterReader.h" />
+    <ClInclude Include="sickapi\src\CoLaParameterWriter.h" />
+    <ClInclude Include="sickapi\src\ControlSession.h" />
+    <ClInclude Include="sickapi\src\Framegrabber.h" />
+    <ClInclude Include="sickapi\src\FrameGrabberBase.h" />
+    <ClInclude Include="sickapi\src\IAuthentication.h" />
+    <ClInclude Include="sickapi\src\IProtocolHandler.h" />
+    <ClInclude Include="sickapi\src\ITransport.h" />
+    <ClInclude Include="sickapi\src\MD5.h" />
+    <ClInclude Include="sickapi\src\PointCloudPlyWriter.h" />
+    <ClInclude Include="sickapi\src\PointXYZ.h" />
+    <ClInclude Include="sickapi\src\SHA256.h" />
+    <ClInclude Include="sickapi\src\TcpSocket.h" />
+    <ClInclude Include="sickapi\src\UdpSocket.h" />
+    <ClInclude Include="sickapi\src\VisionaryAutoIPScan.h" />
+    <ClInclude Include="sickapi\src\VisionaryControl.h" />
+    <ClInclude Include="sickapi\src\VisionaryData.h" />
+    <ClInclude Include="sickapi\src\VisionaryDataStream.h" />
+    <ClInclude Include="sickapi\src\VisionaryEndian.h" />
+    <ClInclude Include="sickapi\src\VisionarySData.h" />
+    <ClInclude Include="sickapi\src\VisionaryTData.h" />
+    <ClInclude Include="sickapi\src\VisionaryTMiniData.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
