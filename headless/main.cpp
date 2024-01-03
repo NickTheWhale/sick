@@ -1,7 +1,11 @@
 #include <chrono>
 #include <iostream>
 #include <string>
-#include <thread>	
+#include <thread>
+
+#include <argparse/argparse.hpp>
+
+#include <spdlog/spdlog.h>
 
 #include <Framegrabber.h>
 #include <VisionaryControl.h>
@@ -10,162 +14,274 @@
 #include <snap7.h>
 
 #include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
-#include <boost/property_tree/ini_parser.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
-boost::property_tree::ptree g_config;
-const std::string config_path = "configuration";
+namespace v = visionary;
 
-const std::string default_cam_ip = "127.0.0.1";
-const std::string default_plc_ip = "127.0.0.1";
+struct configuration
+{
+	struct cam
+	{
+		std::string ip = "";
+		uint16_t port = 0;
+	} cam;
+	struct plc
+	{
+		std::string ip = "";
+		int rack = 0;
+		int slot = 0;
+		int db_num = 0;
+		int db_offset = 0;
+	} plc;
+};
 
-const void save_configuration(const std::string file, const boost::property_tree::ptree &config);
-const bool load_configuration(const std::string file, boost::property_tree::ptree& config);
+configuration config;
+
+const bool parse_args(int argc, char** argv);
+const bool parse_file(const char* file);
+const bool save_config(const char* file);
 
 int main(int argc, char** argv)
 {
-	g_config.put("camera_ip_address", default_cam_ip);
-	g_config.put("plc_ip_address", default_plc_ip);
+	spdlog::set_level(spdlog::level::trace);
 
-#pragma region plc
+	// assume second argument is a file path
+	if (argc == 2)
+	{
+		if (!parse_file(argv[1]))
+		{
+			return -1;
+		}
+	}
 
+	// if we don't have 2 arguments, parse options
+	else
+	{
+		if (!parse_args(argc, argv))
+		{
+			return -1;
+		}
+	}
+
+	int ret;
+
+	// connect to plc
 	TS7Client plc;
-	if (plc.ConnectTo("192.168.1.10", 0, 0) != 0)
-	{
-		std::cout << "Failed to connect plc\n";
-		return -1;
-	}
-
-	std::vector<uint32_t> data;
-
-	for (int i = 0; i < 1296; ++i)
-	{
-		data.push_back(i);
-	}
-
-	// prepare byte buffer
-	std::vector<byte> buffer;
-	buffer.resize(data.size() * sizeof(uint32_t));
-
-	// fill byte buffer from uint32_t (UDint) buffer
-	for (size_t i = 0; i < data.size(); ++i)
-	{
-		SetDWordAt(buffer.data(), i * sizeof(uint32_t), data[i]);
-	}
-
-	// write the buffer
-	int ret = plc.DBWrite(2, 0, buffer.size(), buffer.data());
+	spdlog::trace("Connecting to PLC...");
+	ret = plc.ConnectTo(config.plc.ip.c_str(), config.plc.rack, config.plc.slot);
 	if (ret != 0)
 	{
-		std::cout << "Failed to write to plc: " << CliErrorText(ret) << "\n";
-	}
-
-#pragma endregion
-
-
-#pragma region camera
-	
-	const std::string cam_ip = "192.168.1.67";
-	visionary::FrameGrabber<visionary::VisionaryTMiniData> grabber(cam_ip, htons(2114u), 5000);
-	std::shared_ptr<visionary::VisionaryTMiniData> data_handler;
-	visionary::VisionaryControl visionary_control;
-
-	// open control channel
-	if (!visionary_control.open(visionary::VisionaryControl::ProtocolType::COLA_2, cam_ip, 5000/*ms*/))
-	{
-		std::cout << "Failed to open control connection to camera.\n";
+		spdlog::critical("Failed to connect to PLC at {}: {}", config.plc.ip, CliErrorText(ret));
 		return -1;
 	}
+	spdlog::info("Connected to PLC at {}", config.plc.ip);
 
-	// read device id
-	std::cout << "DeviceIdent: " << visionary_control.getDeviceIdent() << "\n";
+	// connect to camera
+	spdlog::trace("Starting camera frame grabber...");
+	v::FrameGrabber<v::VisionaryTMiniData> grabber(config.cam.ip, htons(config.cam.port), 5000);
+	std::shared_ptr<v::VisionaryTMiniData> data_handler;
+	v::VisionaryControl visionary_control;
+	spdlog::trace("Frame grabber started");
 
-	// logout
-	if (!visionary_control.logout())
+	spdlog::trace("Opening camera control channel...");
+	if (!visionary_control.open(v::VisionaryControl::ProtocolType::COLA_2, config.cam.ip, 5000))
 	{
-		std::cout << "Failed to logout camera\n";
+		spdlog::critical("Failed to connect to camera at {}", config.cam.ip);
+		return -1;
 	}
+	spdlog::info("Connected to camera at {}", config.cam.ip);
 
-	// logout should always work
+	spdlog::trace("Stopping acquisition...");
 	visionary_control.stopAcquisition();
 	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-	// start continous acquisition
+	spdlog::trace("Starting camera frame acquisition...");
 	if (!visionary_control.startAcquisition())
 	{
-		std::cout << "Failed to start acquisition\n";
+		spdlog::critical("Failed to start camera acquisition");
 		return -1;
 	}
+	spdlog::trace("Camera frame acquisition started");
 
-	while (true)
+	// loop indefinitely, filtering and sending frames to the plc
+	bool done = false;
+	while (!done)
 	{
+		if (std::cin.peek() == 'q')
+		{
+			done = true;
+			spdlog::info("Stopping...");
+		}
+
 		if (grabber.getNextFrame(data_handler))
 		{
-			//std::this_thread::sleep_for(std::chrono::milliseconds(10));
-			std::cout << data_handler->getFrameNum() << "\n";
+			std::vector<uint16_t> distance_map_16 = data_handler->getDistanceMap();
+			std::vector<uint32_t> distance_map(distance_map_16.begin(), distance_map_16.end());
 
-			std::vector<uint16_t> depth = data_handler->getDistanceMap();
-			std::vector<uint32_t> data;
-
-			for (int i = 0; i < 1296; ++i)
-			{
-				data.push_back(depth[i]);
-			}
-
-			// prepare byte buffer
 			std::vector<byte> buffer;
-			buffer.resize(data.size() * sizeof(uint32_t));
+			buffer.resize(distance_map.size() * sizeof(uint32_t));
 
-			// fill byte buffer from uint32_t (UDint) buffer
-			for (size_t i = 0; i < data.size(); ++i)
+			for (size_t i = 0; i < distance_map.size(); ++i)
 			{
-				SetDWordAt(buffer.data(), i * sizeof(uint32_t), data[i]);
+				SetDWordAt(buffer.data(), i * sizeof(uint32_t), distance_map[i]);
 			}
 
-			// write the buffer
-			int ret = plc.DBWrite(2, 0, buffer.size(), buffer.data());
+			ret = plc.DBWrite(config.plc.db_num, config.plc.db_offset, std::min(distance_map.size(), (size_t)1296), buffer.data());
 			if (ret != 0)
 			{
-				std::cout << "Failed to write to plc: " << CliErrorText(ret) << "\n";
+				spdlog::error("Failed to write frame #{} to PLC: {}", data_handler->getFrameNum(), CliErrorText(ret));
 				plc.Disconnect();
 				ret = plc.Connect();
 				if (ret != 0)
 				{
-					std::cout << "Failed to reconnect PLC: " << CliErrorText(ret) << "\n";
+					spdlog::error("Failed to reconnect PLC: {}", CliErrorText(ret));
 				}
 			}
+
 		}
 	}
 
-	// close control
 	visionary_control.close();
-
-#pragma endregion
+	plc.Disconnect();
 
 	return 0;
 }
 
-const void save_configuration(const std::string file, const boost::property_tree::ptree &config)
+const bool parse_args(int argc, char** argv)
 {
+	argparse::ArgumentParser program("Program description.");
+
+	program.add_argument("--camera-ip")
+		.required()
+		.help("IP address of the camera");
+
+	program.add_argument("--plc-ip")
+		.required()
+		.help("IP address of the PLC");
+
+	program.add_argument("-cp", "--camera-port")
+		.default_value(uint16_t(2114))
+		.action([](const std::string& value) { return static_cast<uint16_t>(std::stoi(value)); })
+		.help("Camera port number");
+
+	program.add_argument("-r", "--plc-rack")
+		.default_value(0)
+		.action([](const std::string& value) { return std::stoi(value); })
+		.help("PLC rack number");
+
+	program.add_argument("-s", "--plc-slot")
+		.default_value(0)
+		.action([](const std::string& value) { return std::stoi(value); })
+		.help("PLC slot number");
+
+	program.add_argument("-db", "--plc-db-number")
+		.default_value(0)
+		.action([](const std::string& value) { return std::stoi(value); })
+		.help("PLC DB number");
+
+	program.add_argument("-do", "--plc-db-offset")
+		.default_value(0)
+		.action([](const std::string& value) { return std::stoi(value); })
+		.help("PLC DB starting offset");
+
+	int verbosity = 0;
+	program.add_argument("-V")
+		.action([&](const auto&) { ++verbosity; })
+		.append()
+		.default_value(false)
+		.implicit_value(true)
+		.nargs(0)
+		.help("Logging verbosity (-V: info, -VV: debug, -VVV: trace) [default: critical]");
+
 	try
 	{
-		boost::property_tree::ini_parser::write_ini(file, config);
+		program.parse_args(argc, argv);
+
+		config.cam.ip = program.get<std::string>("--camera-ip");
+		config.cam.port = program.get<uint16_t>("--camera-port");
+		config.plc.ip = program.get<std::string>("--plc-ip");
+		config.plc.rack = program.get<int>("--plc-rack");
+		config.plc.slot = program.get<int>("--plc-slot");
+		config.plc.db_num = program.get<int>("--plc-db-number");
+		config.plc.db_offset = program.get<int>("--plc-db-offset");
+
+		if (verbosity == 0)
+			spdlog::set_level(spdlog::level::critical);
+		else if (verbosity == 1)
+			spdlog::set_level(spdlog::level::info);
+		else if (verbosity == 2)
+			spdlog::set_level(spdlog::level::debug);
+		else if (verbosity > 2)
+			spdlog::set_level(spdlog::level::trace);
 	}
-	catch (const boost::property_tree::ini_parser_error e)
+	catch (const std::exception& e)
 	{
-		std::cout << "Error saving configuration: " << e.what() << "\n";
+		std::cout << e.what() << "\n\n";
+		std::cout << program;
+		return false;
 	}
+
+	return true;
 }
 
-const bool load_configuration(const std::string file, boost::property_tree::ptree &config)
+const bool parse_file(const char* file)
 {
+	using namespace boost::property_tree;
 	try
 	{
-		boost::property_tree::ini_parser::read_ini(file, config);
+		ptree pt;
+
+		xml_parser::read_xml(file, pt);
+
+		config.cam.ip = pt.get<std::string>("config.camera.ip");
+		config.cam.port = pt.get<uint16_t>("config.camera.port", 2114);
+		config.plc.ip = pt.get<std::string>("config.plc.ip");
+		config.plc.db_num = pt.get<int>("config.plc.db_number", 0);
+		config.plc.db_offset = pt.get<int>("config.plc.db_offset", 0);
+		config.plc.rack = pt.get<int>("config.plc.rack", 0);
+		config.plc.slot = pt.get<int>("config.plc.slot", 0);
 	}
-	catch (const boost::property_tree::ini_parser_error e)
+	catch (const std::exception& e)
 	{
-		std::cout << "Error reading configuration: " << e.what() << "\n";
+		spdlog::critical("Failed to parse configuration file: {}", e.what());
+		return false;
 	}
+	catch (...)
+	{
+		spdlog::critical("Failed to parse configuration file");
+		return false;
+	}
+
+	return true;
+}
+
+const bool save_config(const char* file) 
+{
+	using namespace boost::property_tree;
+	try 
+	{
+		ptree pt;
+
+		pt.put("config.camera.ip", config.cam.ip);
+		pt.put("config.camera.port", config.cam.port);
+		pt.put("config.plc.ip", config.plc.ip);
+		pt.put("config.plc.db_number", config.plc.db_num);
+		pt.put("config.plc.db_offset", config.plc.db_offset);
+		pt.put("config.plc.rack", config.plc.rack);
+		pt.put("config.plc.slot", config.plc.slot);
+
+		write_xml(file, pt);
+	}
+	catch (const std::exception& e) 
+	{
+		spdlog::critical("Failed to save configuration file: {}", e.what());
+		return false;
+	}
+	catch (...) 
+	{
+		spdlog::critical("Failed to save configuration file");
+		return false;
+	}
+
+	return true;
 }
