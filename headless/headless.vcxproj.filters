@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="headless\src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="sickapi\include\libs\smart_ptr\src\sp_collector.cpp">
@@ -117,6 +117,36 @@
     <ClCompile Include="spdlog\src\stdout_sinks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="headless\src\filter_pipeline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="headless\src\filters\bilateral_filter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="headless\src\filters\blur_filter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="headless\src\filters\crop_filter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="headless\src\filters\gaussian_blur_filter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="headless\src\filters\median_filter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="headless\src\filters\moving_average_filter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="headless\src\filters\resize_filter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="headless\src\filters\stack_blur_filter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="headless\src\filters\threshold_filter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sickapi\src\AuthenticationLegacy.h">
@@ -207,9 +237,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="snap7\snap7.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="argparse\include\argparse\argparse.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="spdlog\include\spdlog\cfg\argv.h">
@@ -609,6 +636,45 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ftxui\include\ftxui\util\ref.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cli11\CLI11.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="json\json.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headless\include\headless\filter_pipeline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headless\include\headless\filter_base.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headless\include\headless\filters\bilateral_filter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headless\include\headless\filters\blur_filter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headless\include\headless\filters\crop_filter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headless\include\headless\filters\gaussian_blur_filter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headless\include\headless\filters\median_filter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headless\include\headless\filters\moving_average_filter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headless\include\headless\filters\resize_filter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headless\include\headless\filters\stack_blur_filter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headless\include\headless\filters\threshold_filter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
