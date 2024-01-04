@@ -37,30 +37,17 @@ struct configuration
 
 configuration config;
 
-const bool parse_args(int argc, char** argv);
+const bool parse_args(const int argc, const char** argv);
 const bool parse_file(const char* file);
 const bool save_config(const char* file);
 
-int main(int argc, char** argv)
+int main(const int argc, const char** argv)
 {
 	spdlog::set_level(spdlog::level::trace);
 
-	// assume second argument is a file path
-	if (argc == 2)
+	if (!parse_args(argc, argv))
 	{
-		if (!parse_file(argv[1]))
-		{
-			return -1;
-		}
-	}
-
-	// if we don't have 2 arguments, parse options
-	else
-	{
-		if (!parse_args(argc, argv))
-		{
-			return -1;
-		}
+		return -1;
 	}
 
 	int ret;
@@ -137,7 +124,6 @@ int main(int argc, char** argv)
 					spdlog::error("Failed to reconnect PLC: {}", CliErrorText(ret));
 				}
 			}
-
 		}
 	}
 
@@ -147,9 +133,14 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-const bool parse_args(int argc, char** argv)
+const bool parse_args(const int argc, const char** argv)
 {
 	argparse::ArgumentParser program("Program description.");
+
+
+	program.add_argument("--config-file")
+		.default_value("")
+		.help("Path to a configuration file");
 
 	program.add_argument("--camera-ip")
 		.required()
@@ -204,6 +195,11 @@ const bool parse_args(int argc, char** argv)
 		config.plc.slot = program.get<int>("--plc-slot");
 		config.plc.db_num = program.get<int>("--plc-db-number");
 		config.plc.db_offset = program.get<int>("--plc-db-offset");
+
+		auto file = program.get<std::string>("--config-file");
+
+		std::cout << "file is_used: " << program.is_used("--config-file") << "\n";
+		std::cout << "file: " << file << "\n";
 
 		if (verbosity == 0)
 			spdlog::set_level(spdlog::level::critical);
