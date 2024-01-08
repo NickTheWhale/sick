@@ -1,8 +1,9 @@
 #include <chrono>
-#include <iostream>
-#include <string>
-#include <thread>
+#include <csignal>
 #include <fstream>
+#include <iostream>
+#include <thread>
+#include <string>
 
 #include <CLI11.hpp>
 
@@ -62,13 +63,18 @@ struct configuration
 
 configuration config;
 filter_pipeline pipeline;
+volatile sig_atomic_t done = 0;
 
 const int parse_args(int argc, char** argv);	
 const bool parse_config(const std::string& file);
 const bool parse_filters(const std::string& file);
+void signal_handler(int signum);
 
 int main(int argc, char** argv)
 {
+	// register signal_handler as the ctrl+c callback
+	signal(SIGINT, signal_handler);
+
 	spdlog::set_level(spdlog::level::trace);
 
 	int ret;
@@ -117,7 +123,6 @@ int main(int argc, char** argv)
 	spdlog::trace("Camera frame acquisition started");
 
 	// loop indefinitely, filtering and sending frames to the plc
-	bool done = false;
 	while (!done)
 	{
 		if (grabber.getNextFrame(data_handler))
@@ -145,6 +150,10 @@ int main(int argc, char** argv)
 				}
 			}
 		}
+
+		static int loop_count = 0;
+		++loop_count;
+		spdlog::trace("loop count: {}", loop_count);
 	}
 
 	visionary_control.close();
@@ -282,4 +291,13 @@ const bool parse_filters(const std::string& file)
 	}
 
 	return true;
+}
+
+void signal_handler(int signum)
+{
+	if (signum == SIGINT)
+	{
+		spdlog::info("Quitting...");
+		done = 1;
+	}
 }
