@@ -1,3 +1,5 @@
+#pragma once
+
 #include <gui/filter_base.h>
 
 class moving_average_filter : public filter_base

@@ -171,6 +171,12 @@
     <ClCompile Include="nodeeditor\imnodes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="gui\src\filter_editor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\src\filter_graph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imgui.h">
@@ -686,6 +692,15 @@
     <ClInclude Include="nodeeditor\imnodes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="gui\include\gui\filter_editor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\include\gui\filter_factory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\include\gui\filter_graph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="glfw\lib\glfw3.lib" />
@@ -695,9 +710,15 @@
   <ItemGroup>
     <None Include="glfw\LICENSE.md" />
     <None Include="nodeeditor\LICENSE.md" />
+    <None Include="json\LICENSE.MIT" />
+    <None Include="spdlog\LICENSE" />
+    <None Include="tinycolormap\LICENSE" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="imgui\LICENSE.txt" />
     <Text Include="glew\LICENSE.txt" />
+    <Text Include="sickapi\LICENSE.txt" />
+    <Text Include="sickapi\LICENSE.boost.txt" />
+    <Text Include="sickapi\LICENSE.md5.txt" />
   </ItemGroup>
 </Project>

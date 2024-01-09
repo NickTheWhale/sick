@@ -140,6 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="gui\src\filter_graph.cpp" />
     <ClCompile Include="gui\src\filters\bilateral_filter.cpp" />
     <ClCompile Include="gui\src\filters\blur_filter.cpp" />
     <ClCompile Include="gui\src\filters\crop_filter.cpp" />
@@ -160,6 +161,7 @@
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="nodeeditor\imnodes.cpp" />
+    <ClCompile Include="gui\src\filter_editor.cpp" />
     <ClCompile Include="sickapi\include\libs\smart_ptr\src\sp_collector.cpp" />
     <ClCompile Include="sickapi\include\libs\smart_ptr\src\sp_debug_hooks.cpp" />
     <ClCompile Include="sickapi\src\AuthenticationLegacy.cpp" />
@@ -194,6 +196,8 @@
     <ClCompile Include="spdlog\src\stdout_sinks.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="gui\include\gui\filter_graph.h" />
+    <ClInclude Include="gui\include\gui\filter_factory.h" />
     <ClInclude Include="glew\include\GL\eglew.h" />
     <ClInclude Include="glew\include\GL\glew.h" />
     <ClInclude Include="glew\include\GL\glxew.h" />
@@ -232,6 +236,7 @@
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="json\json.hpp" />
     <ClInclude Include="nodeeditor\imnodes.h" />
+    <ClInclude Include="gui\include\gui\filter_editor.h" />
     <ClInclude Include="sickapi\src\AuthenticationLegacy.h" />
     <ClInclude Include="sickapi\src\AuthenticationSecure.h" />
     <ClInclude Include="sickapi\src\CoLa2ProtocolHandler.h" />
@@ -373,11 +378,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="glfw\LICENSE.md" />
+    <None Include="json\LICENSE.MIT" />
     <None Include="nodeeditor\LICENSE.md" />
+    <None Include="spdlog\LICENSE" />
+    <None Include="tinycolormap\LICENSE" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="glew\LICENSE.txt" />
     <Text Include="imgui\LICENSE.txt" />
+    <Text Include="sickapi\LICENSE.boost.txt" />
+    <Text Include="sickapi\LICENSE.md5.txt" />
+    <Text Include="sickapi\LICENSE.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
