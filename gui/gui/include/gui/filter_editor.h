@@ -15,8 +15,7 @@ namespace editor
 
 		const void show();
 		const bool add_node(const std::string& type);
-		const bool remove_node(const int id);
-		const std::optional<filter_pipeline> pipeline() const;
+		const bool create_pipeline(filter_pipeline& pipeline) const;
 
 	private:
 		const std::string editor_name;

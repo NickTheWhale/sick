@@ -701,6 +701,9 @@
     <ClInclude Include="gui\include\gui\filter_graph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="gui\include\gui\filter_parameter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="glfw\lib\glfw3.lib" />

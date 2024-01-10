@@ -107,9 +107,7 @@ int main(int, char**)
     }
 
     
-    //filter_pipeline pipe;
-    //nlohmann::json pipe_json = nlohmann::json::parse(std::ifstream("filters.json"));
-    //pipe.from_json(pipe_json);
+    filter_pipeline pipe;
     
     GLuint frame_texture = 0;
     glGenTextures(1, &frame_texture);
@@ -125,6 +123,7 @@ int main(int, char**)
         ImGui::NewFrame();
 
         feditor.show();
+        const bool pipeline_ok = feditor.create_pipeline(pipe);
 
         ImGui::ShowDemoWindow();
 
@@ -136,6 +135,18 @@ int main(int, char**)
         {
             fn = data_handler->getFrameNum();
         }
+        ImGui::Begin("ave depth");
+        if (data_handler->getDistanceMap().size() > 0)
+        {
+            size_t ave_depth = 0;
+            for (const auto& val : data_handler->getDistanceMap())
+                ave_depth += val;
+            ave_depth /= data_handler->getDistanceMap().size();
+            ImGui::Text("Average depth: %d", ave_depth);
+            ImGui::End();
+        }
+
+
         ImGui::Text("Frame number %d", fn);
 
         // Convert frame to texture
@@ -144,6 +155,8 @@ int main(int, char**)
         cv::Mat frame_mat = frameset::toMat(frame);
         int texture_width, texture_height;
         mat_to_texture(frame_mat, frame_texture, texture_width, texture_height);
+        // TODO: seperate raw and filtered frame buffer pointers
+        // TODO: resizable frame window
         // Display texture
         ImGui::Begin("Raw frame");
         ImGui::Text("pointer = %p", frame_texture);
@@ -151,9 +164,13 @@ int main(int, char**)
         ImGui::Image(reinterpret_cast<void*>(static_cast<intptr_t>(frame_texture)), ImVec2(texture_width, texture_height));
         ImGui::End();
 
-        //bool ret = pipe.apply(frame_mat);
-        //if (!ret)
-        //    std::cerr << "failed to apply filter pipeline\n";
+        if (pipeline_ok)
+        {
+            // TODO: filtering needs to be done in a seperate thread
+            bool ret = pipe.apply(frame_mat);
+            if (!ret)
+                std::cerr << "failed to apply filter pipeline\n";
+        }
 
         mat_to_texture(frame_mat, frame_texture, texture_width, texture_height);
         // Display texture

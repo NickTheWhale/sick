@@ -1,6 +1,7 @@
 #pragma once
 
 #include <gui/filter_base.h>
+#include <gui/filter_parameter.h>
 
 class bilateral_filter : public filter_base
 {
@@ -15,6 +16,7 @@ public:
 	const nlohmann::json to_json() const override;
 
 private:
-	int size_x;
-	int size_y;
+	filter::filter_parameter<int, 1, std::numeric_limits<int>::max(), false> diameter;
+	filter::filter_parameter<float, 0.0f, std::numeric_limits<float>::max()> sigma_color;
+	filter::filter_parameter<float, 0.0f, std::numeric_limits<float>::max()> sigma_space;
 };

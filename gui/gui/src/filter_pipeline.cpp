@@ -20,6 +20,9 @@ const void filter_pipeline::from_json(const nlohmann::json& filters)
 {
 	for (const auto& filter_json : filters)
 	{
+		if (!filter_json.contains("type"))
+			continue;
+
 		const std::string filter_type = filter_json["type"].get<std::string>();
 		std::unique_ptr<filter_base> filter = filter_factory::create(filter_type);
 		if (filter)

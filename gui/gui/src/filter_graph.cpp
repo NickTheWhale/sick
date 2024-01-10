@@ -2,10 +2,13 @@
 
 #include <algorithm>
 #include <iostream>
+#include <stack>
 
 const bool editor::filter_graph::add_node(const editor::Node& node)
 {
-	return _nodes.emplace(node.id, node).second;
+	return _nodes.emplace(node.id, node).second 
+		&& _nodes_in_id.emplace(node.in_id, node).second 
+		&& _nodes_out_id.emplace(node.out_id, node).second;
 }
 
 const bool editor::filter_graph::remove_node(const int node_id)
@@ -17,6 +20,7 @@ const bool editor::filter_graph::remove_node(const int node_id)
 	std::vector<int> links_to_remove;
 
 	// remove associated links
+	// TODO: leverage _nodes_*_id maps to improve efficiency
 	for (const auto& [link_id, link] : _links)
 	{
 		const int l_in = link.in_id;
@@ -32,24 +36,143 @@ const bool editor::filter_graph::remove_node(const int node_id)
 	for (const auto& link_id : links_to_remove)
 		remove_link(link_id);
 
+	int in_id = nit->second.in_id;
+	int out_id = nit->second.out_id;
+
 	_nodes.erase(nit);
+
+	// TODO: check complexity
+	_nodes_in_id.erase(in_id);
+	_nodes_out_id.erase(out_id);
 
 	return true;
 }
 
 const bool editor::filter_graph::add_link(const editor::Link& link)
 {
+	// configure associated node flags
+	_nodes.at(_nodes_in_id.at(link.out_id).id).is_in_linked = true;
+	_nodes.at(_nodes_in_id.at(link.out_id).id).in_link = link;
+
+	_nodes.at(_nodes_out_id.at(link.in_id).id).is_out_linked = true;
+	_nodes.at(_nodes_out_id.at(link.in_id).id).out_link = link;
+
 	return _links.emplace(link.id, link).second;
 }
 
 const bool editor::filter_graph::remove_link(const int link_id)
 {
-	auto it = _links.find(link_id);
-	if (it == _links.end())
+	auto link_it = _links.find(link_id);
+	if (link_it == _links.end())
 		return false;
 
-	_links.erase(it);
+	// configure associated node flags
+	_nodes.at(_nodes_in_id.at(link_it->second.out_id).id).is_in_linked = false;
+	_nodes.at(_nodes_in_id.at(link_it->second.out_id).id).in_link = {};
+						   							
+	_nodes.at(_nodes_out_id.at(link_it->second.in_id).id).is_out_linked = false;
+	_nodes.at(_nodes_out_id.at(link_it->second.in_id).id).out_link = {};
+
+	_links.erase(link_it);
 	
+	return true;
+}
+
+//const std::vector<editor::Node> editor::filter_graph::start_nodes() const
+//{
+//	if (_nodes.empty())
+//		return {};
+//
+//	// traverse graph, finding all nodes without an input 
+//
+//	// given a node_id, find all adjacent nodes
+//
+//	std::function adjacent_nodes = [nodes = this->_nodes, links = this->_links](const int node_id)->std::vector<Node> {
+//		std::vector<Node> child_nodes;
+//		
+//		std::vector<Link> out_links;
+//		Node parent = nodes.at(node_id);
+//		
+//		// find outgoing links
+//		for (const auto& [link_id, link] : links)
+//			if (link.in_id == parent.out_id)
+//				out_links.push_back(link);
+//
+//		// find child nodes
+//		for (const auto& link : out_links)
+//			for (const auto& [node_id, node] : nodes)
+//				if (node.in_id == link.out_id)
+//					child_nodes.push_back(node);
+//
+//		return child_nodes;
+//	};
+//
+//	std::function edges = [](const int node_id)->std::vector<int> { return {}; };
+//
+//	struct vertex
+//	{
+//		int node_id;
+//		bool discovered;
+//	};
+//
+//	std::vector<Node> _start_nodes;
+//	std::stack<vertex> s;
+//	
+//	s.push({ .node_id = _nodes.begin()->first, .discovered = false });
+//	_start_nodes.push_back(_nodes.begin()->second);
+//
+//	while (!s.empty())
+//	{
+//		vertex v = s.top();
+//		s.pop();
+//		if (!v.discovered)
+//		{
+//			v.discovered = true;
+//			auto w = adjacent_nodes(v.node_id);
+//			for (const auto& node : w)
+//			{
+//				s.push({ .node_id = node.id, .discovered = false });
+//				_start_nodes.push_back(node);
+//			}
+//		}
+//	}
+//
+//	return _start_nodes;
+//}
+
+const bool editor::filter_graph::traverse(std::vector<editor::Node>& nodes) const
+{
+	if (_nodes.empty())
+		return false;
+
+	// find start node (node with no input link)
+	std::vector<Node> _start_nodes;
+	for (const auto& [node_id, node] : _nodes)
+		if (!node.is_in_linked)
+			_start_nodes.push_back(node);
+
+	// if there isn't exactly 1 start node, then we have dangling nodes or a cycle
+	if (_start_nodes.size() != 1)
+		return false;
+
+	std::vector<Node> node_path;
+	const Node* curr_node = &_start_nodes[0];
+	while (curr_node->is_out_linked)
+	{
+		node_path.push_back(*curr_node);
+		const auto out_link = curr_node->out_link;
+		const auto out_link_out_id = out_link.out_id;
+		const auto* next_node = &_nodes_in_id.at(out_link_out_id);
+		next_node = &_nodes.at(next_node->id);
+		curr_node = next_node;
+
+		//curr_node = &_nodes_out_id.at(curr_node->out_link.in_id);
+		//curr_node = &_nodes.at(_nodes_in_id.at(curr_node->out_link.in_id).id);
+	}
+	node_path.push_back(*curr_node);
+
+	nodes = std::move(node_path);
+
 	return true;
 }
 

@@ -127,6 +127,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)\imgui;$(ProjectDir)\sickapi\src;$(BOOST_DIR);$(ProjectDir)\glfw\include;$(OPENCV_DIR)\build\include;$(ProjectDir)\glew\include;$(ProjectDir)\gui\include;$(ProjectDir)\json;$(ProjectDir)\spdlog\include;$(ProjectDir)\tinycolormap;$(ProjectDir)\nodeeditor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -196,6 +197,7 @@
     <ClCompile Include="spdlog\src\stdout_sinks.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="gui\include\gui\filter_parameter.h" />
     <ClInclude Include="gui\include\gui\filter_graph.h" />
     <ClInclude Include="gui\include\gui\filter_factory.h" />
     <ClInclude Include="glew\include\GL\eglew.h" />
