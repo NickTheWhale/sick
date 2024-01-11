@@ -5,6 +5,7 @@
 #include <spdlog/spdlog.h>
 
 bilateral_filter::bilateral_filter()
+	: diameter(1), sigma_color(0.0), sigma_space(0.0)
 {
 }
 
@@ -33,14 +34,14 @@ const bool bilateral_filter::apply(cv::Mat& mat) const
 	return true;
 }
 
-const bool bilateral_filter::from_json(const nlohmann::json& filter)
+const bool bilateral_filter::load_json(const nlohmann::json& filter)
 {
 	try
 	{
 		nlohmann::json parameters = filter["parameters"];
 		diameter = parameters["diameter"].get<int>();
-		sigma_color = parameters["sigma-color"].get<float>();
-		sigma_space = parameters["sigma-space"].get<float>();
+		sigma_color = parameters["sigma"]["color"].get<double>();
+		sigma_space = parameters["sigma"]["space"].get<double>();
 	}
 	catch (const nlohmann::detail::exception& e)
 	{
@@ -58,13 +59,13 @@ const bool bilateral_filter::from_json(const nlohmann::json& filter)
 
 const nlohmann::json bilateral_filter::to_json() const
 {
-	nlohmann::json root;
 	try
 	{
+		nlohmann::json root;
 		nlohmann::json parameters;
 		parameters["diameter"] = diameter.value();
-		parameters["sigma-color"] = sigma_color.value();
-		parameters["sigma-space"] = sigma_space.value();
+		parameters["sigma"]["color"] = sigma_color.value();
+		parameters["sigma"]["space"] = sigma_space.value();
 
 		root["type"] = type();
 		root["parameters"] = parameters;
@@ -81,6 +82,4 @@ const nlohmann::json bilateral_filter::to_json() const
 		spdlog::error("Failed to convert '{}' filter to json", type());
 		return nlohmann::json{};
 	}
-
-	return root;
 }

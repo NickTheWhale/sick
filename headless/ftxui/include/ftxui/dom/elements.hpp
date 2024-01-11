@@ -149,7 +149,7 @@ enum WidthOrHeight { WIDTH, HEIGHT };
 enum Constraint { LESS_THAN, EQUAL, GREATER_THAN };
 Decorator size(WidthOrHeight, Constraint, int value);
 
-// --- Frame ---
+// --- frame ---
 // A frame is a scrollable area. The internal area is potentially larger than
 // the external one. The internal area is scrolled in order to make visible the
 // focused element.

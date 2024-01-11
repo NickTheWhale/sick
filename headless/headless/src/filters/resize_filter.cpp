@@ -31,7 +31,7 @@ const bool resize_filter::apply(cv::Mat& mat) const
 	return true;
 }
 
-const bool resize_filter::from_json(const nlohmann::json& filter)
+const bool resize_filter::load_json(const nlohmann::json& filter)
 {
 	try
 	{

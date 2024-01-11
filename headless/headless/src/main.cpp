@@ -272,7 +272,7 @@ const bool parse_filters(const std::string& file)
 	try
 	{
 		nlohmann::json filters = nlohmann::json::parse(std::ifstream(file));
-		pipeline.from_json(filters);
+		pipeline.load_json(filters);
 	}
 	catch (const nlohmann::detail::exception& e)
 	{

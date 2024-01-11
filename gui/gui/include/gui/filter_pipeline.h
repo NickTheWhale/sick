@@ -11,9 +11,14 @@
 class filter_pipeline
 {
 public:
-	filter_pipeline();
+	filter_pipeline() = default;
+	filter_pipeline(const filter_pipeline& other);
+	filter_pipeline(filter_pipeline&& other) noexcept;
+	~filter_pipeline() = default;
 
-	const void from_json(const nlohmann::json& filters);
+	filter_pipeline& operator=(const filter_pipeline& other);
+
+	const void load_json(const nlohmann::json& filters);
 	const nlohmann::json to_json() const;
 	const bool apply(cv::Mat& mat) const;
 

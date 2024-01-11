@@ -23,17 +23,19 @@ const bool median_filter::apply(cv::Mat& mat) const
 		return false;
 
 	cv::Mat output;
-
+	cv::medianBlur(mat, output, size.value());
 
 	mat = output;
+
 	return true;
 }
 
-const bool median_filter::from_json(const nlohmann::json& filter)
+const bool median_filter::load_json(const nlohmann::json& filter)
 {
 	try
 	{
-
+		nlohmann::json parameters = filter["parameters"];
+		size = parameters["kernel-size"].get<int>();
 	}
 	catch (const nlohmann::detail::exception& e)
 	{
@@ -51,10 +53,16 @@ const bool median_filter::from_json(const nlohmann::json& filter)
 
 const nlohmann::json median_filter::to_json() const
 {
-	nlohmann::json root;
 	try
 	{
+		nlohmann::json root;
+		nlohmann::json parameters;
+		parameters["kernel-size"] = size.value();
 
+		root["type"] = type();
+		root["parameters"] = parameters;
+
+		return root;
 	}
 	catch (const nlohmann::detail::exception& e)
 	{
@@ -66,6 +74,4 @@ const nlohmann::json median_filter::to_json() const
 		spdlog::error("Failed to convert '{}' filter to json", type());
 		return nlohmann::json{};
 	}
-
-	return root;
 }

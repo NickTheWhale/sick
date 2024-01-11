@@ -295,7 +295,7 @@ const bool editor::filter_editor::create_pipeline(filter_pipeline& pipeline) con
 		filter_json.push_back(json);
 	}
 	
-	pipeline.from_json(filter_json);
+	pipeline.load_json(filter_json);
 
 	return true;
 }

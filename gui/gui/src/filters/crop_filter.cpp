@@ -24,16 +24,42 @@ const bool crop_filter::apply(cv::Mat& mat) const
 
 	cv::Mat output;
 
+	// crop start
+
+	int x = static_cast<int>(mat.cols * center_x.value() - width.value() * mat.cols / 2);
+	int y = static_cast<int>(mat.rows * center_y.value() - height.value() * mat.rows / 2);
+	int crop_width = static_cast<int>(mat.cols * width.value());
+	int crop_height = static_cast<int>(mat.rows * height.value());
+
+	// ensure the crop region is within the image bounds
+	x = std::max(x, 0);
+	y = std::max(y, 0);
+	crop_width = std::min(crop_width, mat.cols - x);
+	crop_height = std::min(crop_height, mat.rows - y);
+
+	// limit smallest roi
+	crop_width = std::max(1, crop_width);
+	crop_height = std::max(1, crop_height);
+
+	cv::Rect roi(x, y, crop_width, crop_height);
+	output = mat(roi);
+
+	// crop end
 
 	mat = output;
+
 	return true;
 }
 
-const bool crop_filter::from_json(const nlohmann::json& filter)
+const bool crop_filter::load_json(const nlohmann::json& filter)
 {
 	try
 	{
-
+		nlohmann::json parameters = filter["parameters"];
+		center_x = parameters["center"]["x"].get<double>();
+		center_y = parameters["center"]["y"].get<double>();
+		width = parameters["size"]["width"].get<double>();
+		height = parameters["size"]["height"].get<double>();
 	}
 	catch (const nlohmann::detail::exception& e)
 	{
@@ -51,10 +77,20 @@ const bool crop_filter::from_json(const nlohmann::json& filter)
 
 const nlohmann::json crop_filter::to_json() const
 {
-	nlohmann::json root;
 	try
 	{
+		nlohmann::json root;
+		nlohmann::json parameters;
 
+		parameters["center"]["x"] = center_x.value();
+		parameters["center"]["y"] = center_y.value();
+		parameters["size"]["width"] = width.value();
+		parameters["size"]["height"] = height.value();
+
+		root["type"] = type();
+		root["parameters"] = parameters;
+
+		return root;
 	}
 	catch (const nlohmann::detail::exception& e)
 	{
@@ -66,6 +102,4 @@ const nlohmann::json crop_filter::to_json() const
 		spdlog::error("Failed to convert '{}' filter to json", type());
 		return nlohmann::json{};
 	}
-
-	return root;
 }

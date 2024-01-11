@@ -9,7 +9,7 @@ public:
 	std::unique_ptr<filter_base> clone() const override;
 	const std::string type() const override { return "threshold-filter"; };
 	const bool apply(cv::Mat& mat) const override;
-	const bool from_json(const nlohmann::json& filter) override;
+	const bool load_json(const nlohmann::json& filter) override;
 	const nlohmann::json to_json() const override;
 
 private:

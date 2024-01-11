@@ -13,7 +13,7 @@ class filter_pipeline
 public:
 	filter_pipeline();
 
-	const bool from_json(const nlohmann::json& filters);
+	const bool load_json(const nlohmann::json& filters);
 	const nlohmann::json to_json() const;
 	const bool apply(cv::Mat& mat) const;
 

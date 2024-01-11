@@ -152,7 +152,8 @@
     <ClCompile Include="gui\src\filters\stack_blur_filter.cpp" />
     <ClCompile Include="gui\src\filters\threshold_filter.cpp" />
     <ClCompile Include="gui\src\filter_pipeline.cpp" />
-    <ClCompile Include="gui\src\frameset.cpp" />
+    <ClCompile Include="gui\src\filter_worker.cpp" />
+    <ClCompile Include="gui\src\frame.cpp" />
     <ClCompile Include="gui\src\main.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
@@ -226,7 +227,8 @@
     <ClInclude Include="gui\include\gui\filters\threshold_filter.h" />
     <ClInclude Include="gui\include\gui\filter_base.h" />
     <ClInclude Include="gui\include\gui\filter_pipeline.h" />
-    <ClInclude Include="gui\include\gui\frameset.h" />
+    <ClInclude Include="gui\include\gui\filter_worker.h" />
+    <ClInclude Include="gui\include\gui\frame.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_impl_glfw.h" />

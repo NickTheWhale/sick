@@ -23,17 +23,22 @@ const bool gaussian_blur_filter::apply(cv::Mat& mat) const
 		return false;
 
 	cv::Mat output;
-
+	cv::Size size(size_x.value(), size_y.value());
+	cv::GaussianBlur(mat, output, size, sigma_x.value(), sigma_y.value());
 
 	mat = output;
 	return true;
 }
 
-const bool gaussian_blur_filter::from_json(const nlohmann::json& filter)
+const bool gaussian_blur_filter::load_json(const nlohmann::json& filter)
 {
 	try
 	{
-
+		nlohmann::json parameters = filter["parameters"];
+		size_x = parameters["kernel-size"]["x"].get<int>();
+		size_y = parameters["kernel-size"]["y"].get<int>();
+		sigma_x = parameters["sigma"]["x"].get<double>();
+		sigma_y = parameters["sigma"]["y"].get<double>();
 	}
 	catch (const nlohmann::detail::exception& e)
 	{
@@ -51,10 +56,19 @@ const bool gaussian_blur_filter::from_json(const nlohmann::json& filter)
 
 const nlohmann::json gaussian_blur_filter::to_json() const
 {
-	nlohmann::json root;
 	try
 	{
+		nlohmann::json root;
+		nlohmann::json parameters;
+		parameters["kernel-size"]["x"] = size_x.value();
+		parameters["kernel-size"]["y"] = size_y.value();
+		parameters["sigma"]["x"] = sigma_x.value();
+		parameters["sigma"]["y"] = sigma_y.value();
 
+		root["type"] = type();
+		root["parameters"] = parameters;
+
+		return root;
 	}
 	catch (const nlohmann::detail::exception& e)
 	{
@@ -66,6 +80,4 @@ const nlohmann::json gaussian_blur_filter::to_json() const
 		spdlog::error("Failed to convert '{}' filter to json", type());
 		return nlohmann::json{};
 	}
-
-	return root;
 }

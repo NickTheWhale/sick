@@ -141,7 +141,7 @@
     <ClCompile Include="gui\src\filter_pipeline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gui\src\frameset.cpp">
+    <ClCompile Include="gui\src\frame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gui\src\main.cpp">
@@ -175,6 +175,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gui\src\filter_graph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\src\filter_worker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -374,7 +377,7 @@
     <ClInclude Include="gui\include\gui\filter_pipeline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gui\include\gui\frameset.h">
+    <ClInclude Include="gui\include\gui\frame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="json\json.hpp">
@@ -702,6 +705,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="gui\include\gui\filter_parameter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\include\gui\filter_worker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

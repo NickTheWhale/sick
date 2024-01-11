@@ -15,7 +15,7 @@ filter_pipeline::filter_pipeline()
 {
 }
 
-const bool filter_pipeline::from_json(const nlohmann::json& filters)
+const bool filter_pipeline::load_json(const nlohmann::json& filters)
 {
 	for (const auto& filter_json : filters)
 	{
@@ -23,7 +23,7 @@ const bool filter_pipeline::from_json(const nlohmann::json& filters)
 		std::unique_ptr<filter_base> filter = make_filter(filter_type);
 		if (filter)
 		{
-			filter->from_json(filter_json);
+			filter->load_json(filter_json);
 			this->filters.push_back(std::move(filter));
 		}
 	}

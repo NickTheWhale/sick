@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <thread>
 #include <vector>
 #include <unordered_map>
 
@@ -11,8 +12,6 @@
 
 #include <GL/glew.h>
 
-#include <opencv2/imgproc.hpp>
-#include <opencv2/imgcodecs.hpp>
 #include <opencv2/core/utils/logger.hpp>
 
 #include "imgui.h"
@@ -22,22 +21,31 @@
 #define GL_SILENCE_DEPRECATION
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
 
-#include <gui/frameset.h>
+#include <gui/frame.h>
 #include <gui/filter_pipeline.h>
+#include <gui/filter_worker.h>
 
 #include <json.hpp>
 
 #include <imnodes.h>
 #include <gui/filter_editor.h>
 
-bool mat_to_texture(const cv::Mat& mat, GLuint& texture, int& texture_width, int& texture_height);
+#include <spdlog/spdlog.h>
 
-static void glfw_error_callback(int error, const char* description)
+std::unique_ptr<visionary::FrameGrabber<visionary::VisionaryTMiniData>> frame_grabber;
+std::shared_ptr<visionary::VisionaryTMiniData> frame_data;
+std::unique_ptr<visionary::VisionaryControl> visionary_control;
+GLuint g_texture;
+
+const bool open_camera(const std::string& ip, const uint16_t& port, const uint64_t& timeout_ms);
+
+namespace ImGui
 {
-    fprintf(stderr, "GLFW Error %d: %s\n", error, description);
+    void FrameWindow(const frame::Frame& frame, const char* name, bool *p_open = (bool *)0, ImGuiWindowFlags flags = 0);
 }
 
-// Main code
+void glfw_error_callback(int error, const char* description);
+
 int main(int, char**)
 {
 #ifndef _DEBUG
@@ -83,37 +91,13 @@ int main(int, char**)
 
     fprintf(stdout, "Using GLEW version %s\n", glewGetString(GLEW_VERSION));
     fprintf(stdout, "Using GL version %s\n", glGetString(GL_VERSION));
+        
+    open_camera("192.168.1.67", 2114, 1000);
 
-    // Camera setup
-    const std::string cam_ip = "192.168.1.67";
-    visionary::FrameGrabber<visionary::VisionaryTMiniData> grabber(cam_ip, htons(2114u), 5000);
-    std::shared_ptr<visionary::VisionaryTMiniData> data_handler;
-    visionary::VisionaryControl visionary_control;
-
-    if (!visionary_control.open(visionary::VisionaryControl::ProtocolType::COLA_2, cam_ip, 5000/*ms*/))
-    {
-        //std::cout << "Failed to open control connection to camera.\n";
-        //return -1;
-    }
-
-    visionary_control.stopAcquisition();
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-    // start continous acquisition
-    if (!visionary_control.startAcquisition())
-    {
-        //std::cout << "Failed to start acquisition\n";
-        //return -1;
-    }
-
-    
-    filter_pipeline pipe;
-    
-    GLuint frame_texture = 0;
-    glGenTextures(1, &frame_texture);
-
-    editor::filter_editor feditor;
-    // Main loop
+    filter_pipeline pipeline;
+    editor::filter_editor editor;
+    filter::filter_worker worker;
+    glGenTextures(1, &g_texture);
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
@@ -121,70 +105,48 @@ int main(int, char**)
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
-        feditor.show();
-        const bool pipeline_ok = feditor.create_pipeline(pipe);
-
-        ImGui::ShowDemoWindow();
-
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+        editor.show();
 
-        // Get camera frame
-        static int fn = 0;
-        if (grabber.getCurrentFrame(data_handler))
-        {
-            fn = data_handler->getFrameNum();
-        }
-        ImGui::Begin("ave depth");
-        if (data_handler->getDistanceMap().size() > 0)
-        {
-            size_t ave_depth = 0;
-            for (const auto& val : data_handler->getDistanceMap())
-                ave_depth += val;
-            ave_depth /= data_handler->getDistanceMap().size();
-            ImGui::Text("Average depth: %d", ave_depth);
-            ImGui::End();
-        }
-
-
-        ImGui::Text("Frame number %d", fn);
-
-        // Convert frame to texture
-        frameset::Frame frame(data_handler->getDistanceMap(), data_handler->getHeight(), data_handler->getWidth(), data_handler->getFrameNum(), data_handler->getTimestamp());
-
-        cv::Mat frame_mat = frameset::toMat(frame);
-        int texture_width, texture_height;
-        mat_to_texture(frame_mat, frame_texture, texture_width, texture_height);
-        // TODO: seperate raw and filtered frame buffer pointers
-        // TODO: resizable frame window
-        // Display texture
-        ImGui::Begin("Raw frame");
-        ImGui::Text("pointer = %p", frame_texture);
-        ImGui::Text("size = %d x %d", texture_width, texture_height);
-        ImGui::Image(reinterpret_cast<void*>(static_cast<intptr_t>(frame_texture)), ImVec2(texture_width, texture_height));
-        ImGui::End();
-
+        bool pipeline_ok = editor.create_pipeline(pipeline);
         if (pipeline_ok)
         {
-            // TODO: filtering needs to be done in a seperate thread
-            bool ret = pipe.apply(frame_mat);
-            if (!ret)
-                std::cerr << "failed to apply filter pipeline\n";
+            if (frame_grabber->getCurrentFrame(frame_data))
+            {
+                frame::Frame depth(
+                    frame_data->getDistanceMap(),
+                    frame_data->getHeight(),
+                    frame_data->getWidth(),
+                    frame_data->getFrameNum(),
+                    frame_data->getTimestampMS()
+                );
+
+                auto depth_mat = frame::to_mat(depth);
+                worker.put_new(depth_mat);
+            }
+            {
+                std::cout << "current frame failed\n";
+            }
+        }
+        else
+        {
+            std::cout << "pipe failed\n";
         }
 
-        mat_to_texture(frame_mat, frame_texture, texture_width, texture_height);
-        // Display texture
-        ImGui::Begin("Filtered frame");
-        ImGui::Text("pointer = %p", frame_texture);
-        ImGui::Text("size = %d x %d", texture_width, texture_height);
-        ImGui::Image(reinterpret_cast<void*>(static_cast<intptr_t>(frame_texture)), ImVec2(texture_width, texture_height));
-        ImGui::End();
+        cv::Mat filtered_mat = worker.latest_mat();
+        frame::Frame filtered_frame;
+        if (!filtered_mat.empty())
+            filtered_frame = frame::to_frame(filtered_mat);
+        else
+            std::cerr << "EMPTY MAT!\n";
+        ImGui::FrameWindow(filtered_frame, "Filtered Frame");
 
         // Rendering
         ImGui::Render();
         int display_w, display_h;
         glfwGetFramebufferSize(window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
+        glClearColor(0.5, 0.5, 0.5, 1.0);
         //glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -193,6 +155,7 @@ int main(int, char**)
     }
 
     // Cleanup
+    glDeleteTextures(1, &g_texture);
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     imnodes::DestroyContext();
@@ -204,35 +167,78 @@ int main(int, char**)
     return 0;
 }
 
-bool mat_to_texture(const cv::Mat& mat, GLuint& texture, int &texture_width, int &texture_height)
-{
-    if (mat.empty())
+const bool open_camera(const std::string& ip, const uint16_t& port, const uint64_t& timeout_ms)
+{ 
+    frame_grabber.reset(new visionary::FrameGrabber<visionary::VisionaryTMiniData>(ip, htons(port), timeout_ms));
+    if (!frame_grabber)
+    {
+        spdlog::error("Failed to create frame grabber");
         return false;
+    }
 
-    cv::Mat in_mat = mat;
-    in_mat.convertTo(in_mat, CV_8U, 0.00390625);
-    cv::cvtColor(in_mat, in_mat, cv::COLOR_GRAY2RGBA);
+    frame_data.reset(new visionary::VisionaryTMiniData);
+    if (!frame_data)
+    {
+        spdlog::error("Failed to create frame data buffer");
+        return false;
+    }
 
-    glBindTexture(GL_TEXTURE_2D, texture);
-    
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    visionary_control.reset(new visionary::VisionaryControl);
+    if (!visionary_control)
+    {
+        spdlog::error("Failed to create camera control channel");
+        return false;
+    }
 
-    glTexImage2D(
-        GL_TEXTURE_2D,
-        0,
-        GL_RGBA,
-        in_mat.cols,
-        in_mat.rows,
-        0,
-        GL_RGBA,
-        GL_UNSIGNED_BYTE,
-        in_mat.data);
+    if (!visionary_control->open(visionary::VisionaryControl::ProtocolType::COLA_2, ip, timeout_ms))
+    {
+        spdlog::error("Failed to open camera control channel");
+        return false;
+    }
 
-    texture_width = in_mat.cols;
-    texture_height = in_mat.rows;
+    if (!visionary_control->stopAcquisition())
+    {
+        spdlog::error("Failed to stop frame acquisition");
+        return false;
+    }
+
+    // start continous acquisition
+    if (!visionary_control->startAcquisition())
+    {
+        spdlog::error("Failed to start frame acquisition");
+        return false;
+    }
 
     return true;
+}
+
+namespace ImGui
+{
+    void FrameWindow(const frame::Frame& frame, const char* name, bool* p_open, ImGuiWindowFlags flags)
+    {
+        // convert frame to texture
+
+        ImGui::Begin(name, p_open, flags);
+        {
+            auto frame_mat = frame::to_mat(frame);
+            int width, height;
+            if (frame::to_texture(frame_mat, g_texture, width, height))
+            {
+                ImGui::Text("pointer = %p", g_texture);
+                ImGui::Text("size = %d x %d", width, height);
+                ImGui::Image(reinterpret_cast<void*>(static_cast<intptr_t>(g_texture)), ImVec2(width, height));
+            }
+            else
+            {
+                std::cerr << "failed to convert to texture\n";
+            }
+        }
+
+        ImGui::End();
+    }
+}
+
+void glfw_error_callback(int error, const char* description)
+{
+    spdlog::error("GLFW Error %d: %s", error, description);
 }

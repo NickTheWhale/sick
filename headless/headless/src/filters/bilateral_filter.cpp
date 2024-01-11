@@ -28,7 +28,7 @@ const bool bilateral_filter::apply(cv::Mat& mat) const
 	return true;
 }
 
-const bool bilateral_filter::from_json(const nlohmann::json& filter)
+const bool bilateral_filter::load_json(const nlohmann::json& filter)
 {
 	try
 	{

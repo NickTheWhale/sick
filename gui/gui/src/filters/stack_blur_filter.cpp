@@ -5,6 +5,7 @@
 #include <spdlog/spdlog.h>
 
 stack_blur_filter::stack_blur_filter()
+	: size_x(size_x.min()), size_y(size_y.min())
 {
 }
 
@@ -23,17 +24,20 @@ const bool stack_blur_filter::apply(cv::Mat& mat) const
 		return false;
 
 	cv::Mat output;
-
+	cv::stackBlur(mat, output, cv::Size(size_x.value(), size_y.value()));
 
 	mat = output;
+
 	return true;
 }
 
-const bool stack_blur_filter::from_json(const nlohmann::json& filter)
+const bool stack_blur_filter::load_json(const nlohmann::json& filter)
 {
 	try
 	{
-
+		nlohmann::json parameters = filter["parameters"];
+		size_x = parameters["kernel-size"]["x"].get<int>();
+		size_y = parameters["kernel-size"]["y"].get<int>();
 	}
 	catch (const nlohmann::detail::exception& e)
 	{
@@ -51,10 +55,17 @@ const bool stack_blur_filter::from_json(const nlohmann::json& filter)
 
 const nlohmann::json stack_blur_filter::to_json() const
 {
-	nlohmann::json root;
 	try
 	{
+		nlohmann::json root;
+		nlohmann::json parameters;
+		parameters["kernel-size"]["x"] = size_x.value();
+		parameters["kernel-size"]["y"] = size_y.value();
 
+		root["type"] = type();
+		root["parameters"] = parameters;
+
+		return root;
 	}
 	catch (const nlohmann::detail::exception& e)
 	{
@@ -66,6 +77,4 @@ const nlohmann::json stack_blur_filter::to_json() const
 		spdlog::error("Failed to convert '{}' filter to json", type());
 		return nlohmann::json{};
 	}
-
-	return root;
 }

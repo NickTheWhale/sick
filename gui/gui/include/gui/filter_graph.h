@@ -39,6 +39,27 @@ namespace editor
                 filter = other.filter->clone();
             }
         }
+
+		Node(Node&& other) noexcept 
+			: id(other.id), in_id(other.in_id), out_id(other.out_id), in_link(other.in_link), out_link(other.out_link), is_in_linked(other.is_in_linked), is_out_linked(other.is_out_linked)
+		{
+			if (other.filter) {
+				filter = other.filter->clone();
+			}
+		}
+
+		Node& operator=(const Node& other)
+		{
+			if (this != &other)
+			{
+				if (other.filter)
+				{
+					filter = other.filter->clone();
+				}
+			}
+
+			return *this;
+		}
     };
 
 

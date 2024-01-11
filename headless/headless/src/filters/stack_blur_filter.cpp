@@ -29,7 +29,7 @@ const bool stack_blur_filter::apply(cv::Mat& mat) const
 	return true;
 }
 
-const bool stack_blur_filter::from_json(const nlohmann::json& filter)
+const bool stack_blur_filter::load_json(const nlohmann::json& filter)
 {
 	try
 	{

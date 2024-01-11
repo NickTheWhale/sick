@@ -12,11 +12,35 @@
 
 #include <gui/filter_factory.h>
 
-filter_pipeline::filter_pipeline()
+
+filter_pipeline::filter_pipeline(const filter_pipeline& other)
+{
+	for (const auto& filter : other.filters)
+	{
+		filters.push_back(filter->clone());
+	}
+}
+
+filter_pipeline::filter_pipeline(filter_pipeline&& other) noexcept
+	: filters(std::move(other.filters))
 {
 }
 
-const void filter_pipeline::from_json(const nlohmann::json& filters)
+filter_pipeline& filter_pipeline::operator=(const filter_pipeline& other)
+{
+	if (this != &other)
+	{
+		filters.clear();
+		for (const auto& filter : other.filters)
+		{
+			filters.push_back(filter->clone());
+		}
+	}
+	
+	return *this;
+}
+
+const void filter_pipeline::load_json(const nlohmann::json& filters)
 {
 	for (const auto& filter_json : filters)
 	{
@@ -27,7 +51,7 @@ const void filter_pipeline::from_json(const nlohmann::json& filters)
 		std::unique_ptr<filter_base> filter = filter_factory::create(filter_type);
 		if (filter)
 		{
-			filter->from_json(filter_json);
+			filter->load_json(filter_json);
 			this->filters.push_back(std::move(filter));
 		}
 	}

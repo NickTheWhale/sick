@@ -24,16 +24,19 @@ const bool blur_filter::apply(cv::Mat& mat) const
 
 	cv::Mat output;
 
-
+	cv::blur(mat, output, cv::Size(size_x.value(), size_y.value()));
 	mat = output;
+
 	return true;
 }
 
-const bool blur_filter::from_json(const nlohmann::json& filter)
+const bool blur_filter::load_json(const nlohmann::json& filter)
 {
 	try
 	{
-
+		nlohmann::json parameters = filter["parameters"];
+		size_x = parameters["kernel-size"]["x"].get<int>();
+		size_y = parameters["kernel-size"]["y"].get<int>();
 	}
 	catch (const nlohmann::detail::exception& e)
 	{
@@ -54,7 +57,14 @@ const nlohmann::json blur_filter::to_json() const
 	nlohmann::json root;
 	try
 	{
+		nlohmann::json parameters;
+		parameters["kernel-size"]["x"] = size_x.value();
+		parameters["kernel-size"]["y"] = size_y.value();
 
+		root["type"] = type();
+		root["parameters"] = parameters;
+
+		return root;
 	}
 	catch (const nlohmann::detail::exception& e)
 	{
@@ -66,6 +76,4 @@ const nlohmann::json blur_filter::to_json() const
 		spdlog::error("Failed to convert '{}' filter to json", type());
 		return nlohmann::json{};
 	}
-
-	return root;
 }
