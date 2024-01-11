@@ -254,15 +254,15 @@ const void editor::filter_editor::show()
 	}
 	ImGui::End();
 
-	// Save / load nodes
-	if (ImGui::Button("Save editor to file"))
+	// Serialization testing
+
+	// links
 	{
-		ImNodes::SaveCurrentEditorStateToIniFile("filter_editor_state.ini");
+		//ImGui::Text("id: %d, in_id: %d, out_id: %d", new_link.id, new_link.in_id, new_link.out_id);
 	}
 
-	if (ImGui::Button("Open editor from file"))
+	// nodes
 	{
-		ImNodes::LoadCurrentEditorStateFromIniFile("filter_editor_state.ini");
 	}
 
 
