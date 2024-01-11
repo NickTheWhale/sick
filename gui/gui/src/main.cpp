@@ -27,6 +27,7 @@
 
 #include <json.hpp>
 
+//#define IMNODES_NAMESPACE imnodes
 #include <imnodes.h>
 #include <gui/filter_editor.h>
 
@@ -69,7 +70,7 @@ int main(int, char**)
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    imnodes::CreateContext();
+    ImNodes::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
@@ -158,7 +159,7 @@ int main(int, char**)
     glDeleteTextures(1, &g_texture);
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
-    imnodes::DestroyContext();
+    ImNodes::DestroyContext();
     ImGui::DestroyContext();
 
     glfwDestroyWindow(window);

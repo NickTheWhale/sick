@@ -168,9 +168,6 @@
     <ClCompile Include="spdlog\src\stdout_sinks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="nodeeditor\imnodes.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="gui\src\filter_editor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -178,6 +175,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gui\src\filter_worker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="imnodes\imnodes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -692,9 +692,6 @@
     <ClInclude Include="spdlog\include\spdlog\version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="nodeeditor\imnodes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="gui\include\gui\filter_editor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -710,6 +707,12 @@
     <ClInclude Include="gui\include\gui\filter_worker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="imnodes\imnodes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imnodes\imnodes_internal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="glfw\lib\glfw3.lib" />
@@ -718,10 +721,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="glfw\LICENSE.md" />
-    <None Include="nodeeditor\LICENSE.md" />
     <None Include="json\LICENSE.MIT" />
     <None Include="spdlog\LICENSE" />
     <None Include="tinycolormap\LICENSE" />
+    <None Include="imnodes\LICENSE.md" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="imgui\LICENSE.txt" />

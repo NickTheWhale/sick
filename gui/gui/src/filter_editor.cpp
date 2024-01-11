@@ -23,69 +23,71 @@ editor::filter_editor::~filter_editor()
 
 const void editor::filter_editor::show()
 {
-	// user input
-	if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
-		ImGui::OpenPopup("###popup");
+	ImGui::Begin("Filter Editor");
+	ImNodes::BeginNodeEditor();
 
-	if (ImGui::BeginPopup("###popup"))
+	// user input
+	if (ImNodes::IsEditorHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+		ImGui::OpenPopup("###add_node_popup");
+	
+	bool node_added = false;
+	if (ImGui::BeginPopup("###add_node_popup"))
 	{
 		ImGui::SeparatorText("Filter type");
 		for (const auto& filter : filter_factory::types)
 		{
 			if (ImGui::Button(filter.first.c_str()))
 			{
-				add_node(filter.first);
+				node_added = add_node(filter.first);
 			}
 		}
 
 		ImGui::EndPopup();
 	}
 
-	ImGui::Begin("node editor");
-	imnodes::BeginNodeEditor();
-
 	// draw nodes
 	for (const auto& [node_id, node] : _graph.nodes())
 	{
 		const float node_width = ImGui::CalcTextSize(node.filter->type().c_str()).x;
 
-		imnodes::BeginNode(node_id);
+		ImNodes::BeginNode(node_id);
 
-		imnodes::BeginNodeTitleBar();
+		ImNodes::BeginNodeTitleBar();
 		ImGui::Text(node.filter->type().c_str());
-		imnodes::EndNodeTitleBar();
+		ImNodes::EndNodeTitleBar();
 
 		{
-			imnodes::BeginInputAttribute(node.in_id);
+			ImNodes::BeginInputAttribute(node.in_id);
 			const float label_width = ImGui::CalcTextSize("in").x;
 			ImGui::TextUnformatted("in");
-			imnodes::EndInputAttribute();
+			ImNodes::EndInputAttribute();
 		}
 
 		ImGui::Spacing();
 
 		{
-			imnodes::BeginOutputAttribute(node.out_id);
+			ImNodes::BeginOutputAttribute(node.out_id);
 			const float label_width = ImGui::CalcTextSize("out").x;
 			ImGui::Indent(node_width - label_width);
 			ImGui::TextUnformatted("out");
-			imnodes::EndOutputAttribute();
+			ImNodes::EndOutputAttribute();
 		}
 
-		imnodes::EndNode();
+		ImNodes::EndNode();
 	}
 
 	// draw links
 	for (const auto& [link_id, link] : _graph.links())
 	{
-		imnodes::Link(link.id, link.in_id, link.out_id);
+		ImNodes::Link(link.id, link.in_id, link.out_id);
 	}
 
-	imnodes::EndNodeEditor();
+	ImNodes::MiniMap();
+	ImNodes::EndNodeEditor();
 
 	// handle adding links
 	int start, end;
-	if (imnodes::IsLinkCreated(&start, &end))
+	if (ImNodes::IsLinkCreated(&start, &end))
 	{
 		// ensure only one input/output per node
 		bool can_add = true;
@@ -111,25 +113,25 @@ const void editor::filter_editor::show()
 
 	// handle removing links and/or nodes
 	int link_id;
-	if (imnodes::IsLinkDestroyed(&link_id))
+	if (ImNodes::IsLinkDestroyed(&link_id))
 		_graph.remove_link(link_id);
 
-	const int num_selected_links = imnodes::NumSelectedLinks();
+	const int num_selected_links = ImNodes::NumSelectedLinks();
 	if (num_selected_links > 0 && ImGui::IsKeyReleased(ImGuiKey::ImGuiKey_Delete))
 	{
 		std::vector<int> sel_links;
 		sel_links.resize(static_cast<size_t>(num_selected_links));
-		imnodes::GetSelectedLinks(sel_links.data());
+		ImNodes::GetSelectedLinks(sel_links.data());
 		for (const auto& link_id : sel_links)
 			_graph.remove_link(link_id);
 	}
 
-	const int num_selected_nodes = imnodes::NumSelectedNodes();
+	const int num_selected_nodes = ImNodes::NumSelectedNodes();
 	if (num_selected_nodes > 0 && ImGui::IsKeyReleased(ImGuiKey::ImGuiKey_Delete))
 	{
 		std::vector<int> sel_nodes;
 		sel_nodes.resize(static_cast<size_t>(num_selected_nodes));
-		imnodes::GetSelectedNodes(sel_nodes.data());
+		ImNodes::GetSelectedNodes(sel_nodes.data());
 		for (const auto& node_id : sel_nodes)
 			_graph.remove_node(node_id);
 	}
@@ -142,7 +144,7 @@ const void editor::filter_editor::show()
 		std::vector<int> sel_nodes;
 		if (num_selected_nodes > 0) {
 			sel_nodes.resize(static_cast<size_t>(num_selected_nodes));
-			imnodes::GetSelectedNodes(sel_nodes.data());
+			ImNodes::GetSelectedNodes(sel_nodes.data());
 		}
 
 		auto node = node_pair.second;
@@ -195,7 +197,7 @@ const void editor::filter_editor::show()
 			std::vector<int> sel_nodes;
 			if (num_selected_nodes > 0) {
 				sel_nodes.resize(static_cast<size_t>(num_selected_nodes));
-				imnodes::GetSelectedNodes(sel_nodes.data());
+				ImNodes::GetSelectedNodes(sel_nodes.data());
 			}
 
 			bool isNodeSelected = (num_selected_nodes > 0) &&
@@ -252,6 +254,18 @@ const void editor::filter_editor::show()
 	}
 	ImGui::End();
 
+	// Save / load nodes
+	if (ImGui::Button("Save editor to file"))
+	{
+		ImNodes::SaveCurrentEditorStateToIniFile("filter_editor_state.ini");
+	}
+
+	if (ImGui::Button("Open editor from file"))
+	{
+		ImNodes::LoadCurrentEditorStateFromIniFile("filter_editor_state.ini");
+	}
+
+
 	ImGui::End();
 }
 
@@ -260,13 +274,6 @@ const bool editor::filter_editor::add_node(const std::string& type)
 	std::unique_ptr<filter_base> filter = filter_factory::create(type);
 	if (!filter)
 		return false;
-
-	//Node node(
-	//	++curr_id,
-	//	++curr_id,
-	//	++curr_id,
-	//	std::move(filter)
-	//);
 
 	Node node(
 		++curr_id,
