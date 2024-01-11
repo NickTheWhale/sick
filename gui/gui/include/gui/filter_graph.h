@@ -86,4 +86,3 @@ namespace editor
 		std::unordered_map<int, Link> _links;
 	};
 }
-
