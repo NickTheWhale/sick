@@ -80,14 +80,14 @@ const nlohmann::json moving_average_filter::to_json() const
 {
 	try
 	{
-		nlohmann::json root;
-		nlohmann::json parameters;
-		parameters["buffer-size"] = buffer_size.value();
+		nlohmann::json j = {
+			{"type", type()},
+			{"parameters", {
+				{"buffer-size", buffer_size.value()},
+			}}
+		};
 
-		root["type"] = type();
-		root["parameters"] = parameters;
-
-		return root;
+		return j;
 	}
 	catch (const nlohmann::detail::exception& e)
 	{

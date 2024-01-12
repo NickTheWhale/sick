@@ -57,15 +57,17 @@ const nlohmann::json stack_blur_filter::to_json() const
 {
 	try
 	{
-		nlohmann::json root;
-		nlohmann::json parameters;
-		parameters["kernel-size"]["x"] = size_x.value();
-		parameters["kernel-size"]["y"] = size_y.value();
+		nlohmann::json j = {
+			{"type", type()},
+			{"parameters", {
+				{"kernel-size", {
+					{"x", size_x.value()},
+					{"y", size_y.value()},
+				}}
+			}}
+		};
 
-		root["type"] = type();
-		root["parameters"] = parameters;
-
-		return root;
+		return j;
 	}
 	catch (const nlohmann::detail::exception& e)
 	{

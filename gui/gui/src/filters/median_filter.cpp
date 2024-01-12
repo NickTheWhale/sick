@@ -55,14 +55,14 @@ const nlohmann::json median_filter::to_json() const
 {
 	try
 	{
-		nlohmann::json root;
-		nlohmann::json parameters;
-		parameters["kernel-size"] = size.value();
+		nlohmann::json j = {
+			{"type", type()},
+			{"parameters", {
+				{"kernel-size", size.value()},
+			}}
+		};
 
-		root["type"] = type();
-		root["parameters"] = parameters;
-
-		return root;
+		return j;
 	}
 	catch (const nlohmann::detail::exception& e)
 	{

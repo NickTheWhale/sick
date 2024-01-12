@@ -25,6 +25,8 @@ namespace editor
 		int curr_id;
 
 		filter_graph _graph;
+
+		const void draw_node_inputs(const nlohmann::json& json);
 	};
 }
 

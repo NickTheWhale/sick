@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <chrono>
 #include <iostream>
 #include <fstream>
@@ -65,7 +66,8 @@ int main(int, char**)
     if (window == nullptr)
         return 1;
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1); // Enable vsync
+    //glfwSwapInterval(1); // Enable vsync
+    glfwSwapInterval(0);
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -80,7 +82,7 @@ int main(int, char**)
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsLight();
-
+    
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
@@ -98,6 +100,7 @@ int main(int, char**)
     filter_pipeline pipeline;
     editor::filter_editor editor;
     filter::filter_worker worker;
+    bool show_editor = false;
     glGenTextures(1, &g_texture);
     while (!glfwWindowShouldClose(window))
     {
@@ -107,8 +110,9 @@ int main(int, char**)
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+        
         editor.show();
-
+        
         bool pipeline_ok = editor.create_pipeline(pipeline);
         if (pipeline_ok)
         {
@@ -125,21 +129,13 @@ int main(int, char**)
                 auto depth_mat = frame::to_mat(depth);
                 worker.put_new(depth_mat);
             }
-            {
-                std::cout << "current frame failed\n";
-            }
-        }
-        else
-        {
-            std::cout << "pipe failed\n";
         }
 
         cv::Mat filtered_mat = worker.latest_mat();
         frame::Frame filtered_frame;
         if (!filtered_mat.empty())
             filtered_frame = frame::to_frame(filtered_mat);
-        else
-            std::cerr << "EMPTY MAT!\n";
+
         ImGui::FrameWindow(filtered_frame, "Filtered Frame");
 
         // Rendering
@@ -217,17 +213,25 @@ namespace ImGui
 {
     void FrameWindow(const frame::Frame& frame, const char* name, bool* p_open, ImGuiWindowFlags flags)
     {
-        // convert frame to texture
-
         ImGui::Begin(name, p_open, flags);
         {
             auto frame_mat = frame::to_mat(frame);
-            int width, height;
-            if (frame::to_texture(frame_mat, g_texture, width, height))
+            int frame_width, frame_height;
+            if (frame::to_texture(frame_mat, g_texture, frame_width, frame_height))
             {
                 ImGui::Text("pointer = %p", g_texture);
-                ImGui::Text("size = %d x %d", width, height);
-                ImGui::Image(reinterpret_cast<void*>(static_cast<intptr_t>(g_texture)), ImVec2(width, height));
+                ImGui::Text("size = %d x %d", frame_width, frame_height);
+
+                const ImVec2 available_size = ImGui::GetContentRegionAvail();
+                const float frame_aspect = static_cast<float>(frame_width) / static_cast<float>(frame_height);
+
+                ImVec2 texture_size = {
+                    std::min(available_size.x, available_size.y * frame_aspect),
+                    std::min(available_size.y, available_size.x / frame_aspect)
+                };
+                
+                ImGui::SetCursorPos(ImGui::GetCursorPos() + (ImGui::GetContentRegionAvail() - texture_size) * 0.5f);
+                ImGui::Image(reinterpret_cast<void*>(static_cast<intptr_t>(g_texture)), texture_size);
             }
             else
             {

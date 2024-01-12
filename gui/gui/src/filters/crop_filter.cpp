@@ -79,18 +79,21 @@ const nlohmann::json crop_filter::to_json() const
 {
 	try
 	{
-		nlohmann::json root;
-		nlohmann::json parameters;
+		nlohmann::json j = {
+			{"type", type()},
+			{"parameters", {
+				{"center", {
+					{"x", center_x.value()},
+					{"y", center_y.value()}
+				}},
+				{"size", {
+					{"width", width.value()},
+					{"height", height.value()},
+				}}
+			}}
+		};
 
-		parameters["center"]["x"] = center_x.value();
-		parameters["center"]["y"] = center_y.value();
-		parameters["size"]["width"] = width.value();
-		parameters["size"]["height"] = height.value();
-
-		root["type"] = type();
-		root["parameters"] = parameters;
-
-		return root;
+		return j;
 	}
 	catch (const nlohmann::detail::exception& e)
 	{

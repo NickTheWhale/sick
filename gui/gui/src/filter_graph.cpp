@@ -78,68 +78,6 @@ const bool editor::filter_graph::remove_link(const int link_id)
 	return true;
 }
 
-//const std::vector<editor::Node> editor::filter_graph::start_nodes() const
-//{
-//	if (_nodes.empty())
-//		return {};
-//
-//	// traverse graph, finding all nodes without an input 
-//
-//	// given a node_id, find all adjacent nodes
-//
-//	std::function adjacent_nodes = [nodes = this->_nodes, links = this->_links](const int node_id)->std::vector<Node> {
-//		std::vector<Node> child_nodes;
-//		
-//		std::vector<Link> out_links;
-//		Node parent = nodes.at(node_id);
-//		
-//		// find outgoing links
-//		for (const auto& [link_id, link] : links)
-//			if (link.in_id == parent.out_id)
-//				out_links.push_back(link);
-//
-//		// find child nodes
-//		for (const auto& link : out_links)
-//			for (const auto& [node_id, node] : nodes)
-//				if (node.in_id == link.out_id)
-//					child_nodes.push_back(node);
-//
-//		return child_nodes;
-//	};
-//
-//	std::function edges = [](const int node_id)->std::vector<int> { return {}; };
-//
-//	struct vertex
-//	{
-//		int node_id;
-//		bool discovered;
-//	};
-//
-//	std::vector<Node> _start_nodes;
-//	std::stack<vertex> s;
-//	
-//	s.push({ .node_id = _nodes.begin()->first, .discovered = false });
-//	_start_nodes.push_back(_nodes.begin()->second);
-//
-//	while (!s.empty())
-//	{
-//		vertex v = s.top();
-//		s.pop();
-//		if (!v.discovered)
-//		{
-//			v.discovered = true;
-//			auto w = adjacent_nodes(v.node_id);
-//			for (const auto& node : w)
-//			{
-//				s.push({ .node_id = node.id, .discovered = false });
-//				_start_nodes.push_back(node);
-//			}
-//		}
-//	}
-//
-//	return _start_nodes;
-//}
-
 const bool editor::filter_graph::traverse(std::vector<editor::Node>& nodes) const
 {
 	if (_nodes.empty())

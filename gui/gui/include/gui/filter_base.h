@@ -1,10 +1,13 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include <opencv2/core/mat.hpp>
 
 #include <json.hpp>
+
+#include <gui/filter_parameter.h>
 
 class filter_base
 {

@@ -61,16 +61,18 @@ const nlohmann::json bilateral_filter::to_json() const
 {
 	try
 	{
-		nlohmann::json root;
-		nlohmann::json parameters;
-		parameters["diameter"] = diameter.value();
-		parameters["sigma"]["color"] = sigma_color.value();
-		parameters["sigma"]["space"] = sigma_space.value();
+		nlohmann::json j = {
+			{"type", type()},
+			{"parameters", {
+				{"diameter", diameter.value()},
+				{"sigma", {
+					{"color", sigma_color.value()},
+					{"space", sigma_space.value()},
+				}}
+			}}
+		};
 
-		root["type"] = type();
-		root["parameters"] = parameters;
-
-		return root;
+		return j;
 	}
 	catch (const nlohmann::detail::exception& e)
 	{

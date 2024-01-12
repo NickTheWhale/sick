@@ -26,13 +26,14 @@ const filter_pipeline filter::filter_worker::get_pipeline() const
 
 void filter::filter_worker::put_new(const cv::Mat& mat)
 {
+	std::lock_guard<std::mutex> locker(_mutex);
 	_new_mat = true;
 	mat.copyTo(_buffer);
 }
 
 const cv::Mat filter::filter_worker::latest_mat() const
 {
-	std::lock_guard<std::mutex> locker(_latest_mat_mtx);
+	std::lock_guard<std::mutex> locker(_mutex);
 	return _latest_mat;
 }
 
@@ -43,13 +44,9 @@ void filter::filter_worker::run()
 		if (_new_mat)
 		{
 			_new_mat = false;
-			std::cout << "applying to new mat\n";
-			if (!_pipeline.apply(_buffer))
 			{
-				std::cerr << "worker has failed :(\n";
-			}
-			{
-				std::lock_guard<std::mutex> locker(_latest_mat_mtx);
+				std::lock_guard<std::mutex> locker(_mutex);
+				_pipeline.apply(_buffer);
 				_buffer.copyTo(_latest_mat);
 			}
 		}

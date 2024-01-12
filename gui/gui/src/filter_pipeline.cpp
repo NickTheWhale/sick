@@ -42,6 +42,7 @@ filter_pipeline& filter_pipeline::operator=(const filter_pipeline& other)
 
 const void filter_pipeline::load_json(const nlohmann::json& filters)
 {
+	this->filters.clear();
 	for (const auto& filter_json : filters)
 	{
 		if (!filter_json.contains("type"))

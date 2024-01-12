@@ -66,15 +66,15 @@ const nlohmann::json threshold_filter::to_json() const
 {
 	try
 	{
-		nlohmann::json root;
-		nlohmann::json parameters;
-		parameters["upper"] = upper.value();
-		parameters["lower"] = lower.value();
+		nlohmann::json j = {
+			{"type", type()},
+			{"parameters", {
+				{"upper", upper.value()},
+				{"lower", lower.value()},
+			}}
+		};
 
-		root["type"] = type();
-		root["parameters"] = parameters;
-
-		return root;
+		return j;
 	}
 	catch (const nlohmann::detail::exception& e)
 	{

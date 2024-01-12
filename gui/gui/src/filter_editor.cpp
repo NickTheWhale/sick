@@ -73,8 +73,15 @@ const void editor::filter_editor::show()
 			ImNodes::EndOutputAttribute();
 		}
 
+		// generate inputs
+		{
+			draw_node_inputs(node.filter->to_json()["parameters"]);
+		}
+
 		ImNodes::EndNode();
 	}
+
+	ImGui::ShowDemoWindow();
 
 	// draw links
 	for (const auto& [link_id, link] : _graph.links())
@@ -235,9 +242,11 @@ const void editor::filter_editor::show()
 			ImGui::Text("%s", node.is_out_linked ? "true" : "false");
 			ImGui::PopStyleColor();
 
-			ImGui::Text("filter json:");
-			std::string json_str = node.filter->to_json().dump();
-			ImGui::TextWrapped("%s", json_str.c_str());
+			if (node.filter->to_json().contains("parameters"))
+			{
+				std::string json_str = node.filter->to_json()["parameters"].dump(2);
+				ImGui::TextWrapped("%s", json_str.c_str());
+			}
 
 			ImGui::Separator();
 		}
@@ -249,22 +258,10 @@ const void editor::filter_editor::show()
 	if (create_pipeline(pipeline))
 	{
 		nlohmann::json pipe_json = pipeline.to_json();
-		std::string pipe_json_str = pipe_json.dump();
+		std::string pipe_json_str = pipe_json.dump(2);
 		ImGui::TextWrapped(pipe_json_str.c_str());
 	}
 	ImGui::End();
-
-	// Serialization testing
-
-	// links
-	{
-		//ImGui::Text("id: %d, in_id: %d, out_id: %d", new_link.id, new_link.in_id, new_link.out_id);
-	}
-
-	// nodes
-	{
-	}
-
 
 	ImGui::End();
 }
@@ -291,6 +288,9 @@ const bool editor::filter_editor::add_node(const std::string& type)
 
 const bool editor::filter_editor::create_pipeline(filter_pipeline& pipeline) const
 {
+	if (_graph.nodes().empty())
+		return true;
+
 	std::vector<Node> filter_nodes;
 	if (!_graph.traverse(filter_nodes))
 		return false;
@@ -305,4 +305,23 @@ const bool editor::filter_editor::create_pipeline(filter_pipeline& pipeline) con
 	pipeline.load_json(filter_json);
 
 	return true;
+}
+
+const void editor::filter_editor::draw_node_inputs(const nlohmann::json& json)
+{
+	try
+	{
+		nlohmann::json j = json.flatten();
+
+		for (const auto item : j.items())
+		{
+			//if (item.value().is_number())
+				
+			ImGui::Text("%s, %d", item.key().c_str(), item.value().is_number());
+		}
+	}
+	catch (const std::exception& e)
+	{
+		std::cout << e.what() << "\n";
+	}
 }

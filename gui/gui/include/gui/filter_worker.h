@@ -25,7 +25,7 @@ namespace filter
 	private:
 		volatile bool _stop;
 
-		mutable std::mutex _latest_mat_mtx;
+		mutable std::mutex _mutex;
 		cv::Mat _latest_mat;
 
 		std::atomic_bool _new_mat;
