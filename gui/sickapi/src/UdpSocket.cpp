@@ -12,6 +12,8 @@
 
 #include <iostream>
 
+#include <spdlog/spdlog.h>
+
 namespace visionary 
 {
 
@@ -140,7 +142,7 @@ int UdpSocket::getLastError()
     socklen_t error_code_size = sizeof error_code;
     if (getsockopt(m_socket, SOL_SOCKET, SO_ERROR, &error_code, &error_code_size) != 0)
     {
-        std::cout << "Error getting error code" << std::endl;
+        spdlog::get("camera")->error("Error getting error code");
     }
 
 #endif

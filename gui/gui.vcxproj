@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SERCURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;GLEW_STATIC;SPDLOG_COMPILED_LIB;IMGUI_DEFINE_MATH_OPERATORS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\imgui;$(ProjectDir)\sickapi\src;$(BOOST_DIR);$(ProjectDir)\glfw\include;$(OPENCV_DIR)\build\include;$(ProjectDir)\glew\include;$(ProjectDir)\gui\include;$(ProjectDir)\json;$(ProjectDir)\spdlog\include;$(ProjectDir)\tinycolormap;$(ProjectDir)\imnodes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\imgui;$(ProjectDir)\sickapi\src;$(BOOST_DIR);$(ProjectDir)\glfw\include;$(OPENCV_DIR)\build\include;$(ProjectDir)\glew\include;$(ProjectDir)\gui\include;$(ProjectDir)\json;$(ProjectDir)\spdlog\include;$(ProjectDir)\tinycolormap;$(ProjectDir)\imnodes;$(ProjectDir)\imguifiledialog;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -125,7 +125,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SERCURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;GLEW_STATIC;SPDLOG_COMPILED_LIB;IMGUI_DEFINE_MATH_OPERATORS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\imgui;$(ProjectDir)\sickapi\src;$(BOOST_DIR);$(ProjectDir)\glfw\include;$(OPENCV_DIR)\build\include;$(ProjectDir)\glew\include;$(ProjectDir)\gui\include;$(ProjectDir)\json;$(ProjectDir)\spdlog\include;$(ProjectDir)\tinycolormap;$(ProjectDir)\imnodes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\imgui;$(ProjectDir)\sickapi\src;$(BOOST_DIR);$(ProjectDir)\glfw\include;$(OPENCV_DIR)\build\include;$(ProjectDir)\glew\include;$(ProjectDir)\gui\include;$(ProjectDir)\json;$(ProjectDir)\spdlog\include;$(ProjectDir)\tinycolormap;$(ProjectDir)\imnodes;$(ProjectDir)\imguifiledialog;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
@@ -155,6 +155,7 @@
     <ClCompile Include="gui\src\filter_worker.cpp" />
     <ClCompile Include="gui\src\frame.cpp" />
     <ClCompile Include="gui\src\main.cpp" />
+    <ClCompile Include="imguifiledialog\ImGuiFileDialog.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
@@ -229,6 +230,11 @@
     <ClInclude Include="gui\include\gui\filter_pipeline.h" />
     <ClInclude Include="gui\include\gui\filter_worker.h" />
     <ClInclude Include="gui\include\gui\frame.h" />
+    <ClInclude Include="imguifiledialog\dirent\dirent.h" />
+    <ClInclude Include="imguifiledialog\ImGuiFileDialog.h" />
+    <ClInclude Include="imguifiledialog\ImGuiFileDialogConfig.h" />
+    <ClInclude Include="imguifiledialog\stb\stb_image.h" />
+    <ClInclude Include="imguifiledialog\stb\stb_image_resize.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_impl_glfw.h" />
@@ -383,6 +389,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="glfw\LICENSE.md" />
+    <None Include="imguifiledialog\dirent\LICENSE" />
+    <None Include="imguifiledialog\LICENSE" />
+    <None Include="imguifiledialog\stb\LICENSE" />
     <None Include="imnodes\LICENSE.md" />
     <None Include="json\LICENSE.MIT" />
     <None Include="spdlog\LICENSE" />

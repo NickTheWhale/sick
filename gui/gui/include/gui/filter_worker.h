@@ -16,8 +16,8 @@ namespace filter
 		filter_worker();
 		~filter_worker();
 
-		void put_new(const cv::Mat& mat);
-		const cv::Mat latest_mat() const;
+		const bool try_put_new(const cv::Mat& mat);
+		const bool try_latest_mat(cv::Mat& mat) const;
 
 		void set_pipeline(const filter_pipeline& pipeline);
 		const filter_pipeline get_pipeline() const;

@@ -9,6 +9,7 @@
 #include "FrameGrabberBase.h"
 #include <chrono>
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 namespace visionary
 {
@@ -26,7 +27,7 @@ namespace visionary
     {
         if(m_isRunning)
         {
-            std::cout << "FrameGrabberBase is already running" << std::endl;
+            spdlog::get("camera")->info("FrameGrabberBase is already running");
             return;
         }
         m_isRunning = true;
@@ -35,7 +36,7 @@ namespace visionary
         m_connected = m_pDataStream->open(m_hostname, m_port, m_timeoutMs);
         if (!m_connected)
         {
-            std::cout << "Failed to connect" << std::endl;
+            spdlog::get("camera")->error("Failed to connect");
         }
         m_grabberThread = std::thread(&FrameGrabberBase::run, this);
     }
@@ -54,7 +55,7 @@ namespace visionary
             {
                 if (!m_pDataStream->open(m_hostname, m_port, m_timeoutMs))
                 {
-                    std::cout << "Failed to connect" << std::endl;
+                    spdlog::get("camera")->error("Failed to connect");
                     m_connected = false;
                     std::this_thread::sleep_for(std::chrono::seconds(1));
                     continue;
@@ -76,7 +77,7 @@ namespace visionary
             {
                 if(!m_pDataStream->isConnected())
                 {
-                    std::cout << "Connection lost -> Reconnecting" << std::endl;
+                    spdlog::get("camera")->error("Connection lost -> Reconnecting");
                     m_pDataStream->close();
                     m_connected = m_pDataStream->open(m_hostname, m_port, m_timeoutMs);
 

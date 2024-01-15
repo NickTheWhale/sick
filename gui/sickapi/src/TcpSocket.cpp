@@ -11,6 +11,8 @@
 
 #include <iostream>
 
+#include <spdlog/spdlog.h>
+
 namespace visionary
 {
 
@@ -215,7 +217,7 @@ namespace visionary
             // Supress warning for sizes >= 125MB, because it is very likely an invalid size
             if (nBytesToReceive < 1024u * 1024u * 125u)
             {
-				std::cout << "TcpSocket::" <<  __FUNCTION__ << ": Unable to allocate buffer of size " << nBytesToReceive << std::endl;
+                spdlog::get("camera")->error("TcpSocket::{}: Unable to allocate buffer of size {}", __FUNCTION__, nBytesToReceive);
             }
             return -1;
         }
@@ -249,7 +251,7 @@ namespace visionary
         socklen_t error_code_size = sizeof error_code;
         if (getsockopt(m_socket, SOL_SOCKET, SO_ERROR, &error_code, &error_code_size) != 0)
         {
-            std::cout << "Error getting error code" << std::endl;
+            spdlog::get("camera")->error("Error getting error code");
         }
 
 #endif

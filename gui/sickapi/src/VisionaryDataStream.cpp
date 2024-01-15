@@ -14,6 +14,8 @@
 
 #include "VisionaryEndian.h"
 
+#include <spdlog/spdlog.h>
+
 namespace visionary 
 {
 
@@ -94,7 +96,7 @@ bool VisionaryDataStream::getNextFrame()
   // Read package length
   if (m_pTransport->read(buffer, sizeof(uint32_t)) < static_cast<TcpSocket::recv_return_t>(sizeof(uint32_t)))
   {
-    std::cout << "Received less than the required 4 package length bytes." << std::endl;
+    spdlog::get("camera")->error("Received less than the required 4 package length bytes.");
     return false;
   }
   
@@ -102,7 +104,7 @@ bool VisionaryDataStream::getNextFrame()
 
   if(packageLength < 3u)
   {
-    std::cout << "Invalid package length " << packageLength << ". Should be at least 3" << std::endl;
+    spdlog::get("camera")->error("Invalid package length {}. Should be at least 3", packageLength);
     return false;
   }
 
@@ -110,7 +112,7 @@ bool VisionaryDataStream::getNextFrame()
   size_t remainingBytesToReceive = packageLength;
   if(m_pTransport->read(buffer, remainingBytesToReceive) < static_cast<ITransport::recv_return_t>(remainingBytesToReceive))
   {
-    std::cout << "Received less than the required " << remainingBytesToReceive << " bytes." << std::endl;
+    spdlog::get("camera")->error("Received less than the required {} bytes", remainingBytesToReceive);
     return false;
   }
 
@@ -119,12 +121,12 @@ bool VisionaryDataStream::getNextFrame()
   const auto packetType = readUnalignBigEndian<uint8_t>(buffer.data() + 2);
   if (protocolVersion != 0x001)
   {
-    std::cout << "Received unknown protocol version " << protocolVersion << "." << std::endl;
+    spdlog::get("camera")->error("Received unkown protocol version {}", protocolVersion);
     return false;
   }
   if (packetType != 0x62)
   {
-    std::cout << "Received unknown packet type " << packetType << "." << std::endl;
+    spdlog::get("camera")->error("Received unknown packet type {}", packetType);
     return false;
   }
   return parseSegmentBinaryData(buffer.begin() + 3, buffer.size() - 3u); // Skip protocolVersion and packetType
@@ -134,7 +136,7 @@ bool VisionaryDataStream::parseSegmentBinaryData(std::vector<uint8_t>::iterator 
 {
   if(m_dataHandler == nullptr)
   {
-      std::cout << "No datahandler is set -> cant parse blob data" << std::endl;
+      spdlog::get("camera")->error("No datahandler is set -> cant parse blob data");
       return false;
   }
   bool result = false;
@@ -143,7 +145,7 @@ bool VisionaryDataStream::parseSegmentBinaryData(std::vector<uint8_t>::iterator 
 
   if(remainingSize < 4)
   {
-    std::cout << "Received not enough data to parse segment description. Connection issues?" << std::endl;
+    spdlog::get("camera")->error("Received not enough data to parse segment description. Connection issues?");
     return false;
   }
   
@@ -163,12 +165,12 @@ bool VisionaryDataStream::parseSegmentBinaryData(std::vector<uint8_t>::iterator 
   const size_t totalSegmentDescriptionSize = static_cast<size_t>(numSegments * segmentDescriptionSize);
   if(remainingSize < totalSegmentDescriptionSize)
   {
-    std::cout << "Received not enough data to parse segment description. Connection issues?" << std::endl;
+    spdlog::get("camera")->error("Received not enough data to parse segment description. Connection issues?");
     return false;
   }
   if(numSegments < 3)
   {
-    std::cout << "Invalid number of segments. Connection issues?" << std::endl;
+    spdlog::get("camera")->error("Invalid number of segments. Connection issues?");
     return false;
   }
   for (uint16_t i = 0; i < numSegments; i++)
@@ -185,7 +187,7 @@ bool VisionaryDataStream::parseSegmentBinaryData(std::vector<uint8_t>::iterator 
   const size_t xmlSize = offset[1] - offset[0];
   if(remainingSize < xmlSize)
   {
-    std::cout << "Received not enough data to parse xml Description. Connection issues?" << std::endl;
+    spdlog::get("camera")->error("Received not enough data to parse xml Description. Connection issues?");
     return false;
   }
   remainingSize -= xmlSize;
@@ -197,7 +199,7 @@ bool VisionaryDataStream::parseSegmentBinaryData(std::vector<uint8_t>::iterator 
     size_t binarySegmentSize = offset[2] - offset[1];
     if(remainingSize < binarySegmentSize)
     {
-      std::cout << "Received not enough data to parse binary Segment. Connection issues?" << std::endl;
+      spdlog::get("camera")->error("Received not enough data to parse binary Segment. Connection issues?");
       return false;
     
     }

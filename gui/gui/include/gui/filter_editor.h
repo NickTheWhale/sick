@@ -19,14 +19,13 @@ namespace editor
 
 	private:
 		const std::string editor_name;
-		//int curr_node_id;
-		//int curr_link_id;
 		
 		int curr_id;
 
 		filter_graph _graph;
 
-		const void draw_node_inputs(const nlohmann::json& json);
+		const void draw_node_inputs(const nlohmann::json& json, nlohmann::json& new_parameters);
+		const void show_debug_windows() const;
 	};
 }
 

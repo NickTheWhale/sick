@@ -29,6 +29,13 @@ namespace frame
         {
         }
     };
+    
+    struct Size
+    {
+        uint32_t height, width;
+    };
+
+    const Size size(const Frame& frame);
 
     const cv::Mat to_mat(const Frame& frame);
 

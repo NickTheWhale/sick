@@ -2,6 +2,13 @@
 
 
 
+const frame::Size frame::size(const Frame& frame)
+{
+    assert(frame.data.size() == frame.height * frame.width);
+
+    return { .height = frame.height, .width = frame.width };
+}
+
 const cv::Mat frame::to_mat(const Frame& frame)
 {
     cv::Mat mat(frame.height, frame.width, CV_16U);

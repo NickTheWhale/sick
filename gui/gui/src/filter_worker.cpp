@@ -1,5 +1,6 @@
 #include <gui/filter_worker.h>
 
+#include <spdlog/spdlog.h>
 
 filter::filter_worker::filter_worker()
 	: _stop(false), _new_mat(false), _thread{&filter::filter_worker::run, this}
@@ -8,10 +9,10 @@ filter::filter_worker::filter_worker()
 
 filter::filter_worker::~filter_worker()
 {
-	std::cout << "stopping worker\n";
+	spdlog::get("filter")->debug("Stopping filter worker");
 	_stop = true;
 	_thread.join();
-	std::cout << "worker stopped\n";
+	spdlog::get("filter")->debug("Filter worker stopped");
 }
 
 void filter::filter_worker::set_pipeline(const filter_pipeline& pipeline)
@@ -24,17 +25,27 @@ const filter_pipeline filter::filter_worker::get_pipeline() const
 	return _pipeline;
 }
 
-void filter::filter_worker::put_new(const cv::Mat& mat)
+const bool filter::filter_worker::try_put_new(const cv::Mat& mat)
 {
-	std::lock_guard<std::mutex> locker(_mutex);
+	std::unique_lock<std::mutex> locker(_mutex, std::try_to_lock);
+	if (!locker.owns_lock())
+		return false;
+
 	_new_mat = true;
 	mat.copyTo(_buffer);
+
+	return true;
 }
 
-const cv::Mat filter::filter_worker::latest_mat() const
+const bool filter::filter_worker::try_latest_mat(cv::Mat& mat) const
 {
-	std::lock_guard<std::mutex> locker(_mutex);
-	return _latest_mat;
+	std::unique_lock<std::mutex> locker(_mutex, std::try_to_lock);
+	if (!locker.owns_lock())
+		return false;
+	
+	_latest_mat.copyTo(mat);
+	
+	return true;
 }
 
 void filter::filter_worker::run()
@@ -46,7 +57,8 @@ void filter::filter_worker::run()
 			_new_mat = false;
 			{
 				std::lock_guard<std::mutex> locker(_mutex);
-				_pipeline.apply(_buffer);
+				if (!_pipeline.apply(_buffer))
+					spdlog::get("filter")->error("Filter worker failed to apply filters");
 				_buffer.copyTo(_latest_mat);
 			}
 		}

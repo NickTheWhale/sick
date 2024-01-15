@@ -40,9 +40,10 @@ const bool crop_filter::apply(cv::Mat& mat) const
 	// limit smallest roi
 	crop_width = std::max(1, crop_width);
 	crop_height = std::max(1, crop_height);
-
+	
 	cv::Rect roi(x, y, crop_width, crop_height);
 	output = mat(roi);
+
 
 	// crop end
 

@@ -180,6 +180,9 @@
     <ClCompile Include="imnodes\imnodes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="imguifiledialog\ImGuiFileDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imgui.h">
@@ -713,6 +716,21 @@
     <ClInclude Include="imnodes\imnodes_internal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="imguifiledialog\dirent\dirent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imguifiledialog\stb\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imguifiledialog\stb\stb_image_resize.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imguifiledialog\ImGuiFileDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imguifiledialog\ImGuiFileDialogConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="glfw\lib\glfw3.lib" />
@@ -725,6 +743,9 @@
     <None Include="spdlog\LICENSE" />
     <None Include="tinycolormap\LICENSE" />
     <None Include="imnodes\LICENSE.md" />
+    <None Include="imguifiledialog\LICENSE" />
+    <None Include="imguifiledialog\dirent\LICENSE" />
+    <None Include="imguifiledialog\stb\LICENSE" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="imgui\LICENSE.txt" />

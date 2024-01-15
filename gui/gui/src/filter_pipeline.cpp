@@ -12,6 +12,7 @@
 
 #include <gui/filter_factory.h>
 
+#include <spdlog/spdlog.h>
 
 filter_pipeline::filter_pipeline(const filter_pipeline& other)
 {
@@ -60,7 +61,7 @@ const void filter_pipeline::load_json(const nlohmann::json& filters)
 
 const nlohmann::json filter_pipeline::to_json() const
 {
-	nlohmann::json::array_t filters;
+	nlohmann::json filters;
 
 	for (const auto& filter : this->filters)
 	{
@@ -72,9 +73,26 @@ const nlohmann::json filter_pipeline::to_json() const
 
 const bool filter_pipeline::apply(cv::Mat& mat) const
 {
-	for (const auto& filter : this->filters)
-		if (!filter->apply(mat))
-			return false;
+	try
+	{
+		for (const auto& filter : this->filters)
+		{
+			if (!filter->apply(mat))
+				return false;
+		}
 
-	return true;
+		return true;
+	}
+	catch (const std::exception& e)
+	{
+		spdlog::get("filter")->error(e.what());
+
+		return false;
+	}
+	catch (...)
+	{
+		spdlog::get("filter")->error("Filter pipeline failed to apply");
+
+		return false;
+	}
 }
