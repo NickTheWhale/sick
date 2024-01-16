@@ -110,14 +110,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;SPDLOG_COMPILED_LIB;NOMINMAX</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\sickapi\src;$(ProjectDir)\snap7;$(BOOST_DIR);$(ProjectDir)\cli11;$(ProjectDir)\spdlog\include;$(ProjectDir)\ftxui\include;$(ProjectDir)\json;$(OPENCV_DIR)\build\include;$(ProjectDir)\headless\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\sickapi\src;$(ProjectDir)\snap7;$(BOOST_DIR);$(ProjectDir)\cli11;$(ProjectDir)\spdlog\include;$(ProjectDir)\json;$(OPENCV_DIR)\build\include;$(ProjectDir)\headless\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)\ftxui\lib;$(OPENCV_DIR)\build\x64\vc16\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(ProjectDir)\ftxui\lib\ftxui-component-debug.lib;$(ProjectDir)\ftxui\lib\ftxui-dom-debug.lib;$(ProjectDir)\ftxui\lib\ftxui-screen-debug.lib;opencv_world480d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OPENCV_DIR)\build\x64\vc16\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_world480d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y /d /f "$(OPENCV_DIR)\build\x64\vc16\bin\opencv_world480d.dll" "$(OutDir)"</Command>
@@ -135,7 +135,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;SPDLOG_COMPILED_LIB;NOMINMAX</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\sickapi\src;$(ProjectDir)\snap7;$(BOOST_DIR);$(ProjectDir)\cli11;$(ProjectDir)\spdlog\include;$(ProjectDir)\ftxui\include;$(ProjectDir)\json;$(OPENCV_DIR)\build\include;$(ProjectDir)\headless\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\sickapi\src;$(ProjectDir)\snap7;$(BOOST_DIR);$(ProjectDir)\cli11;$(ProjectDir)\spdlog\include;$(ProjectDir)\json;$(OPENCV_DIR)\build\include;$(ProjectDir)\headless\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -143,8 +143,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)\ftxui\lib;$(OPENCV_DIR)\build\x64\vc16\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(ProjectDir)\ftxui\lib\ftxui-component.lib;$(ProjectDir)\ftxui\lib\ftxui-dom.lib;$(ProjectDir)\ftxui\lib\ftxui-screen.lib;opencv_world480.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OPENCV_DIR)\build\x64\vc16\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_world480.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y /d /f "$(OPENCV_DIR)\build\x64\vc16\bin\opencv_world480.dll" "$(OutDir)"</Command>
@@ -212,37 +212,9 @@
     <ClInclude Include="headless\include\headless\filters\resize_filter.h" />
     <ClInclude Include="headless\include\headless\filters\stack_blur_filter.h" />
     <ClInclude Include="headless\include\headless\filters\threshold_filter.h" />
+    <ClInclude Include="headless\include\headless\filter_factory.h" />
+    <ClInclude Include="headless\include\headless\filter_parameter.h" />
     <ClInclude Include="headless\include\headless\filter_pipeline.h" />
-    <ClInclude Include="ftxui\include\ftxui\component\animation.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\component\captured_mouse.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\component\component.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\component\component_base.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\component\component_options.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\component\event.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\component\loop.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\component\mouse.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\component\receiver.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\component\screen_interactive.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\component\task.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\dom\canvas.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\dom\deprecated.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\dom\direction.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\dom\elements.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\dom\flexbox_config.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\dom\linear_gradient.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\dom\node.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\dom\requirement.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\dom\table.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\dom\take_any_args.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\screen\box.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\screen\color.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\screen\color_info.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\screen\deprecated.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\screen\screen.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\screen\string.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\screen\terminal.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\util\autoreset.hpp" />
-    <ClInclude Include="ftxui\include\ftxui\util\ref.hpp" />
     <ClInclude Include="json\json.hpp" />
     <ClInclude Include="sickapi\src\AuthenticationLegacy.h" />
     <ClInclude Include="sickapi\src\AuthenticationSecure.h" />
@@ -379,15 +351,6 @@
     <ClInclude Include="spdlog\include\spdlog\version.h" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="ftxui\lib\ftxui-component-debug.lib" />
-    <Library Include="ftxui\lib\ftxui-component.lib" />
-    <Library Include="ftxui\lib\ftxui-dom-debug.lib" />
-    <Library Include="ftxui\lib\ftxui-dom.lib" />
-    <Library Include="ftxui\lib\ftxui-screen-debug.lib" />
-    <Library Include="ftxui\lib\ftxui-screen.lib" />
-    <Library Include="snap7\snap7.lib" />
-  </ItemGroup>
-  <ItemGroup>
     <CopyFileToFolders Include="snap7\snap7.dll">
       <FileType>Document</FileType>
     </CopyFileToFolders>
@@ -401,9 +364,11 @@
     <Text Include="sickapi\LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ftxui\lib\ftxui-component.pdb" />
-    <None Include="ftxui\lib\ftxui-dom.pdb" />
-    <None Include="ftxui\lib\ftxui-screen.pdb" />
+    <Library Include="snap7\snap7.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="json\LICENSE.MIT" />
+    <None Include="spdlog\LICENSE" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

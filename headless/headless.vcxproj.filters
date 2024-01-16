@@ -548,96 +548,6 @@
     <ClInclude Include="spdlog\include\spdlog\version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\component\animation.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\component\captured_mouse.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\component\component.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\component\component_base.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\component\component_options.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\component\event.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\component\loop.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\component\mouse.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\component\receiver.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\component\screen_interactive.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\component\task.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\dom\canvas.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\dom\deprecated.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\dom\direction.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\dom\elements.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\dom\flexbox_config.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\dom\linear_gradient.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\dom\node.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\dom\requirement.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\dom\table.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\dom\take_any_args.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\screen\box.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\screen\color.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\screen\color_info.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\screen\deprecated.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\screen\screen.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\screen\string.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\screen\terminal.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\util\autoreset.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ftxui\include\ftxui\util\ref.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="cli11\CLI11.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -677,15 +587,12 @@
     <ClInclude Include="headless\include\headless\filters\threshold_filter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="snap7\snap7.lib" />
-    <Library Include="ftxui\lib\ftxui-component.lib" />
-    <Library Include="ftxui\lib\ftxui-dom.lib" />
-    <Library Include="ftxui\lib\ftxui-screen.lib" />
-    <Library Include="ftxui\lib\ftxui-screen-debug.lib" />
-    <Library Include="ftxui\lib\ftxui-dom-debug.lib" />
-    <Library Include="ftxui\lib\ftxui-component-debug.lib" />
+    <ClInclude Include="headless\include\headless\filter_factory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headless\include\headless\filter_parameter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="snap7\snap7.exp" />
@@ -697,8 +604,10 @@
     <Text Include="sickapi\LICENSE.md5.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ftxui\lib\ftxui-screen.pdb" />
-    <None Include="ftxui\lib\ftxui-dom.pdb" />
-    <None Include="ftxui\lib\ftxui-component.pdb" />
+    <Library Include="snap7\snap7.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="json\LICENSE.MIT" />
+    <None Include="spdlog\LICENSE" />
   </ItemGroup>
 </Project>
