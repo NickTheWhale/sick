@@ -108,9 +108,9 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;SPDLOG_COMPILED_LIB;NOMINMAX</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;SPDLOG_COMPILED_LIB;NOMINMAX;FMT_HEADER_ONLY;SPDLOG_FMT_EXTERNAL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\sickapi\src;$(ProjectDir)\snap7;$(BOOST_DIR);$(ProjectDir)\cli11;$(ProjectDir)\spdlog\include;$(ProjectDir)\json;$(OPENCV_DIR)\build\include;$(ProjectDir)\headless\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\sickapi\src;$(ProjectDir)\snap7;$(BOOST_DIR);$(ProjectDir)\cli11;$(ProjectDir)\spdlog\include;$(ProjectDir)\json;$(OPENCV_DIR)\build\include;$(ProjectDir)\headless\include;$(ProjectDir)\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -133,9 +133,9 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;SPDLOG_COMPILED_LIB;NOMINMAX</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;SPDLOG_COMPILED_LIB;NOMINMAX;FMT_HEADER_ONLY;SPDLOG_FMT_EXTERNAL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\sickapi\src;$(ProjectDir)\snap7;$(BOOST_DIR);$(ProjectDir)\cli11;$(ProjectDir)\spdlog\include;$(ProjectDir)\json;$(OPENCV_DIR)\build\include;$(ProjectDir)\headless\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\sickapi\src;$(ProjectDir)\snap7;$(BOOST_DIR);$(ProjectDir)\cli11;$(ProjectDir)\spdlog\include;$(ProjectDir)\json;$(OPENCV_DIR)\build\include;$(ProjectDir)\headless\include;$(ProjectDir)\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -155,6 +155,9 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="fmt\src\fmt.cc" />
+    <ClCompile Include="fmt\src\format.cc" />
+    <ClCompile Include="fmt\src\os.cc" />
     <ClCompile Include="headless\src\filters\bilateral_filter.cpp" />
     <ClCompile Include="headless\src\filters\blur_filter.cpp" />
     <ClCompile Include="headless\src\filters\crop_filter.cpp" />
@@ -202,6 +205,20 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cli11\CLI11.hpp" />
+    <ClInclude Include="fmt\include\fmt\args.h" />
+    <ClInclude Include="fmt\include\fmt\base.h" />
+    <ClInclude Include="fmt\include\fmt\chrono.h" />
+    <ClInclude Include="fmt\include\fmt\color.h" />
+    <ClInclude Include="fmt\include\fmt\compile.h" />
+    <ClInclude Include="fmt\include\fmt\core.h" />
+    <ClInclude Include="fmt\include\fmt\format-inl.h" />
+    <ClInclude Include="fmt\include\fmt\format.h" />
+    <ClInclude Include="fmt\include\fmt\os.h" />
+    <ClInclude Include="fmt\include\fmt\ostream.h" />
+    <ClInclude Include="fmt\include\fmt\printf.h" />
+    <ClInclude Include="fmt\include\fmt\ranges.h" />
+    <ClInclude Include="fmt\include\fmt\std.h" />
+    <ClInclude Include="fmt\include\fmt\xchar.h" />
     <ClInclude Include="headless\include\headless\filter_base.h" />
     <ClInclude Include="headless\include\headless\filters\bilateral_filter.h" />
     <ClInclude Include="headless\include\headless\filters\blur_filter.h" />
@@ -367,6 +384,7 @@
     <Library Include="snap7\snap7.lib" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="fmt\LICENSE" />
     <None Include="json\LICENSE.MIT" />
     <None Include="spdlog\LICENSE" />
   </ItemGroup>
