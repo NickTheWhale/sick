@@ -3,19 +3,22 @@
 #include <gui/filter_base.h>
 #include <gui/filter_parameter.h>
 
-class stack_blur_filter : public filter_base
+namespace filter
 {
-public:
-	stack_blur_filter();
-	~stack_blur_filter() override;
+	class stack_blur_filter : public filter_base
+	{
+	public:
+		stack_blur_filter();
+		~stack_blur_filter() override;
 
-	std::unique_ptr<filter_base> clone() const override;
-	const std::string type() const override { return "stack-blur-filter"; };
-	const bool apply(cv::Mat& mat) const override;
-	const bool load_json(const nlohmann::json& filter) override;
-	const nlohmann::json to_json() const override;
+		std::unique_ptr<filter_base> clone() const override;
+		const std::string type() const override { return "stack-blur-filter"; };
+		const bool apply(cv::Mat& mat) const override;
+		const bool load_json(const nlohmann::json& filter) override;
+		const nlohmann::json to_json() const override;
 
-private:
-	filter::filter_parameter<int, 1, std::numeric_limits<int>::max(), true> size_x;
-	filter::filter_parameter<int, 1, std::numeric_limits<int>::max(), true> size_y;
-};
+	private:
+		filter::filter_parameter<int, 1, std::numeric_limits<int>::max(), true> size_x;
+		filter::filter_parameter<int, 1, std::numeric_limits<int>::max(), true> size_y;
+	};
+}

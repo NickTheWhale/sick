@@ -14,7 +14,7 @@
 
 #include <spdlog/spdlog.h>
 
-filter_pipeline::filter_pipeline(const filter_pipeline& other)
+filter::filter_pipeline::filter_pipeline(const filter_pipeline& other)
 {
 	for (const auto& filter : other.filters)
 	{
@@ -22,12 +22,12 @@ filter_pipeline::filter_pipeline(const filter_pipeline& other)
 	}
 }
 
-filter_pipeline::filter_pipeline(filter_pipeline&& other) noexcept
+filter::filter_pipeline::filter_pipeline(filter_pipeline&& other) noexcept
 	: filters(std::move(other.filters))
 {
 }
 
-filter_pipeline& filter_pipeline::operator=(const filter_pipeline& other)
+filter::filter_pipeline& filter::filter_pipeline::operator=(const filter_pipeline& other)
 {
 	if (this != &other)
 	{
@@ -41,7 +41,7 @@ filter_pipeline& filter_pipeline::operator=(const filter_pipeline& other)
 	return *this;
 }
 
-const void filter_pipeline::load_json(const nlohmann::json& filters)
+const void filter::filter_pipeline::load_json(const nlohmann::json& filters)
 {
 	this->filters.clear();
 	for (const auto& filter_json : filters)
@@ -50,7 +50,7 @@ const void filter_pipeline::load_json(const nlohmann::json& filters)
 			continue;
 
 		const std::string filter_type = filter_json["type"].get<std::string>();
-		std::unique_ptr<filter_base> filter = filter_factory::create(filter_type);
+		std::unique_ptr<filter_base> filter = filter::create(filter_type);
 		if (filter)
 		{
 			filter->load_json(filter_json);
@@ -59,7 +59,7 @@ const void filter_pipeline::load_json(const nlohmann::json& filters)
 	}
 }
 
-const nlohmann::json filter_pipeline::to_json() const
+const nlohmann::json filter::filter_pipeline::to_json() const
 {
 	nlohmann::json filters;
 
@@ -71,7 +71,7 @@ const nlohmann::json filter_pipeline::to_json() const
 	return filters;
 }
 
-const bool filter_pipeline::apply(cv::Mat& mat) const
+const bool filter::filter_pipeline::apply(cv::Mat& mat) const
 {
 	try
 	{

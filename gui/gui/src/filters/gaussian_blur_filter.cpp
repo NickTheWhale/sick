@@ -4,20 +4,20 @@
 
 #include <spdlog/spdlog.h>
 
-gaussian_blur_filter::gaussian_blur_filter()
+filter::gaussian_blur_filter::gaussian_blur_filter()
 {
 }
 
-gaussian_blur_filter::~gaussian_blur_filter()
+filter::gaussian_blur_filter::~gaussian_blur_filter()
 {
 }
 
-std::unique_ptr<filter_base> gaussian_blur_filter::clone() const
+std::unique_ptr<filter::filter_base> filter::gaussian_blur_filter::clone() const
 {
-	return std::make_unique<gaussian_blur_filter>(*this);
+	return std::make_unique<filter::gaussian_blur_filter>(*this);
 }
 
-const bool gaussian_blur_filter::apply(cv::Mat& mat) const
+const bool filter::gaussian_blur_filter::apply(cv::Mat& mat) const
 {
 	if (mat.empty())
 		return false;
@@ -30,7 +30,7 @@ const bool gaussian_blur_filter::apply(cv::Mat& mat) const
 	return true;
 }
 
-const bool gaussian_blur_filter::load_json(const nlohmann::json& filter)
+const bool filter::gaussian_blur_filter::load_json(const nlohmann::json& filter)
 {
 	try
 	{
@@ -54,7 +54,7 @@ const bool gaussian_blur_filter::load_json(const nlohmann::json& filter)
 	return true;
 }
 
-const nlohmann::json gaussian_blur_filter::to_json() const
+const nlohmann::json filter::gaussian_blur_filter::to_json() const
 {
 	try
 	{

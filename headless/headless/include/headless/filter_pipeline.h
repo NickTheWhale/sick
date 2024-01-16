@@ -8,18 +8,23 @@
 
 #include <opencv2/opencv.hpp>
 
-class filter_pipeline
+namespace filter
 {
-public:
-	filter_pipeline();
+	class filter_pipeline
+	{
+	public:
+		filter_pipeline() = default;
+		filter_pipeline(const filter_pipeline& other);
+		filter_pipeline(filter_pipeline&& other) noexcept;
+		~filter_pipeline() = default;
 
-	const bool load_json(const nlohmann::json& filters);
-	const nlohmann::json to_json() const;
-	const bool apply(cv::Mat& mat) const;
+		filter_pipeline& operator=(const filter_pipeline& other);
 
-private:
-	std::vector<std::unique_ptr<filter_base>> filters;
+		const void load_json(const nlohmann::json& filters);
+		const nlohmann::json to_json() const;
+		const bool apply(cv::Mat& mat) const;
 
-	std::unique_ptr<filter_base> make_filter(const std::string& type) const;
-};
-
+	private:
+		std::vector<std::unique_ptr<filter_base>> filters;
+	};
+}

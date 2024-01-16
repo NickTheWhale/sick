@@ -4,21 +4,21 @@
 
 #include <spdlog/spdlog.h>
 
-bilateral_filter::bilateral_filter()
+filter::bilateral_filter::bilateral_filter()
 	: diameter(1), sigma_color(0.0), sigma_space(0.0)
 {
 }
 
-bilateral_filter::~bilateral_filter()
+filter::bilateral_filter::~bilateral_filter()
 {
 }
 
-std::unique_ptr<filter_base> bilateral_filter::clone() const
+std::unique_ptr<filter::filter_base> filter::bilateral_filter::clone() const
 {
 	return std::make_unique<bilateral_filter>(*this);
 }
 
-const bool bilateral_filter::apply(cv::Mat& mat) const
+const bool filter::bilateral_filter::apply(cv::Mat& mat) const
 {
 	if (mat.empty())
 		return false;
@@ -34,7 +34,7 @@ const bool bilateral_filter::apply(cv::Mat& mat) const
 	return true;
 }
 
-const bool bilateral_filter::load_json(const nlohmann::json& filter)
+const bool filter::bilateral_filter::load_json(const nlohmann::json& filter)
 {
 	try
 	{
@@ -57,7 +57,7 @@ const bool bilateral_filter::load_json(const nlohmann::json& filter)
 	return true;
 }
 
-const nlohmann::json bilateral_filter::to_json() const
+const nlohmann::json filter::bilateral_filter::to_json() const
 {
 	try
 	{

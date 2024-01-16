@@ -4,20 +4,20 @@
 
 #include <spdlog/spdlog.h>
 
-blur_filter::blur_filter()
+filter::blur_filter::blur_filter()
 {
 }
 
-blur_filter::~blur_filter()
+filter::blur_filter::~blur_filter()
 {
 }
 
-std::unique_ptr<filter_base> blur_filter::clone() const
+std::unique_ptr<filter::filter_base> filter::blur_filter::clone() const
 {
-	return std::make_unique<blur_filter>(*this);
+	return std::make_unique<filter::blur_filter>(*this);
 }
 
-const bool blur_filter::apply(cv::Mat& mat) const
+const bool filter::blur_filter::apply(cv::Mat& mat) const
 {
 	if (mat.empty())
 		return false;
@@ -30,7 +30,7 @@ const bool blur_filter::apply(cv::Mat& mat) const
 	return true;
 }
 
-const bool blur_filter::load_json(const nlohmann::json& filter)
+const bool filter::blur_filter::load_json(const nlohmann::json& filter)
 {
 	try
 	{
@@ -52,7 +52,7 @@ const bool blur_filter::load_json(const nlohmann::json& filter)
 	return true;
 }
 
-const nlohmann::json blur_filter::to_json() const
+const nlohmann::json filter::blur_filter::to_json() const
 {
 	nlohmann::json root;
 	try

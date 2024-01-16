@@ -15,7 +15,7 @@
 #include <gui/filters/stack_blur_filter.h>
 #include <gui/filters/threshold_filter.h>
 
-namespace filter_factory
+namespace filter
 {
 	const static std::unordered_map<std::string, std::function<std::unique_ptr<filter_base>()>> types = {
 		{ bilateral_filter().type(),      []() { return bilateral_filter().clone(); }},

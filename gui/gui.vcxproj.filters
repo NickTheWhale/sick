@@ -168,9 +168,6 @@
     <ClCompile Include="spdlog\src\stdout_sinks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gui\src\filter_editor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="gui\src\filter_graph.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -181,6 +178,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="imguifiledialog\ImGuiFileDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\src\windows\frame_window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\src\windows\window_base.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\src\windows\filter_editor_window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\src\windows\camera_handler_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -695,9 +704,6 @@
     <ClInclude Include="spdlog\include\spdlog\version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gui\include\gui\filter_editor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="gui\include\gui\filter_factory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -729,6 +735,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="imguifiledialog\ImGuiFileDialogConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\include\gui\windows\frame_window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\include\gui\windows\window_base.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\include\gui\windows\filter_editor_window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\include\gui\windows\camera_handler_window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

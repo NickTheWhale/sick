@@ -20,7 +20,7 @@ void filter::filter_worker::set_pipeline(const filter_pipeline& pipeline)
 	this->_pipeline = pipeline;
 }
 
-const filter_pipeline filter::filter_worker::get_pipeline() const
+const filter::filter_pipeline filter::filter_worker::get_pipeline() const
 {
 	return _pipeline;
 }

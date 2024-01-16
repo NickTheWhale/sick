@@ -4,21 +4,21 @@
 
 #include <spdlog/spdlog.h>
 
-stack_blur_filter::stack_blur_filter()
+filter::stack_blur_filter::stack_blur_filter()
 	: size_x(size_x.min()), size_y(size_y.min())
 {
 }
 
-stack_blur_filter::~stack_blur_filter()
+filter::stack_blur_filter::~stack_blur_filter()
 {
 }
 
-std::unique_ptr<filter_base> stack_blur_filter::clone() const
+std::unique_ptr<filter::filter_base> filter::stack_blur_filter::clone() const
 {
 	return std::make_unique<stack_blur_filter>(*this);
 }
 
-const bool stack_blur_filter::apply(cv::Mat& mat) const
+const bool filter::stack_blur_filter::apply(cv::Mat& mat) const
 {
 	if (mat.empty())
 		return false;
@@ -31,7 +31,7 @@ const bool stack_blur_filter::apply(cv::Mat& mat) const
 	return true;
 }
 
-const bool stack_blur_filter::load_json(const nlohmann::json& filter)
+const bool filter::stack_blur_filter::load_json(const nlohmann::json& filter)
 {
 	try
 	{
@@ -53,7 +53,7 @@ const bool stack_blur_filter::load_json(const nlohmann::json& filter)
 	return true;
 }
 
-const nlohmann::json stack_blur_filter::to_json() const
+const nlohmann::json filter::stack_blur_filter::to_json() const
 {
 	try
 	{

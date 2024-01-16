@@ -10,30 +10,58 @@
 #include <headless/filters/stack_blur_filter.h>
 #include <headless/filters/threshold_filter.h>
 
+#include <headless/filter_factory.h>
 
-filter_pipeline::filter_pipeline()
+#include <spdlog/spdlog.h>
+
+filter::filter_pipeline::filter_pipeline(const filter_pipeline& other)
+{
+	for (const auto& filter : other.filters)
+	{
+		filters.push_back(filter->clone());
+	}
+}
+
+filter::filter_pipeline::filter_pipeline(filter_pipeline&& other) noexcept
+	: filters(std::move(other.filters))
 {
 }
 
-const bool filter_pipeline::load_json(const nlohmann::json& filters)
+filter::filter_pipeline& filter::filter_pipeline::operator=(const filter_pipeline& other)
 {
+	if (this != &other)
+	{
+		filters.clear();
+		for (const auto& filter : other.filters)
+		{
+			filters.push_back(filter->clone());
+		}
+	}
+	
+	return *this;
+}
+
+const void filter::filter_pipeline::load_json(const nlohmann::json& filters)
+{
+	this->filters.clear();
 	for (const auto& filter_json : filters)
 	{
+		if (!filter_json.contains("type"))
+			continue;
+
 		const std::string filter_type = filter_json["type"].get<std::string>();
-		std::unique_ptr<filter_base> filter = make_filter(filter_type);
+		std::unique_ptr<filter_base> filter = filter::create(filter_type);
 		if (filter)
 		{
 			filter->load_json(filter_json);
 			this->filters.push_back(std::move(filter));
 		}
 	}
-
-	return {};
 }
 
-const nlohmann::json filter_pipeline::to_json() const
+const nlohmann::json filter::filter_pipeline::to_json() const
 {
-	nlohmann::json::array_t filters;
+	nlohmann::json filters;
 
 	for (const auto& filter : this->filters)
 	{
@@ -43,40 +71,28 @@ const nlohmann::json filter_pipeline::to_json() const
 	return filters;
 }
 
-const bool filter_pipeline::apply(cv::Mat& mat) const
+const bool filter::filter_pipeline::apply(cv::Mat& mat) const
 {
-	return false;
-}
+	try
+	{
+		for (const auto& filter : this->filters)
+		{
+			if (!filter->apply(mat))
+				return false;
+		}
 
-std::unique_ptr<filter_base> filter_pipeline::make_filter(const std::string& type) const
-{
-	if (type == bilateral_filter().type())
-		return bilateral_filter().clone();
+		return true;
+	}
+	catch (const std::exception& e)
+	{
+		spdlog::get("filter")->error(e.what());
 
-	if (type == blur_filter().type())
-		return blur_filter().clone();
+		return false;
+	}
+	catch (...)
+	{
+		spdlog::get("filter")->error("Filter pipeline failed to apply");
 
-	if (type == crop_filter().type())
-		return crop_filter().clone();
-
-	if (type == gaussian_blur_filter().type())
-		return gaussian_blur_filter().clone();
-
-	if (type == median_filter().type())
-		return median_filter().clone();
-
-	if (type == moving_average_filter().type())
-		return moving_average_filter().clone();
-
-	if (type == resize_filter().type())
-		return resize_filter().clone();
-
-	if (type == stack_blur_filter().type())
-		return stack_blur_filter().clone();
-
-	if (type == threshold_filter().type())
-		return threshold_filter().clone();
-
-
-	return nullptr;
+		return false;
+	}
 }

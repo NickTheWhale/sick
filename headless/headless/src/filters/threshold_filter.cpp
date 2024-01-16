@@ -4,37 +4,49 @@
 
 #include <spdlog/spdlog.h>
 
-threshold_filter::threshold_filter()
+filter::threshold_filter::threshold_filter()
+	: upper(upper.max()), lower(lower.min())
 {
 }
 
-threshold_filter::~threshold_filter()
+filter::threshold_filter::~threshold_filter()
 {
 }
 
-std::unique_ptr<filter_base> threshold_filter::clone() const
+std::unique_ptr<filter::filter_base> filter::threshold_filter::clone() const
 {
-	return std::make_unique<threshold_filter>(*this);
+	return std::make_unique<filter::threshold_filter>(*this);
 }
 
-const bool threshold_filter::apply(cv::Mat& mat) const
+const bool filter::threshold_filter::apply(cv::Mat& mat) const
 {
-	if (mat.empty())
-		return false;
+    if (mat.empty())
+        return false;
 
-	cv::Mat output;
+    cv::Mat output;
+    cv::threshold(mat, output, upper.value(), 0, cv::THRESH_TOZERO_INV);
+    mat = output;
+    
+    cv::threshold(mat, output, lower.value(), 0, cv::THRESH_TOZERO);
+    mat = output;
 
-
-
-	mat = output;
-	return true;
+    return true;
 }
 
-const bool threshold_filter::load_json(const nlohmann::json& filter)
+const bool filter::threshold_filter::load_json(const nlohmann::json& filter)
 {
 	try
 	{
+		nlohmann::json parameters = filter["parameters"];
+		upper = parameters["upper"].get<int>();
+		lower = parameters["lower"].get<int>();
 
+		if (upper.value() < lower.value())
+		{
+			const auto upper_temp = upper;
+			upper = lower.value();
+			lower = upper_temp.value();
+		}
 	}
 	catch (const nlohmann::detail::exception& e)
 	{
@@ -50,12 +62,19 @@ const bool threshold_filter::load_json(const nlohmann::json& filter)
 	return true;
 }
 
-const nlohmann::json threshold_filter::to_json() const
+const nlohmann::json filter::threshold_filter::to_json() const
 {
-	nlohmann::json root;
 	try
 	{
+		nlohmann::json j = {
+			{"type", type()},
+			{"parameters", {
+				{"upper", upper.value()},
+				{"lower", lower.value()},
+			}}
+		};
 
+		return j;
 	}
 	catch (const nlohmann::detail::exception& e)
 	{
@@ -67,6 +86,4 @@ const nlohmann::json threshold_filter::to_json() const
 		spdlog::error("Failed to convert '{}' filter to json", type());
 		return nlohmann::json{};
 	}
-
-	return root;
 }

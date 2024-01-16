@@ -28,8 +28,6 @@
 
 #include <headless/filter_pipeline.h>
 
-namespace v = visionary;
-
 struct configuration
 {
 	struct cam
@@ -42,7 +40,8 @@ struct configuration
 		std::string ip = "";
 		int rack = 0;
 		int slot = 0;
-		int db_num = 0;
+		int db_number = 0;
+		int db_size_bytes = 0;
 		int db_offset = 0;
 	} plc;
 
@@ -56,14 +55,15 @@ struct configuration
 			<< "\tip:\t\t" << plc.ip << "\n"
 			<< "\tslot:\t\t" << plc.slot << "\n"
 			<< "\track:\t\t" << plc.rack << "\n"
-			<< "\tdb_num:\t\t" << plc.db_num << "\n"
+			<< "\tdb_num:\t\t" << plc.db_number << "\n"
+			<< "\tdb_size_bytes:\t" << plc.db_size_bytes << "\n"
 			<< "\tdb_offset:\t" << plc.db_offset << "\n";
 	}
 };
 
 configuration config;
-filter_pipeline pipeline;
-volatile sig_atomic_t done = 0;
+filter::filter_pipeline pipeline;
+volatile std::atomic_bool done = false;
 
 const int parse_args(int argc, char** argv);	
 const bool parse_config(const std::string& file);
@@ -97,13 +97,13 @@ int main(int argc, char** argv)
 
 	// connect to camera
 	spdlog::trace("Starting camera frame grabber...");
-	v::FrameGrabber<v::VisionaryTMiniData> grabber(config.cam.ip, htons(config.cam.port), 5000);
-	std::shared_ptr<v::VisionaryTMiniData> data_handler;
-	v::VisionaryControl visionary_control;
+	visionary::FrameGrabber<visionary::VisionaryTMiniData> grabber(config.cam.ip, htons(config.cam.port), 5000);
+	std::shared_ptr<visionary::VisionaryTMiniData> data_handler;
+	visionary::VisionaryControl visionary_control;
 	spdlog::trace("Frame grabber started");
 
 	spdlog::trace("Opening camera control channel...");
-	if (!visionary_control.open(v::VisionaryControl::ProtocolType::COLA_2, config.cam.ip, 5000))
+	if (!visionary_control.open(visionary::VisionaryControl::ProtocolType::COLA_2, config.cam.ip, 5000))
 	{
 		spdlog::critical("Failed to connect to camera at {}", config.cam.ip);
 		return -1;
@@ -133,12 +133,12 @@ int main(int argc, char** argv)
 			std::vector<byte> buffer;
 			buffer.resize(distance_map.size() * sizeof(uint32_t));
 
-			for (size_t i = 0; i < distance_map.size(); ++i)
+			for (int i = 0; i < distance_map.size(); ++i)
 			{
-				SetDWordAt(buffer.data(), i * sizeof(uint32_t), distance_map[i]);
+				SetDWordAt(buffer.data(), i * static_cast<int>(sizeof(uint32_t)), distance_map[i]);
 			}
 
-			ret = plc.DBWrite(config.plc.db_num, config.plc.db_offset, (int)1296*4, buffer.data());
+			ret = plc.DBWrite(config.plc.db_number, config.plc.db_offset, (int)1296*4, buffer.data());
 			if (ret != 0)
 			{
 				spdlog::error("Failed to write frame #{} to PLC: {}", data_handler->getFrameNum(), CliErrorText(ret));
@@ -150,10 +150,6 @@ int main(int argc, char** argv)
 				}
 			}
 		}
-
-		static int loop_count = 0;
-		++loop_count;
-		spdlog::trace("loop count: {}", loop_count);
 	}
 
 	visionary_control.close();
@@ -177,7 +173,8 @@ const int parse_args(int argc, char** argv)
 
 	// plc options
 	req_with_no_config.push_back(app.add_option("--plc-ip", config.plc.ip, "PLC IP address"));
-	app.add_option("--plc-db", config.plc.db_num, "PLC DB number");
+	req_with_no_config.push_back(app.add_option("--plc-db", config.plc.db_number, "PLC DB number"));
+	req_with_no_config.push_back(app.add_option("--plc-db-size", config.plc.db_size_bytes, "PLC DB size in bytes"));
 	app.add_option("--plc-db-offset", config.plc.db_offset, "PLC DB start offset");
 	app.add_option("--plc-rack", config.plc.rack, "PLC rack number");
 	app.add_option("--plc-slot", config.plc.slot, "PLC slot number");
@@ -238,14 +235,15 @@ const bool parse_config(const std::string& file)
 		nlohmann::json cam = json["configuration"]["camera"];
 		nlohmann::json plc = json["configuration"]["plc"];
 
-		config.cam.ip = cam["ip"].is_null() ? config.cam.ip : cam["ip"].get<std::string>();
-		config.cam.port = cam["port"].is_null() ? config.cam.port : cam["port"].get<uint16_t>();
+		config.cam.ip = cam.value("ip", config.cam.ip);
+		config.cam.port = cam.value("port", config.cam.port);
 
-		config.plc.ip = plc["ip"].is_null() ? config.plc.ip : plc["ip"].get<std::string>();
-		config.plc.db_num = plc["db_number"].is_null() ? config.plc.db_num : plc["db_number"].get<int>();
-		config.plc.db_offset = plc["db_offset"].is_null() ? config.plc.db_offset : plc["db_offset"].get<int>();
-		config.plc.rack = plc["rack"].is_null() ? config.plc.rack : plc["rack"].get<int>();
-		config.plc.slot = plc["slot"].is_null() ? config.plc.slot : plc["slot"].get<int>();
+		config.plc.ip = plc.value("ip", config.plc.ip);
+		config.plc.db_number = plc.value("db_number", config.plc.db_number);
+		config.plc.db_size_bytes = plc.value("db_size_bytes", config.plc.db_size_bytes);
+		config.plc.db_offset = plc.value("db_offset", config.plc.db_offset);
+		config.plc.rack = plc.value("rack", config.plc.rack);
+		config.plc.slot = plc.value("slot", config.plc.slot);
 		
 	}
 	catch (const nlohmann::detail::exception& e)
@@ -298,6 +296,6 @@ void signal_handler(int signum)
 	if (signum == SIGINT)
 	{
 		spdlog::info("Quitting...");
-		done = 1;
+		done = true;
 	}
 }

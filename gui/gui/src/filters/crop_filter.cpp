@@ -4,20 +4,20 @@
 
 #include <spdlog/spdlog.h>
 
-crop_filter::crop_filter()
+filter::crop_filter::crop_filter()
 {
 }
 
-crop_filter::~crop_filter()
+filter::crop_filter::~crop_filter()
 {
 }
 
-std::unique_ptr<filter_base> crop_filter::clone() const
+std::unique_ptr<filter::filter_base> filter::crop_filter::clone() const
 {
 	return std::make_unique<crop_filter>(*this);
 }
 
-const bool crop_filter::apply(cv::Mat& mat) const
+const bool filter::crop_filter::apply(cv::Mat& mat) const
 {
 	if (mat.empty())
 		return false;
@@ -52,7 +52,7 @@ const bool crop_filter::apply(cv::Mat& mat) const
 	return true;
 }
 
-const bool crop_filter::load_json(const nlohmann::json& filter)
+const bool filter::crop_filter::load_json(const nlohmann::json& filter)
 {
 	try
 	{
@@ -76,7 +76,7 @@ const bool crop_filter::load_json(const nlohmann::json& filter)
 	return true;
 }
 
-const nlohmann::json crop_filter::to_json() const
+const nlohmann::json filter::crop_filter::to_json() const
 {
 	try
 	{

@@ -4,35 +4,44 @@
 
 #include <spdlog/spdlog.h>
 
-bilateral_filter::bilateral_filter()
+filter::bilateral_filter::bilateral_filter()
+	: diameter(1), sigma_color(0.0), sigma_space(0.0)
 {
 }
 
-bilateral_filter::~bilateral_filter()
+filter::bilateral_filter::~bilateral_filter()
 {
 }
 
-std::unique_ptr<filter_base> bilateral_filter::clone() const
+std::unique_ptr<filter::filter_base> filter::bilateral_filter::clone() const
 {
 	return std::make_unique<bilateral_filter>(*this);
 }
 
-const bool bilateral_filter::apply(cv::Mat& mat) const
+const bool filter::bilateral_filter::apply(cv::Mat& mat) const
 {
 	if (mat.empty())
 		return false;
 
+	cv::Mat input_32F;
+	cv::Mat output_32F;
 	cv::Mat output;
-
+	mat.convertTo(input_32F, CV_32F);
+	cv::bilateralFilter(input_32F, output_32F, diameter.value(), sigma_color.value(), sigma_space.value());
+	output_32F.convertTo(output, CV_16U);
 	mat = output;
+
 	return true;
 }
 
-const bool bilateral_filter::load_json(const nlohmann::json& filter)
+const bool filter::bilateral_filter::load_json(const nlohmann::json& filter)
 {
 	try
 	{
-
+		nlohmann::json parameters = filter["parameters"];
+		diameter = parameters["diameter"].get<int>();
+		sigma_color = parameters["sigma"]["color"].get<double>();
+		sigma_space = parameters["sigma"]["space"].get<double>();
 	}
 	catch (const nlohmann::detail::exception& e)
 	{
@@ -48,12 +57,22 @@ const bool bilateral_filter::load_json(const nlohmann::json& filter)
 	return true;
 }
 
-const nlohmann::json bilateral_filter::to_json() const
+const nlohmann::json filter::bilateral_filter::to_json() const
 {
-	nlohmann::json root;
 	try
 	{
+		nlohmann::json j = {
+			{"type", type()},
+			{"parameters", {
+				{"diameter", diameter.value()},
+				{"sigma", {
+					{"color", sigma_color.value()},
+					{"space", sigma_space.value()},
+				}}
+			}}
+		};
 
+		return j;
 	}
 	catch (const nlohmann::detail::exception& e)
 	{
@@ -65,6 +84,4 @@ const nlohmann::json bilateral_filter::to_json() const
 		spdlog::error("Failed to convert '{}' filter to json", type());
 		return nlohmann::json{};
 	}
-
-	return root;
 }

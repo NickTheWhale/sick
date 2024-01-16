@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <gui/filter_base.h>
 
-namespace editor
+namespace filter
 {
 	struct Link
 	{
@@ -66,12 +66,12 @@ namespace editor
 	class filter_graph
 	{
 	public:
-		const bool add_node(const editor::Node& node);
+		const bool add_node(const filter::Node& node);
 		const bool remove_node(const int node_id);
-		const bool add_link(const editor::Link& link);
+		const bool add_link(const filter::Link& link);
 		const bool remove_link(const int link_id);
 
-		const bool traverse(std::vector<editor::Node>& nodes) const;
+		const bool traverse(std::vector<filter::Node>& nodes) const;
 
 		const std::unordered_map<int, Node>& nodes() const;
 		const std::unordered_map<int, Link>& links() const;

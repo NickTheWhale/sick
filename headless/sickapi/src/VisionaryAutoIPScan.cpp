@@ -22,6 +22,8 @@
 #include "VisionaryAutoIPScan.h"
 #include "UdpSocket.h"
 
+#include <spdlog/spdlog.h>
+
 namespace visionary 
 {
 
@@ -124,7 +126,7 @@ std::vector<VisionaryAutoIPScan::DeviceInfo> VisionaryAutoIPScan::doScan(int tim
       }
       else
       {
-        std::cout << __FUNCTION__ << "Received invalid AutoIP Packet" << std::endl;
+        spdlog::get("camera")->error("{} Received invalid AutoIP Packet", __FUNCTION__);
       }
       
     }

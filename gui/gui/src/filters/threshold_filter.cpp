@@ -4,21 +4,21 @@
 
 #include <spdlog/spdlog.h>
 
-threshold_filter::threshold_filter()
+filter::threshold_filter::threshold_filter()
 	: upper(upper.max()), lower(lower.min())
 {
 }
 
-threshold_filter::~threshold_filter()
+filter::threshold_filter::~threshold_filter()
 {
 }
 
-std::unique_ptr<filter_base> threshold_filter::clone() const
+std::unique_ptr<filter::filter_base> filter::threshold_filter::clone() const
 {
-	return std::make_unique<threshold_filter>(*this);
+	return std::make_unique<filter::threshold_filter>(*this);
 }
 
-const bool threshold_filter::apply(cv::Mat& mat) const
+const bool filter::threshold_filter::apply(cv::Mat& mat) const
 {
     if (mat.empty())
         return false;
@@ -33,7 +33,7 @@ const bool threshold_filter::apply(cv::Mat& mat) const
     return true;
 }
 
-const bool threshold_filter::load_json(const nlohmann::json& filter)
+const bool filter::threshold_filter::load_json(const nlohmann::json& filter)
 {
 	try
 	{
@@ -62,7 +62,7 @@ const bool threshold_filter::load_json(const nlohmann::json& filter)
 	return true;
 }
 
-const nlohmann::json threshold_filter::to_json() const
+const nlohmann::json filter::threshold_filter::to_json() const
 {
 	try
 	{

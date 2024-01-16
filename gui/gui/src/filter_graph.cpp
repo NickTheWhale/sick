@@ -4,14 +4,14 @@
 #include <iostream>
 #include <stack>
 
-const bool editor::filter_graph::add_node(const editor::Node& node)
+const bool filter::filter_graph::add_node(const filter::Node& node)
 {
 	return _nodes.emplace(node.id, node).second 
 		&& _nodes_in_id.emplace(node.in_id, node).second 
 		&& _nodes_out_id.emplace(node.out_id, node).second;
 }
 
-const bool editor::filter_graph::remove_node(const int node_id)
+const bool filter::filter_graph::remove_node(const int node_id)
 {
 	auto nit = _nodes.find(node_id);
 	if (nit == _nodes.end())
@@ -48,7 +48,7 @@ const bool editor::filter_graph::remove_node(const int node_id)
 	return true;
 }
 
-const bool editor::filter_graph::add_link(const editor::Link& link)
+const bool filter::filter_graph::add_link(const filter::Link& link)
 {
 	// configure associated node flags
 	_nodes.at(_nodes_in_id.at(link.out_id).id).is_in_linked = true;
@@ -60,7 +60,7 @@ const bool editor::filter_graph::add_link(const editor::Link& link)
 	return _links.emplace(link.id, link).second;
 }
 
-const bool editor::filter_graph::remove_link(const int link_id)
+const bool filter::filter_graph::remove_link(const int link_id)
 {
 	auto link_it = _links.find(link_id);
 	if (link_it == _links.end())
@@ -78,7 +78,7 @@ const bool editor::filter_graph::remove_link(const int link_id)
 	return true;
 }
 
-const bool editor::filter_graph::traverse(std::vector<editor::Node>& nodes) const
+const bool filter::filter_graph::traverse(std::vector<filter::Node>& nodes) const
 {
 	if (_nodes.empty())
 		return false;
@@ -114,12 +114,12 @@ const bool editor::filter_graph::traverse(std::vector<editor::Node>& nodes) cons
 	return true;
 }
 
-const std::unordered_map<int, editor::Node>& editor::filter_graph::nodes() const
+const std::unordered_map<int, filter::Node>& filter::filter_graph::nodes() const
 {
 	return _nodes;
 }
 
-const std::unordered_map<int, editor::Link>& editor::filter_graph::links() const
+const std::unordered_map<int, filter::Link>& filter::filter_graph::links() const
 {
 	return _links;
 }

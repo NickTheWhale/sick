@@ -4,36 +4,39 @@
 
 #include <spdlog/spdlog.h>
 
-blur_filter::blur_filter()
+filter::blur_filter::blur_filter()
 {
 }
 
-blur_filter::~blur_filter()
+filter::blur_filter::~blur_filter()
 {
 }
 
-std::unique_ptr<filter_base> blur_filter::clone() const
+std::unique_ptr<filter::filter_base> filter::blur_filter::clone() const
 {
-	return std::make_unique<blur_filter>(*this);
+	return std::make_unique<filter::blur_filter>(*this);
 }
 
-const bool blur_filter::apply(cv::Mat& mat) const
+const bool filter::blur_filter::apply(cv::Mat& mat) const
 {
 	if (mat.empty())
 		return false;
 
 	cv::Mat output;
 
-
+	cv::blur(mat, output, cv::Size(size_x.value(), size_y.value()));
 	mat = output;
+
 	return true;
 }
 
-const bool blur_filter::load_json(const nlohmann::json& filter)
+const bool filter::blur_filter::load_json(const nlohmann::json& filter)
 {
 	try
 	{
-
+		nlohmann::json parameters = filter["parameters"];
+		size_x = parameters["kernel-size"]["x"].get<int>();
+		size_y = parameters["kernel-size"]["y"].get<int>();
 	}
 	catch (const nlohmann::detail::exception& e)
 	{
@@ -49,12 +52,22 @@ const bool blur_filter::load_json(const nlohmann::json& filter)
 	return true;
 }
 
-const nlohmann::json blur_filter::to_json() const
+const nlohmann::json filter::blur_filter::to_json() const
 {
 	nlohmann::json root;
 	try
 	{
+		nlohmann::json j = {
+			{"type", type()},
+			{"parameters", {
+				{"kernel-size", {
+					{"x", size_x.value()},
+					{"y", size_y.value()}
+				}}
+			}}
+		};
 
+		return j;
 	}
 	catch (const nlohmann::detail::exception& e)
 	{
@@ -66,6 +79,4 @@ const nlohmann::json blur_filter::to_json() const
 		spdlog::error("Failed to convert '{}' filter to json", type());
 		return nlohmann::json{};
 	}
-
-	return root;
 }

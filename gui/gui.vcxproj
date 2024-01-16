@@ -70,6 +70,12 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)build\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)build\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -116,6 +122,9 @@
       <ShowProgress>
       </ShowProgress>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d /f "$(OPENCV_DIR)\build\x64\vc16\bin\opencv_world480d.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -139,8 +148,14 @@
       <ShowProgress>
       </ShowProgress>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d /f "$(OPENCV_DIR)\build\x64\vc16\bin\opencv_world480.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="gui\src\windows\camera_handler_window.cpp" />
+    <ClCompile Include="gui\src\windows\filter_editor_window.cpp" />
+    <ClCompile Include="gui\src\windows\window_base.cpp" />
     <ClCompile Include="gui\src\filter_graph.cpp" />
     <ClCompile Include="gui\src\filters\bilateral_filter.cpp" />
     <ClCompile Include="gui\src\filters\blur_filter.cpp" />
@@ -154,6 +169,7 @@
     <ClCompile Include="gui\src\filter_pipeline.cpp" />
     <ClCompile Include="gui\src\filter_worker.cpp" />
     <ClCompile Include="gui\src\frame.cpp" />
+    <ClCompile Include="gui\src\windows\frame_window.cpp" />
     <ClCompile Include="gui\src\main.cpp" />
     <ClCompile Include="imguifiledialog\ImGuiFileDialog.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
@@ -163,7 +179,6 @@
     <ClCompile Include="imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
-    <ClCompile Include="gui\src\filter_editor.cpp" />
     <ClCompile Include="imnodes\imnodes.cpp" />
     <ClCompile Include="sickapi\include\libs\smart_ptr\src\sp_collector.cpp" />
     <ClCompile Include="sickapi\include\libs\smart_ptr\src\sp_debug_hooks.cpp" />
@@ -199,6 +214,9 @@
     <ClCompile Include="spdlog\src\stdout_sinks.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="gui\include\gui\windows\camera_handler_window.h" />
+    <ClInclude Include="gui\include\gui\windows\window_base.h" />
+    <ClInclude Include="gui\include\gui\windows\filter_editor_window.h" />
     <ClInclude Include="gui\include\gui\filter_parameter.h" />
     <ClInclude Include="gui\include\gui\filter_graph.h" />
     <ClInclude Include="gui\include\gui\filter_factory.h" />
@@ -230,6 +248,7 @@
     <ClInclude Include="gui\include\gui\filter_pipeline.h" />
     <ClInclude Include="gui\include\gui\filter_worker.h" />
     <ClInclude Include="gui\include\gui\frame.h" />
+    <ClInclude Include="gui\include\gui\windows\frame_window.h" />
     <ClInclude Include="imguifiledialog\dirent\dirent.h" />
     <ClInclude Include="imguifiledialog\ImGuiFileDialog.h" />
     <ClInclude Include="imguifiledialog\ImGuiFileDialogConfig.h" />
@@ -247,7 +266,6 @@
     <ClInclude Include="imnodes\imnodes.h" />
     <ClInclude Include="imnodes\imnodes_internal.h" />
     <ClInclude Include="json\json.hpp" />
-    <ClInclude Include="gui\include\gui\filter_editor.h" />
     <ClInclude Include="sickapi\src\AuthenticationLegacy.h" />
     <ClInclude Include="sickapi\src\AuthenticationSecure.h" />
     <ClInclude Include="sickapi\src\CoLa2ProtocolHandler.h" />

@@ -6,10 +6,6 @@
 #include <vector>
 #include <unordered_map>
 
-#include <Framegrabber.h>
-#include <VisionaryControl.h>
-#include <VisionaryTMiniData.h>
-
 #include <GL/glew.h>
 
 #include <opencv2/core/utils/logger.hpp>
@@ -27,26 +23,17 @@
 
 #include <json.hpp>
 
-//#define IMNODES_NAMESPACE imnodes
 #include <imnodes.h>
-#include <gui/filter_editor.h>
 
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-std::unique_ptr<visionary::FrameGrabber<visionary::VisionaryTMiniData>> frame_grabber;
-std::shared_ptr<visionary::VisionaryTMiniData> frame_data;
-std::unique_ptr<visionary::VisionaryControl> visionary_control;
-int g_octets[4] = {};
-int g_port = {};
-GLuint g_texture;
-
-const bool open_camera(const std::string& ip, const uint16_t& port, const uint64_t& timeout_ms);
+#include <gui/windows/frame_window.h>
+#include <gui/windows/filter_editor_window.h>
+#include <gui/windows/camera_handler_window.h>
 
 namespace ImGui
 {
-    void FrameWindow(const frame::Frame& frame, const char* name, bool *p_open = (bool *)0, ImGuiWindowFlags flags = 0);
-    void CameraConnectionWindow(const char* name, bool* p_open = (bool*)0, ImGuiWindowFlags flags = 0);
     void LogOptionsSelector(const char* name, bool* p_open = (bool*)0, ImGuiWindowFlags flags = 0);
 }
 
@@ -78,11 +65,11 @@ int main(int, char**)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
     GLFWwindow* window = glfwCreateWindow(1280, 720, "Sick GUI", nullptr, nullptr);
+    
     if (window == nullptr)
         return 1;
     glfwMakeContextCurrent(window);
-    //glfwSwapInterval(1); // Enable vsync
-    glfwSwapInterval(0);
+    glfwSwapInterval(1); // Enable vsync
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -95,8 +82,8 @@ int main(int, char**)
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
 
     // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
-    //ImGui::StyleColorsLight();
+    //ImGui::StyleColorsDark();
+    ImGui::StyleColorsLight();
     
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -109,43 +96,40 @@ int main(int, char**)
 
     spdlog::get("ui")->debug("Using GLEW version {}", reinterpret_cast<const char*>(glewGetString(GLEW_VERSION)));
     spdlog::get("ui")->debug("Using GL version {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
-    //open_camera("192.168.1.67", 2114, 1000);
 
-    filter_pipeline pipeline;
-    editor::filter_editor editor;
+    filter::filter_pipeline pipeline;
     filter::filter_worker worker;
     cv::Mat filtered_mat;
     frame::Frame filtered_frame;
-    bool show_editor = false;
-    glGenTextures(1, &g_texture);
+    window::frame_window filtered_frame_window("Filtered Frame");
+    window::filter_editor_window editor_window("Filter Editor");
+    window::camera_handler_window camera_handler_window("Camera Handler");
     while (!glfwWindowShouldClose(window))
     {
+        //ImGuiViewport* viewport = ImGui::GetMainViewport();
+        //ImGui::SetNextWindowPos(viewport->WorkPos);
+        //ImGui::SetNextWindowSize(viewport->WorkSize);
+
         glfwPollEvents();
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
         
         ImGui::LogOptionsSelector("Log Options");
 
-        editor.show();
-        ImGui::CameraConnectionWindow("Camera");
+        editor_window.render();
+        camera_handler_window.render();
         
-        bool pipeline_ok = editor.create_pipeline(pipeline);
+        bool pipeline_ok = editor_window.create_pipeline(pipeline);
         if (pipeline_ok)
         {
-            if (frame_grabber && frame_grabber->getCurrentFrame(frame_data))
+            frame::Frame depth;
+            if (camera_handler_window.get_current_frame(depth))
             {
-                frame::Frame depth(
-                    frame_data->getDistanceMap(),
-                    frame_data->getHeight(),
-                    frame_data->getWidth(),
-                    frame_data->getFrameNum(),
-                    frame_data->getTimestampMS()
-                );
-
-                auto depth_mat = frame::to_mat(depth);
+                const cv::Mat& depth_mat = frame::to_mat(depth);
                 worker.set_pipeline(pipeline);
                 worker.try_put_new(depth_mat);
             }
@@ -154,7 +138,8 @@ int main(int, char**)
         if (worker.try_latest_mat(filtered_mat) && !filtered_mat.empty())
             filtered_frame = frame::to_frame(filtered_mat);
 
-        ImGui::FrameWindow(filtered_frame, "Filtered Frame");
+        filtered_frame_window.set_frame(filtered_frame);
+        filtered_frame_window.render();
 
         // Rendering
         ImGui::Render();
@@ -170,7 +155,6 @@ int main(int, char**)
     }
 
     // Cleanup
-    glDeleteTextures(1, &g_texture);
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImNodes::DestroyContext();
@@ -182,158 +166,8 @@ int main(int, char**)
     return 0;
 }
 
-const bool open_camera(const std::string& ip, const uint16_t& port, const uint64_t& timeout_ms)
-{ 
-    frame_grabber.reset(new visionary::FrameGrabber<visionary::VisionaryTMiniData>(ip, htons(port), timeout_ms));
-    if (!frame_grabber)
-    {
-        spdlog::get("camera")->error("Failed to create frame grabber");
-        return false;
-    }
-
-    frame_data.reset(new visionary::VisionaryTMiniData);
-    if (!frame_data)
-    {
-        spdlog::get("camera")->error("Failed to create frame data buffer");
-        return false;
-    }
-
-    visionary_control.reset(new visionary::VisionaryControl);
-    if (!visionary_control)
-    {
-        spdlog::get("camera")->error("Failed to create camera control channel");
-        return false;
-    }
-
-    if (!visionary_control->open(visionary::VisionaryControl::ProtocolType::COLA_2, ip, timeout_ms))
-    {
-        spdlog::get("camera")->error("Failed to open camera control channel");
-        return false;
-    }
-
-    if (!visionary_control->stopAcquisition())
-    {
-        spdlog::get("camera")->error("Failed to stop frame acquisition");
-        return false;
-    }
-
-    // start continous acquisition
-    if (!visionary_control->startAcquisition())
-    {
-        spdlog::get("camera")->error("Failed to start frame acquisition");
-        return false;
-    }
-
-    spdlog::get("camera")->info("Camera opened");
-
-    return true;
-}
-
 namespace ImGui
-{
-    void FrameWindow(const frame::Frame& frame, const char* name, bool* p_open, ImGuiWindowFlags flags)
-    {
-        ImGui::Begin(name, p_open, flags);
-        frame::Size frame_size = frame::size(frame);
-        if (frame_size.height != 0 && frame_size.width != 0)
-        {
-            auto frame_mat = frame::to_mat(frame);
-            int texture_width, texture_height;
-            if (frame::to_texture(frame_mat, g_texture, texture_width, texture_height))
-            {
-                ImGui::Text("pointer = %p", g_texture);
-                ImGui::Text("size = %d x %d", texture_width, texture_height);
-
-                const ImVec2 available_size = ImGui::GetContentRegionAvail();
-                const float frame_aspect = static_cast<float>(texture_width) / static_cast<float>(texture_height);
-
-                ImVec2 texture_size = {
-                    std::min(available_size.x, available_size.y * frame_aspect),
-                    std::min(available_size.y, available_size.x / frame_aspect)
-                };
-                
-                ImGui::SetCursorPos(ImGui::GetCursorPos() + (ImGui::GetContentRegionAvail() - texture_size) * 0.5f);
-                ImGui::Image(reinterpret_cast<void*>(static_cast<intptr_t>(g_texture)), texture_size);
-            }
-            else
-            {
-                spdlog::get("ui")->error("Failed to convert frame to texture");
-            }
-        }
-
-        ImGui::End();
-    }
-
-    void CameraConnectionWindow(const char* name, bool* p_open, ImGuiWindowFlags flags)
-    {
-        //ImGui::SetNextWindowPosCenter();
-        ImGui::Begin(name, p_open, flags);
-
-        float width = ImGui::CalcItemWidth();
-        ImGui::BeginGroup();
-        ImGui::PushID("IP");
-        ImGui::TextUnformatted("IP");
-        ImGui::SameLine();
-        int i;
-        for (i = 0; i < 4; i++) {
-            ImGui::PushItemWidth(width / 5.0f);
-            ImGui::PushID(i);
-            bool invalid_octet = false;
-            if (g_octets[i] > 255) {
-                // Make values over 255 red, and when focus is lost reset it to 255.
-                g_octets[i] = 255;
-                invalid_octet = true;
-                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-            }
-            if (g_octets[i] < 0) {
-                // Make values below 0 yellow, and when focus is lost reset it to 0.
-                g_octets[i] = 0;
-                invalid_octet = true;
-                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.0f, 1.0f));
-            }
-            ImGui::InputInt("##v", &g_octets[i], 0, 0, ImGuiInputTextFlags_CharsDecimal);
-            if (invalid_octet) {
-                ImGui::PopStyleColor();
-            }
-            ImGui::SameLine();
-            ImGui::PopID();
-            ImGui::PopItemWidth();
-        }
-        ImGui::PushItemWidth(width / 5.0f);
-        ImGui::PushID("PORT");
-        ImGui::TextUnformatted("Port");
-        ImGui::SameLine();
-        bool invalid_port = false;
-        if (g_port > 65535)
-        {
-            g_port = 65535;
-            invalid_port = true;
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-        }
-        if (g_port < 0)
-        {
-            g_port = 0;
-            invalid_port = true;
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.0f, 1.0f));
-        }
-        ImGui::InputInt("##v", &g_port, 0, 0, ImGuiInputTextFlags_CharsDecimal);
-        if (invalid_port)
-            ImGui::PopStyleColor();
-        ImGui::PopID();
-
-        ImGui::PopID();
-        ImGui::EndGroup();
-
-        ImGui::SameLine();
-        if (ImGui::Button("Connect")) 
-        {
-            std::stringstream ip;
-            ip << g_octets[0] << "." << g_octets[1] << "." << g_octets[2] << "." << g_octets[3];
-            open_camera(ip.str(), g_port, 5000);
-        }
-        ImGui::End();
-    }
-    
+{    
     void LogOptionsSelector(const char* name, bool* p_open, ImGuiWindowFlags flags)
     {
         ImGui::Begin(name, p_open, flags);

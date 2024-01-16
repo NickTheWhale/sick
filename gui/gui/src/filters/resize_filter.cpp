@@ -4,20 +4,20 @@
 
 #include <spdlog/spdlog.h>
 
-resize_filter::resize_filter()
+filter::resize_filter::resize_filter()
 {
 }
 
-resize_filter::~resize_filter()
+filter::resize_filter::~resize_filter()
 {
 }
 
-std::unique_ptr<filter_base> resize_filter::clone() const
+std::unique_ptr<filter::filter_base> filter::resize_filter::clone() const
 {
 	return std::make_unique<resize_filter>(*this);
 }
 
-const bool resize_filter::apply(cv::Mat& mat) const
+const bool filter::resize_filter::apply(cv::Mat& mat) const
 {
 	if (mat.empty())
 		return false;
@@ -29,7 +29,7 @@ const bool resize_filter::apply(cv::Mat& mat) const
 	return true;
 }
 
-const bool resize_filter::load_json(const nlohmann::json& filter)
+const bool filter::resize_filter::load_json(const nlohmann::json& filter)
 {
 	try
 	{
@@ -52,7 +52,7 @@ const bool resize_filter::load_json(const nlohmann::json& filter)
 	return true;
 }
 
-const nlohmann::json resize_filter::to_json() const
+const nlohmann::json filter::resize_filter::to_json() const
 {
 	try
 	{
