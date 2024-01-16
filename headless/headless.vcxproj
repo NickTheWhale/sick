@@ -155,9 +155,6 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="fmt\src\fmt.cc" />
-    <ClCompile Include="fmt\src\format.cc" />
-    <ClCompile Include="fmt\src\os.cc" />
     <ClCompile Include="headless\src\filters\bilateral_filter.cpp" />
     <ClCompile Include="headless\src\filters\blur_filter.cpp" />
     <ClCompile Include="headless\src\filters\crop_filter.cpp" />

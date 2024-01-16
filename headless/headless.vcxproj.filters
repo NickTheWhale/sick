@@ -147,15 +147,6 @@
     <ClCompile Include="headless\src\filters\threshold_filter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="fmt\src\fmt.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="fmt\src\format.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="fmt\src\os.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sickapi\src\AuthenticationLegacy.h">
