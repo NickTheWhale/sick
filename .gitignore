@@ -414,6 +414,7 @@ FodyWeavers.xsd
 *.so
 *.dylib
 *.dll
+!snap7.dll
 
 # Fortran module files
 *.mod
@@ -424,6 +425,7 @@ FodyWeavers.xsd
 *.la
 *.a
 *.lib
+!snap7.lib
 
 # Executables
 *.exe
