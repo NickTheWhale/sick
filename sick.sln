@@ -11,6 +11,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dummy_plc", "dummy_plc\dumm
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "view_server", "view_server\view_server.vcxproj", "{378A2F46-2933-4BF3-95F9-8EAE73E27EFE}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{90576647-0A5C-41ED-A430-AE92ED0EBF07}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "include", "include", "{C2D2382D-207F-4E31-93FA-C311A1340390}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{FDE3C505-6556-4BAE-89F6-CD9A19AF7D5D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3rdparty", "3rdparty", "{C4361F86-1837-4DE8-877F-A0D946C8AF6B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -54,6 +62,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C2D2382D-207F-4E31-93FA-C311A1340390} = {90576647-0A5C-41ED-A430-AE92ED0EBF07}
+		{FDE3C505-6556-4BAE-89F6-CD9A19AF7D5D} = {90576647-0A5C-41ED-A430-AE92ED0EBF07}
+		{C4361F86-1837-4DE8-877F-A0D946C8AF6B} = {90576647-0A5C-41ED-A430-AE92ED0EBF07}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1DF7543E-BDDB-470E-951C-2BB97787786A}
