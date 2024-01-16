@@ -1,0 +1,222 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{390102af-c19c-493d-8a08-ed9601631706}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\json\json.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\AuthenticationLegacy.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\AuthenticationSecure.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\CoLa2ProtocolHandler.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\CoLaBProtocolHandler.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\CoLaCommand.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\CoLaCommandType.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\CoLaError.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\CoLaParameterReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\CoLaParameterWriter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\ControlSession.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\Framegrabber.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\FrameGrabberBase.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\IAuthentication.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\IProtocolHandler.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\ITransport.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\MD5.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\PointCloudPlyWriter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\PointXYZ.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\SHA256.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\TcpSocket.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\UdpSocket.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\VisionaryAutoIPScan.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\VisionaryControl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\VisionaryData.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\VisionaryDataStream.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\VisionaryEndian.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\VisionarySData.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\VisionaryTData.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\sickapi\src\VisionaryTMiniData.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\async.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\async_logger-inl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\async_logger.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\cfg\argv.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\cfg\env.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\cfg\helpers-inl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\cfg\helpers.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\common-inl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\common.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\backtracer-inl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\backtracer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\circular_q.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\console_globals.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\file_helper-inl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\file_helper.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\fmt_helper.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\log_msg-inl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\log_msg.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\log_msg_buffer-inl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\log_msg_buffer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\mpmc_blocking_q.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\null_mutex.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\os-inl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\os.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\periodic_worker-inl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\periodic_worker.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\registry-inl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\registry.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\synchronous_factory.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\tcp_client-windows.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\tcp_client.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\thread_pool-inl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\thread_pool.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\udp_client-windows.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\udp_client.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\details\windows_include.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\fmt\bin_to_hex.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\fmt\bundled\args.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\fmt\bundled\chrono.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\fmt\bundled\color.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\fmt\bundled\compile.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\fmt\bundled\core.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\fmt\bundled\format-inl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\fmt\bundled\format.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\fmt\bundled\locale.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\fmt\bundled\os.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\fmt\bundled\ostream.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\fmt\bundled\printf.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\fmt\bundled\ranges.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\fmt\bundled\std.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\fmt\bundled\xchar.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\fmt\chrono.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\fmt\compile.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\fmt\fmt.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\fmt\ostr.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\fmt\ranges.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\fmt\std.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\fmt\xchar.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\formatter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\fwd.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\logger-inl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\logger.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\pattern_formatter-inl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\pattern_formatter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\android_sink.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\ansicolor_sink-inl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\ansicolor_sink.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\base_sink-inl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\base_sink.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\basic_file_sink-inl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\basic_file_sink.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\callback_sink.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\daily_file_sink.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\dist_sink.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\dup_filter_sink.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\hourly_file_sink.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\kafka_sink.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\mongo_sink.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\msvc_sink.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\null_sink.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\ostream_sink.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\qt_sinks.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\ringbuffer_sink.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\rotating_file_sink-inl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\rotating_file_sink.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\sink-inl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\sink.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\stdout_color_sinks-inl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\stdout_color_sinks.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\stdout_sinks-inl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\stdout_sinks.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\syslog_sink.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\systemd_sink.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\tcp_sink.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\udp_sink.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\wincolor_sink-inl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\wincolor_sink.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\sinks\win_eventlog_sink.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\spdlog-inl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\spdlog.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\stopwatch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\tweakme.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)3P\spdlog\include\spdlog\version.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\filters\bilateral_filter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\filters\blur_filter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\filters\crop_filter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\filters\filter_base.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\filters\filter_factory.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\filters\filter_parameter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\filters\filter_pipeline.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\filters\filter_worker.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\filters\gaussian_blur_filter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\filters\median_filter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\filters\moving_average_filter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\filters\resize_filter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\filters\stack_blur_filter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\filters\threshold_filter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\frame.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\sickapi\include\libs\smart_ptr\src\sp_collector.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\sickapi\include\libs\smart_ptr\src\sp_debug_hooks.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\sickapi\src\AuthenticationLegacy.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\sickapi\src\AuthenticationSecure.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\sickapi\src\CoLa2ProtocolHandler.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\sickapi\src\CoLaBProtocolHandler.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\sickapi\src\CoLaCommand.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\sickapi\src\CoLaParameterReader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\sickapi\src\CoLaParameterWriter.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\sickapi\src\ControlSession.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\sickapi\src\FrameGrabberBase.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\sickapi\src\IAuthentication.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\sickapi\src\IProtocolHandler.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\sickapi\src\MD5.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\sickapi\src\PointCloudPlyWriter.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\sickapi\src\SHA256.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\sickapi\src\TcpSocket.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\sickapi\src\UdpSocket.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\sickapi\src\VisionaryAutoIPScan.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\sickapi\src\VisionaryControl.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\sickapi\src\VisionaryData.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\sickapi\src\VisionaryDataStream.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\sickapi\src\VisionarySData.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\sickapi\src\VisionaryTData.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\sickapi\src\VisionaryTMiniData.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\spdlog\src\async.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\spdlog\src\bundled_fmtlib_format.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\spdlog\src\cfg.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\spdlog\src\color_sinks.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\spdlog\src\file_sinks.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\spdlog\src\spdlog.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)3P\spdlog\src\stdout_sinks.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\filters\bilateral_filter.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\filters\blur_filter.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\filters\crop_filter.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\filters\filter_graph.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\filters\filter_pipeline.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\filters\filter_worker.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\filters\frame.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\filters\gaussian_blur_filter.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\filters\median_filter.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\filters\moving_average_filter.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\filters\resize_filter.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\filters\stack_blur_filter.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\filters\threshold_filter.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)3P\json\LICENSE.MIT" />
+    <None Include="$(MSBuildThisFileDirectory)3P\spdlog\LICENSE" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="$(MSBuildThisFileDirectory)3P\sickapi\LICENSE.boost.txt" />
+    <Text Include="$(MSBuildThisFileDirectory)3P\sickapi\LICENSE.md5.txt" />
+    <Text Include="$(MSBuildThisFileDirectory)3P\sickapi\LICENSE.txt" />
+  </ItemGroup>
+</Project>
