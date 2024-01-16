@@ -426,6 +426,9 @@ FodyWeavers.xsd
 *.a
 *.lib
 !snap7.lib
+!glfw3.lib
+!glew32.lib
+!glew32s.lib
 
 # Executables
 *.exe

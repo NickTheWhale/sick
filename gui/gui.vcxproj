@@ -214,6 +214,20 @@
     <ClCompile Include="spdlog\src\stdout_sinks.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="fmt\include\fmt\args.h" />
+    <ClInclude Include="fmt\include\fmt\base.h" />
+    <ClInclude Include="fmt\include\fmt\chrono.h" />
+    <ClInclude Include="fmt\include\fmt\color.h" />
+    <ClInclude Include="fmt\include\fmt\compile.h" />
+    <ClInclude Include="fmt\include\fmt\core.h" />
+    <ClInclude Include="fmt\include\fmt\format-inl.h" />
+    <ClInclude Include="fmt\include\fmt\format.h" />
+    <ClInclude Include="fmt\include\fmt\os.h" />
+    <ClInclude Include="fmt\include\fmt\ostream.h" />
+    <ClInclude Include="fmt\include\fmt\printf.h" />
+    <ClInclude Include="fmt\include\fmt\ranges.h" />
+    <ClInclude Include="fmt\include\fmt\std.h" />
+    <ClInclude Include="fmt\include\fmt\xchar.h" />
     <ClInclude Include="gui\include\gui\windows\camera_handler_window.h" />
     <ClInclude Include="gui\include\gui\windows\window_base.h" />
     <ClInclude Include="gui\include\gui\windows\filter_editor_window.h" />
@@ -406,6 +420,7 @@
     <Library Include="glfw\lib\glfw3.lib" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="fmt\LICENSE" />
     <None Include="glfw\LICENSE.md" />
     <None Include="imguifiledialog\dirent\LICENSE" />
     <None Include="imguifiledialog\LICENSE" />
