@@ -14,7 +14,9 @@
 
 #include "VisionaryEndian.h"
 
+#ifdef SICKAPI_USE_SPDLOG
 #include <spdlog/spdlog.h>
+#endif
 
 namespace visionary 
 {
@@ -96,7 +98,11 @@ bool VisionaryDataStream::getNextFrame()
   // Read package length
   if (m_pTransport->read(buffer, sizeof(uint32_t)) < static_cast<TcpSocket::recv_return_t>(sizeof(uint32_t)))
   {
-    spdlog::get("camera")->error("Received less than the required 4 package length bytes.");
+#ifdef SICKAPI_USE_SPDLOG
+      spdlog::get("sickapi")->error("Received less than the required 4 package length bytes.");
+#else
+      std::cerr << "Received less than the required 4 package length bytes.\n";
+#endif
     return false;
   }
   
@@ -104,7 +110,11 @@ bool VisionaryDataStream::getNextFrame()
 
   if(packageLength < 3u)
   {
-    spdlog::get("camera")->error("Invalid package length {}. Should be at least 3", packageLength);
+#ifdef SICKAPI_USE_SPDLOG
+      spdlog::get("sickapi")->error("Invalid package length {}. Should be at least 3", packageLength);
+#else
+      std::cerr << "Invalid package length " << packageLength << ". Should be at least 3\n";
+#endif
     return false;
   }
 
@@ -112,7 +122,11 @@ bool VisionaryDataStream::getNextFrame()
   size_t remainingBytesToReceive = packageLength;
   if(m_pTransport->read(buffer, remainingBytesToReceive) < static_cast<ITransport::recv_return_t>(remainingBytesToReceive))
   {
-    spdlog::get("camera")->error("Received less than the required {} bytes", remainingBytesToReceive);
+#ifdef SICKAPI_USE_SPDLOG
+      spdlog::get("sickapi")->error("Received less than the required {} bytes", remainingBytesToReceive);
+#else
+      std::cerr << "Received less than the required " << remainingBytesToReceive << " bytes\n";
+#endif
     return false;
   }
 
@@ -121,12 +135,20 @@ bool VisionaryDataStream::getNextFrame()
   const auto packetType = readUnalignBigEndian<uint8_t>(buffer.data() + 2);
   if (protocolVersion != 0x001)
   {
-    spdlog::get("camera")->error("Received unkown protocol version {}", protocolVersion);
+#ifdef SICKAPI_USE_SPDLOG
+      spdlog::get("sickapi")->error("Received unknown protocol version {}", protocolVersion);
+#else
+      std::cerr << "Received unknown protocol version " << protocolVersion << "\n";
+#endif
     return false;
   }
   if (packetType != 0x62)
   {
-    spdlog::get("camera")->error("Received unknown packet type {}", packetType);
+#ifdef SICKAPI_USE_SPDLOG
+      spdlog::get("sickapi")->error("Received unknown packet type {}", packetType);
+#else
+      std::cerr << "Received unknown packet type " << packetType << "\n";
+#endif
     return false;
   }
   return parseSegmentBinaryData(buffer.begin() + 3, buffer.size() - 3u); // Skip protocolVersion and packetType
@@ -136,7 +158,11 @@ bool VisionaryDataStream::parseSegmentBinaryData(std::vector<uint8_t>::iterator 
 {
   if(m_dataHandler == nullptr)
   {
-      spdlog::get("camera")->error("No datahandler is set -> cant parse blob data");
+#ifdef SICKAPI_USE_SPDLOG
+      spdlog::get("sickapi")->error("No data handler is set -> can't parse blob data");
+#else
+      std::cerr << "No data handler is set -> can't parse blob data\n";
+#endif
       return false;
   }
   bool result = false;
@@ -145,7 +171,11 @@ bool VisionaryDataStream::parseSegmentBinaryData(std::vector<uint8_t>::iterator 
 
   if(remainingSize < 4)
   {
-    spdlog::get("camera")->error("Received not enough data to parse segment description. Connection issues?");
+#ifdef SICKAPI_USE_SPDLOG
+      spdlog::get("sickapi")->error("Received not enough data to parse segment description. Connection issues?");
+#else
+      std::cerr << "Received not enough data to parse segment description. Connection issues?\n";
+#endif
     return false;
   }
   
@@ -165,12 +195,20 @@ bool VisionaryDataStream::parseSegmentBinaryData(std::vector<uint8_t>::iterator 
   const size_t totalSegmentDescriptionSize = static_cast<size_t>(numSegments * segmentDescriptionSize);
   if(remainingSize < totalSegmentDescriptionSize)
   {
-    spdlog::get("camera")->error("Received not enough data to parse segment description. Connection issues?");
+#ifdef SICKAPI_USE_SPDLOG
+      spdlog::get("sickapi")->error("Received not enough data to parse segment description. Connection issues?");
+#else
+      std::cerr << "Received not enough data to parse segment description. Connection issues?\n";
+#endif
     return false;
   }
   if(numSegments < 3)
   {
-    spdlog::get("camera")->error("Invalid number of segments. Connection issues?");
+#ifdef SICKAPI_USE_SPDLOG
+      spdlog::get("sickapi")->error("Invalid number of segments. Connection issues?");
+#else
+      std::cerr << "Invalid number of segments. Connection issues?\n";
+#endif
     return false;
   }
   for (uint16_t i = 0; i < numSegments; i++)
@@ -187,7 +225,11 @@ bool VisionaryDataStream::parseSegmentBinaryData(std::vector<uint8_t>::iterator 
   const size_t xmlSize = offset[1] - offset[0];
   if(remainingSize < xmlSize)
   {
-    spdlog::get("camera")->error("Received not enough data to parse xml Description. Connection issues?");
+#ifdef SICKAPI_USE_SPDLOG
+      spdlog::get("sickapi")->error("Received not enough data to parse XML Description. Connection issues?");
+#else
+      std::cerr << "Received not enough data to parse XML Description. Connection issues?\n";
+#endif
     return false;
   }
   remainingSize -= xmlSize;
@@ -199,7 +241,11 @@ bool VisionaryDataStream::parseSegmentBinaryData(std::vector<uint8_t>::iterator 
     size_t binarySegmentSize = offset[2] - offset[1];
     if(remainingSize < binarySegmentSize)
     {
-      spdlog::get("camera")->error("Received not enough data to parse binary Segment. Connection issues?");
+#ifdef SICKAPI_USE_SPDLOG
+        spdlog::get("sickapi")->error("Received not enough data to parse binary Segment. Connection issues?");
+#else
+        std::cerr << "Received not enough data to parse binary Segment. Connection issues?\n";
+#endif
       return false;
     
     }

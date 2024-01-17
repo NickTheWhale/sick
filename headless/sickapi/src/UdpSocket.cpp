@@ -12,7 +12,9 @@
 
 #include <iostream>
 
+#ifdef SICKAPI_USE_SPDLOG
 #include <spdlog/spdlog.h>
+#endif
 
 namespace visionary 
 {
@@ -142,7 +144,11 @@ int UdpSocket::getLastError()
     socklen_t error_code_size = sizeof error_code;
     if (getsockopt(m_socket, SOL_SOCKET, SO_ERROR, &error_code, &error_code_size) != 0)
     {
-        spdlog::get("camera")->error("Error getting error code");
+#ifdef SICKAPI_USE_SPDLOG
+        spdlog::get("sickapi")->error("Error getting error code");
+#else
+        std::cerr << "Error getting error code\n";
+#endif
     }
 
 #endif

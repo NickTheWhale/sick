@@ -14,7 +14,9 @@
 
 #include <iostream>
 
+#ifdef SICKAPI_USE_SPDLOG
 #include <spdlog/spdlog.h>
+#endif
 // Boost library used for parseXML function
 #if defined(__GNUC__)                              // GCC compiler
   #pragma GCC diagnostic push                        // Save warning levels for later restoration
@@ -64,7 +66,11 @@ bool VisionarySData::parseXML(const std::string & xmlString, uint32_t changeCoun
     boost::property_tree::xml_parser::read_xml(ss, xmlTree);
   }
   catch (...) {
-    spdlog::get("camera")->error("Reading XML tree in BLOB failed");
+#ifdef SICKAPI_USE_SPDLOG
+      spdlog::get("sickapi")->error("Reading XML tree in BLOB failed");
+#else
+      std::cerr << "Reading XML tree in BLOB failed\n";
+#endif
     return false;
   }
 
@@ -108,7 +114,11 @@ bool VisionarySData::parseBinaryData(std::vector<uint8_t>::iterator itBuf, size_
 {
   if(m_cameraParams.height < 1 || m_cameraParams.width < 1)
   {
-    spdlog::get("camera")->error("{}: Invalid Image size", __FUNCTION__);
+#ifdef SICKAPI_USE_SPDLOG
+      spdlog::get("sickapi")->error("{}: Invalid Image size", __FUNCTION__);
+#else
+      std::cerr << __FUNCTION__ << ": Invalid Image size\n";
+#endif
     return false;
   }
   auto remainingSize = size;
@@ -121,7 +131,11 @@ bool VisionarySData::parseBinaryData(std::vector<uint8_t>::iterator itBuf, size_
 
   if(remainingSize < headerSize)
   {
-     spdlog::get("camera")->error("Malformed data. Did not receive enough data to parse Header of binary Segment");
+#ifdef SICKAPI_USE_SPDLOG
+      spdlog::get("sickapi")->error("Malformed data. Did not receive enough data to parse Header of binary Segment");
+#else
+      std::cerr << "Malformed data. Did not receive enough data to parse Header of binary Segment\n";
+#endif
      return false;
   }
   remainingSize -= headerSize;
@@ -133,7 +147,11 @@ bool VisionarySData::parseBinaryData(std::vector<uint8_t>::iterator itBuf, size_
   const auto length = readUnalignLittleEndian<uint32_t>(&*itBuf);
   if (length > size)
   {
-    spdlog::get("camera")->error("Malformed data, length in depth map header does not match package size");
+#ifdef SICKAPI_USE_SPDLOG
+      spdlog::get("sickapi")->error("Malformed data, length in depth map header does not match package size");
+#else
+      std::cerr << "Malformed data, length in depth map header does not match package size\n";
+#endif
     return false;
   }
 
@@ -152,7 +170,11 @@ bool VisionarySData::parseBinaryData(std::vector<uint8_t>::iterator itBuf, size_
     const size_t extendedHeaderSize = 4u + 1u + 1u; // Framenumber(32bit) + dataQuality(8bit) + deviceStatus(8bit)
     if(remainingSize < extendedHeaderSize)
     {
-      spdlog::get("camera")->error("Malformed data. Did not receive enough data to parse extended header of binary segment");
+#ifdef SICKAPI_USE_SPDLOG
+        spdlog::get("sickapi")->error("Malformed data. Did not receive enough data to parse extended header of binary segment");
+#else
+        std::cerr << "Malformed data. Did not receive enough data to parse extended header of binary segment\n";
+#endif
       return false;
     }
     remainingSize -= extendedHeaderSize;
@@ -175,7 +197,11 @@ bool VisionarySData::parseBinaryData(std::vector<uint8_t>::iterator itBuf, size_
   const auto imageSetSize = (numBytesZ + numBytesRGBA + numBytesConfidence);
   if(remainingSize < imageSetSize)
   {
-      spdlog::get("camera")->error("Malformed data. Did no receive enough data to parse images of binary segment");
+#ifdef SICKAPI_USE_SPDLOG
+      spdlog::get("sickapi")->error("Malformed data. Did not receive enough data to parse images of binary segment");
+#else
+      std::cerr << "Malformed data. Did not receive enough data to parse images of binary segment\n";
+#endif
       return false;
   }
   remainingSize -= imageSetSize;
@@ -194,7 +220,11 @@ bool VisionarySData::parseBinaryData(std::vector<uint8_t>::iterator itBuf, size_
   const auto footerSize = (4u+4u); // CRC(32bit) + LengthCopy(32bit)
   if(remainingSize < footerSize)
   {
-      spdlog::get("camera")->error("Malformed data. Did not receive enough data to parse images of binary segment");
+#ifdef SICKAPI_USE_SPDLOG
+      spdlog::get("sickapi")->error("Malformed data. Did not receive enough data to parse images of binary segment");
+#else
+      std::cerr << "Malformed data. Did not receive enough data to parse images of binary segment\n";
+#endif
       return false;
   }
 
@@ -208,7 +238,11 @@ bool VisionarySData::parseBinaryData(std::vector<uint8_t>::iterator itBuf, size_
 
   if (length != lengthCopy)
   {
-    spdlog::get("camera")->error("Malformed data, length in header does not match package size.");
+#ifdef SICKAPI_USE_SPDLOG
+      spdlog::get("sickapi")->error("Malformed data, length in header does not match package size.");
+#else
+      std::cerr << "Malformed data, length in header does not match package size.\n";
+#endif
     return false;
   }
 

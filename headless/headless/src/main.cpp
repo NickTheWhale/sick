@@ -8,25 +8,15 @@
 #include <CLI11.hpp>
 
 #include <spdlog/spdlog.h>
-#include <spdlog/sinks/basic_file_sink.h>
-
-#include <Framegrabber.h>
-#include <VisionaryControl.h>
-#include <VisionaryTMiniData.h>
-
-#include <snap7.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 #define JSON_USE_IMPLICIT_CONVERSIONS 0
 #include <json.hpp>
 
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/xml_parser.hpp>
-
-#include <opencv2/opencv.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/core/types_c.h>
-
 #include <headless/filter_pipeline.h>
+#include <headless/camera_handler.h>
+#include <headless/plc_handler.h>
+#include <headless/frame.h>
 
 struct configuration
 {
@@ -65,17 +55,17 @@ configuration config;
 filter::filter_pipeline pipeline;
 volatile std::atomic_bool done = false;
 
+void setup_loggers();
 const int parse_args(int argc, char** argv);	
-const bool parse_config(const std::string& file);
-const bool parse_filters(const std::string& file);
+const bool parse_config(const std::string& path);
+const bool parse_filters(const std::string& path);
 void signal_handler(int signum);
 
 int main(int argc, char** argv)
 {
+	setup_loggers();
 	// register signal_handler as the ctrl+c callback
 	signal(SIGINT, signal_handler);
-
-	spdlog::set_level(spdlog::level::trace);
 
 	int ret;
 	ret = parse_args(argc, argv);
@@ -84,78 +74,60 @@ int main(int argc, char** argv)
 		return ret;
 	}
 
-	// connect to plc
-	TS7Client plc;
-	spdlog::trace("Connecting to PLC...");
-	ret = plc.ConnectTo(config.plc.ip.c_str(), config.plc.rack, config.plc.slot);
-	if (ret != 0)
+	plc::plc_handler plc;
+	while (!done && 0 != plc.connect_to(config.plc.ip, config.plc.rack, config.plc.slot))
 	{
-		spdlog::critical("Failed to connect to PLC at {}: {}", config.plc.ip, CliErrorText(ret));
-		return -1;
+		std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 	}
-	spdlog::info("Connected to PLC at {}", config.plc.ip);
 
-	// connect to camera
-	spdlog::trace("Starting camera frame grabber...");
-	visionary::FrameGrabber<visionary::VisionaryTMiniData> grabber(config.cam.ip, htons(config.cam.port), 5000);
-	std::shared_ptr<visionary::VisionaryTMiniData> data_handler;
-	visionary::VisionaryControl visionary_control;
-	spdlog::trace("Frame grabber started");
-
-	spdlog::trace("Opening camera control channel...");
-	if (!visionary_control.open(visionary::VisionaryControl::ProtocolType::COLA_2, config.cam.ip, 5000))
+	camera::camera_handler camera;
+	while (!done && !camera.open(config.cam.ip, config.cam.port, 1000))
 	{
-		spdlog::critical("Failed to connect to camera at {}", config.cam.ip);
-		return -1;
+		std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 	}
-	spdlog::info("Connected to camera at {}", config.cam.ip);
-
-	spdlog::trace("Stopping acquisition...");
-	visionary_control.stopAcquisition();
-	std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-	spdlog::trace("Starting camera frame acquisition...");
-	if (!visionary_control.startAcquisition())
-	{
-		spdlog::critical("Failed to start camera acquisition");
-		return -1;
-	}
-	spdlog::trace("Camera frame acquisition started");
 
 	// loop indefinitely, filtering and sending frames to the plc
 	while (!done)
 	{
-		if (grabber.getNextFrame(data_handler))
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+		frame::Frame raw_frame;
+		if (camera.get_next_frame(raw_frame))
 		{
-			std::vector<uint16_t> distance_map_16 = data_handler->getDistanceMap();
-			std::vector<uint32_t> distance_map(distance_map_16.begin(), distance_map_16.end());
-
-			std::vector<byte> buffer;
-			buffer.resize(distance_map.size() * sizeof(uint32_t));
-
-			for (int i = 0; i < distance_map.size(); ++i)
+			cv::Mat raw_mat = frame::to_mat(raw_frame);
+			if (pipeline.apply(raw_mat))
 			{
-				SetDWordAt(buffer.data(), i * static_cast<int>(sizeof(uint32_t)), distance_map[i]);
-			}
+				frame::Frame filtered_frame = frame::to_frame(raw_mat);
 
-			ret = plc.DBWrite(config.plc.db_number, config.plc.db_offset, (int)1296*4, buffer.data());
-			if (ret != 0)
-			{
-				spdlog::error("Failed to write frame #{} to PLC: {}", data_handler->getFrameNum(), CliErrorText(ret));
-				plc.Disconnect();
-				ret = plc.Connect();
+				std::vector<uint16_t> distance_map_16 = filtered_frame.data;
+				std::vector<uint32_t> distance_map(distance_map_16.begin(), distance_map_16.begin() + (config.plc.db_size_bytes / sizeof(uint32_t)));
+
+				ret = plc.write_udint(distance_map, config.plc.db_number, config.plc.db_offset);
 				if (ret != 0)
 				{
-					spdlog::error("Failed to reconnect PLC: {}", CliErrorText(ret));
+					spdlog::error("Failed to write frame #{} to PLC: {}", filtered_frame.number, CliErrorText(ret));
+					plc.disconnect();
+					std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+					plc.connect();
 				}
 			}
 		}
 	}
 
-	visionary_control.close();
-	plc.Disconnect();
+	plc.disconnect();
 
 	return 0;
+}
+
+void setup_loggers()
+{
+	auto camera_logger = spdlog::stdout_color_mt("camera");
+	auto plc_logger = spdlog::stdout_color_mt("plc");
+	auto sickapi_logger = spdlog::stdout_color_mt("sickapi");
+	auto filter_logger = spdlog::stdout_color_mt("filter");
+	auto app_logger = spdlog::stdout_color_mt("app");
+	spdlog::set_default_logger(app_logger);
+	spdlog::set_level(spdlog::level::trace);
 }
 
 const int parse_args(int argc, char** argv)
@@ -165,7 +137,7 @@ const int parse_args(int argc, char** argv)
 	std::vector<CLI::Option*> req_with_no_config;
 
 	// configuration file
-	app.set_config("--config, config", "", "Path to configuration file")->each([](const std::string& file) { parse_config(file); });
+	app.set_config("--config, config", "", "Path to configuration file");
 
 	// camera options
 	req_with_no_config.push_back(app.add_option("--cam-ip", config.cam.ip, "Camera IP address"));
@@ -186,7 +158,12 @@ const int parse_args(int argc, char** argv)
 	{
 		app.parse(argc, argv);
 
-		if (app.count("config") < 1)
+		if (app.count("config") > 0)
+		{
+			const std::string config_path = app["config"]->as<std::string>();
+			return parse_config(config_path) ? 0 : 1;
+		}
+		else
 		{
 			std::vector<CLI::Option*> missing;
 			for (const auto& option : req_with_no_config)
@@ -227,13 +204,19 @@ const int parse_args(int argc, char** argv)
 	return 0;
 }
 
-const bool parse_config(const std::string& file)
+const bool parse_config(const std::string& path)
 {
 	try
 	{
-		nlohmann::json json = nlohmann::json::parse(std::ifstream(file));
+		nlohmann::json json = nlohmann::json::parse(std::ifstream(path));
 		nlohmann::json cam = json["configuration"]["camera"];
 		nlohmann::json plc = json["configuration"]["plc"];
+
+		if (cam.is_null())
+			throw std::exception{"Missing camera configuration"};
+
+		if (plc.is_null())
+			throw std::exception{"Missing PLC configuration"};
 
 		config.cam.ip = cam.value("ip", config.cam.ip);
 		config.cam.port = cam.value("port", config.cam.port);
@@ -265,11 +248,11 @@ const bool parse_config(const std::string& file)
 	return true;
 }
 
-const bool parse_filters(const std::string& file)
+const bool parse_filters(const std::string& path)
 {
 	try
 	{
-		nlohmann::json filters = nlohmann::json::parse(std::ifstream(file));
+		nlohmann::json filters = nlohmann::json::parse(std::ifstream(path));
 		pipeline.load_json(filters);
 	}
 	catch (const nlohmann::detail::exception& e)

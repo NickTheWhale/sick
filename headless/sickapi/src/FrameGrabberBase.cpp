@@ -9,7 +9,9 @@
 #include "FrameGrabberBase.h"
 #include <chrono>
 #include <iostream>
+#ifdef SICKAPI_USE_SPDLOG
 #include <spdlog/spdlog.h>
+#endif
 
 namespace visionary
 {
@@ -27,7 +29,11 @@ namespace visionary
     {
         if(m_isRunning)
         {
-            spdlog::get("camera")->info("FrameGrabberBase is already running");
+#ifdef SICKAPI_USE_SPDLOG
+            spdlog::get("sickapi")->info("FrameGrabberBase is already running");
+#else
+            std::cout << "FrameGrabberBase is already running\n";
+#endif
             return;
         }
         m_isRunning = true;
@@ -36,7 +42,11 @@ namespace visionary
         m_connected = m_pDataStream->open(m_hostname, m_port, m_timeoutMs);
         if (!m_connected)
         {
-            spdlog::get("camera")->error("Failed to connect");
+#ifdef SICKAPI_USE_SPDLOG
+            spdlog::get("sickapi")->error("Failed to connect");
+#else
+            std::cerr << "Failed to connect\n";
+#endif
         }
         m_grabberThread = std::thread(&FrameGrabberBase::run, this);
     }
@@ -55,7 +65,11 @@ namespace visionary
             {
                 if (!m_pDataStream->open(m_hostname, m_port, m_timeoutMs))
                 {
-                    spdlog::get("camera")->error("Failed to connect");
+#ifdef SICKAPI_USE_SPDLOG
+                    spdlog::get("sickapi")->error("Failed to connect");
+#else
+                    std::cerr << "Failed to connect\n";
+#endif
                     m_connected = false;
                     std::this_thread::sleep_for(std::chrono::seconds(1));
                     continue;
@@ -77,7 +91,11 @@ namespace visionary
             {
                 if(!m_pDataStream->isConnected())
                 {
-                    spdlog::get("camera")->error("Connection lost -> Reconnecting");
+#ifdef SICKAPI_USE_SPDLOG
+                    spdlog::get("sickapi")->error("Connection lost -> Reconnecting");
+#else
+                    std::cerr << "Connection lost -> Reconnecting\n";
+#endif
                     m_pDataStream->close();
                     m_connected = m_pDataStream->open(m_hostname, m_port, m_timeoutMs);
 

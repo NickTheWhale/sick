@@ -13,7 +13,9 @@
 #include "VisionaryEndian.h"
 
 #include <iostream>
+#ifdef SICKAPI_USE_SPDLOG
 #include <spdlog/spdlog.h>
+#endif
 // Boost library used for parseXML function
 #if defined(__GNUC__)                              // GCC compiler
   #pragma GCC diagnostic push                        // Save warning levels for later restoration
@@ -72,7 +74,11 @@ bool VisionaryTData::parseXML(const std::string & xmlString, uint32_t changeCoun
     boost::property_tree::xml_parser::read_xml(ss, xmlTree);
   }
   catch (...) {
-    spdlog::get("camera")->error("Reading XML tree BLOB failed.");
+#ifdef SICKAPI_USE_SPDLOG
+      spdlog::get("sickapi")->error("Reading XML tree in BLOB failed.");
+#else
+      std::cerr << "Reading XML tree in BLOB failed.\n";
+#endif
     return false;
   }
 
@@ -137,7 +143,11 @@ bool VisionaryTData::parseXML(const std::string & xmlString, uint32_t changeCoun
       "float32" != dataStreamTree.get<std::string>("Z", "") ||
       "float32" != dataStreamTree.get<std::string>("Intensity", ""))
     {
-      spdlog::get("camera")->error("DataSet Cartesian does not contain the expected format. Won't be used");
+#ifdef SICKAPI_USE_SPDLOG
+        spdlog::get("sickapi")->error("DataSet Cartesian does not contain the expected format. Won't be used");
+#else
+        std::cerr << "DataSet Cartesian does not contain the expected format. Won't be used\n";
+#endif
       m_dataSetsActive.hasDataSetCartesian = false;
     }
     // To be sure float is 32 bit on this machine, otherwise the parsing of the binary part won't work
@@ -151,7 +161,11 @@ bool VisionaryTData::parseBinaryData(std::vector<uint8_t>::iterator itBuf, size_
 {
   if(m_cameraParams.height < 1 || m_cameraParams.width < 1)
   {
-    spdlog::get("camera")->error("{}: Invalid image size", __FUNCTION__);
+#ifdef SICKAPI_USE_SPDLOG
+      spdlog::get("sickapi")->error("{}: Invalid image size", __FUNCTION__);
+#else
+      std::cerr << __FUNCTION__ << ": Invalid image size\n";
+#endif
     return false;
   }
   size_t dataSetslength = 0;
@@ -167,7 +181,11 @@ bool VisionaryTData::parseBinaryData(std::vector<uint8_t>::iterator itBuf, size_
     const size_t headerSize = 4u + 8u + 2u; // Length(32bit) + TimeStamp(64bit) + version(16bit)
     if(remainingSize < headerSize)
     {
-      spdlog::get("camera")->error("Malformed data. Did not receive enough data to parse header of binary segment");
+#ifdef SICKAPI_USE_SPDLOG
+        spdlog::get("sickapi")->error("Malformed data. Did not receive enough data to parse header of binary segment");
+#else
+        std::cerr << "Malformed data. Did not receive enough data to parse header of binary segment\n";
+#endif
       return false;
     }
     remainingSize -= headerSize;
@@ -179,7 +197,11 @@ bool VisionaryTData::parseBinaryData(std::vector<uint8_t>::iterator itBuf, size_
     dataSetslength += length;
     if (dataSetslength > size)
     {
-      spdlog::get("camera")->error("Malformed data, length in depth map header does not match package size.");
+#ifdef SICKAPI_USE_SPDLOG
+        spdlog::get("sickapi")->error("Malformed data, length in depth map header does not match package size.");
+#else
+        std::cerr << "Malformed data, length in depth map header does not match package size.\n";
+#endif
       return false;
     }
     itBuf += sizeof(uint32_t);
@@ -196,7 +218,11 @@ bool VisionaryTData::parseBinaryData(std::vector<uint8_t>::iterator itBuf, size_
       const size_t extendedHeaderSize = 4u + 1u + 1u; // Framenumber(32bit) + dataQuality(8bit) + deviceStatus(8bit)
       if(remainingSize < extendedHeaderSize)
       {
-        spdlog::get("camera")->error("Malformed data. Did not receive enough Data to parse extended Header of binary Segment");
+#ifdef SICKAPI_USE_SPDLOG
+          spdlog::get("sickapi")->error("Malformed data. Did not receive enough data to parse extended Header of binary Segment");
+#else
+          std::cerr << "Malformed data. Did not receive enough data to parse extended Header of binary Segment\n";
+#endif
         return false;
       }
       remainingSize -= extendedHeaderSize;
@@ -219,7 +245,11 @@ bool VisionaryTData::parseBinaryData(std::vector<uint8_t>::iterator itBuf, size_
     const auto imageSetSize = (numBytesDistance + numBytesIntensity + numBytesConfidence);
     if(remainingSize < imageSetSize)
     {
-        spdlog::get("camera")->error("Malformed data. Did not receive enough Data to parse images of binary Segment");
+#ifdef SICKAPI_USE_SPDLOG
+        spdlog::get("sickapi")->error("Malformed data. Did not receive enough data to parse images of binary Segment");
+#else
+        std::cerr << "Malformed data. Did not receive enough data to parse images of binary Segment\n";
+#endif
         return false;
     }
     remainingSize -= imageSetSize;
@@ -238,7 +268,11 @@ bool VisionaryTData::parseBinaryData(std::vector<uint8_t>::iterator itBuf, size_
     const auto footerSize = (4u+4u); // CRC(32bit) + LengthCopy(32bit)
     if(remainingSize < footerSize)
     {
-        spdlog::get("camera")->error("Malformed data. Did not receive enough Data to parse images of binary Segment");
+#ifdef SICKAPI_USE_SPDLOG
+        spdlog::get("sickapi")->error("Malformed data. Did not receive enough data to parse images of binary Segment");
+#else
+        std::cerr << "Malformed data. Did not receive enough data to parse images of binary Segment\n";
+#endif
         return false;
     }
 
@@ -252,7 +286,11 @@ bool VisionaryTData::parseBinaryData(std::vector<uint8_t>::iterator itBuf, size_
 
     if (length != lengthCopy)
     {
-      spdlog::get("camera")->error("Malformed data, length in header does not match package size.");
+#ifdef SICKAPI_USE_SPDLOG
+        spdlog::get("sickapi")->error("Malformed data, length in header does not match package size.");
+#else
+        std::cerr << "Malformed data, length in header does not match package size.\n";
+#endif
       return false;
     }
   }
@@ -269,7 +307,11 @@ bool VisionaryTData::parseBinaryData(std::vector<uint8_t>::iterator itBuf, size_
     dataSetslength += length;
     if (dataSetslength > size)
     {
-      spdlog::get("camera")->error("Malformed data, length in polar scan header does not match package size.");
+#ifdef SICKAPI_USE_SPDLOG
+        spdlog::get("sickapi")->error("Malformed data, length in polar scan header does not match package size.");
+#else
+        std::cerr << "Malformed data, length in polar scan header does not match package size.\n";
+#endif
       return false;
     }
     itBuf += sizeof(uint32_t);
@@ -324,7 +366,11 @@ bool VisionaryTData::parseBinaryData(std::vector<uint8_t>::iterator itBuf, size_
 
     if (length != lengthCopy)
     {
-      spdlog::get("camera")->error("Malformed data, length in header does not match package size.");
+#ifdef SICKAPI_USE_SPDLOG
+        spdlog::get("sickapi")->error("Malformed data, length in header does not match package size.");
+#else
+        std::cerr << "Malformed data, length in header does not match package size.\n";
+#endif
       return false;
     }
   }
@@ -341,7 +387,11 @@ bool VisionaryTData::parseBinaryData(std::vector<uint8_t>::iterator itBuf, size_
     dataSetslength += length;
     if (dataSetslength > size)
     {
-      spdlog::get("camera")->error("Malformed data, length in cartesian header does not match package size.");
+#ifdef SICKAPI_USE_SPDLOG
+        spdlog::get("sickapi")->error("Malformed data, length in cartesian header does not match package size.");
+#else
+        std::cerr << "Malformed data, length in cartesian header does not match package size.\n";
+#endif
       return false;
     }
     itBuf += sizeof(uint32_t);
@@ -367,7 +417,11 @@ bool VisionaryTData::parseBinaryData(std::vector<uint8_t>::iterator itBuf, size_
 
       if (length != lengthCopy)
       {
-        spdlog::get("camera")->error("Malformed data, length in header does not match package size.");
+#ifdef SICKAPI_USE_SPDLOG
+          spdlog::get("sickapi")->error("Malformed data, length in header does not match package size.");
+#else
+          std::cerr << "Malformed data, length in header does not match package size.\n";
+#endif
         return false;
       }
   }

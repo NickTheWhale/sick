@@ -147,6 +147,15 @@
     <ClCompile Include="headless\src\filters\threshold_filter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="headless\src\camera_handler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="headless\src\frame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="headless\src\plc_handler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sickapi\src\AuthenticationLegacy.h">
@@ -633,6 +642,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="fmt\include\fmt\xchar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headless\include\headless\camera_handler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headless\include\headless\frame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headless\include\headless\plc_handler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

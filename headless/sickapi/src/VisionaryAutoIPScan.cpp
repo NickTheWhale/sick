@@ -22,7 +22,9 @@
 #include "VisionaryAutoIPScan.h"
 #include "UdpSocket.h"
 
+#ifdef SICKAPI_USE_SPDLOG
 #include <spdlog/spdlog.h>
+#endif
 
 namespace visionary 
 {
@@ -126,7 +128,11 @@ std::vector<VisionaryAutoIPScan::DeviceInfo> VisionaryAutoIPScan::doScan(int tim
       }
       else
       {
-        spdlog::get("camera")->error("{} Received invalid AutoIP Packet", __FUNCTION__);
+#ifdef SICKAPI_USE_SPDLOG
+        spdlog::get("sickapi")->error("{} Received invalid AutoIP Packet", __FUNCTION__);
+#else
+        std::cerr << __FUNCTION__ << " Received invalid AutoIP Packet\n";
+#endif
       }
       
     }

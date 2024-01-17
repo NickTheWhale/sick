@@ -108,7 +108,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;SPDLOG_COMPILED_LIB;NOMINMAX;FMT_HEADER_ONLY;SPDLOG_FMT_EXTERNAL</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;SPDLOG_COMPILED_LIB;NOMINMAX;FMT_HEADER_ONLY;SPDLOG_FMT_EXTERNAL;SICKAPI_USE_SPDLOG</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)\sickapi\src;$(ProjectDir)\snap7;$(BOOST_DIR);$(ProjectDir)\cli11;$(ProjectDir)\spdlog\include;$(ProjectDir)\json;$(OPENCV_DIR)\build\include;$(ProjectDir)\headless\include;$(ProjectDir)\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -133,7 +133,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;SPDLOG_COMPILED_LIB;NOMINMAX;FMT_HEADER_ONLY;SPDLOG_FMT_EXTERNAL</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;SPDLOG_COMPILED_LIB;NOMINMAX;FMT_HEADER_ONLY;SPDLOG_FMT_EXTERNAL;SICKAPI_USE_SPDLOG</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)\sickapi\src;$(ProjectDir)\snap7;$(BOOST_DIR);$(ProjectDir)\cli11;$(ProjectDir)\spdlog\include;$(ProjectDir)\json;$(OPENCV_DIR)\build\include;$(ProjectDir)\headless\include;$(ProjectDir)\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -155,6 +155,7 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="headless\src\camera_handler.cpp" />
     <ClCompile Include="headless\src\filters\bilateral_filter.cpp" />
     <ClCompile Include="headless\src\filters\blur_filter.cpp" />
     <ClCompile Include="headless\src\filters\crop_filter.cpp" />
@@ -165,7 +166,9 @@
     <ClCompile Include="headless\src\filters\stack_blur_filter.cpp" />
     <ClCompile Include="headless\src\filters\threshold_filter.cpp" />
     <ClCompile Include="headless\src\filter_pipeline.cpp" />
+    <ClCompile Include="headless\src\frame.cpp" />
     <ClCompile Include="headless\src\main.cpp" />
+    <ClCompile Include="headless\src\plc_handler.cpp" />
     <ClCompile Include="sickapi\include\libs\smart_ptr\src\sp_collector.cpp" />
     <ClCompile Include="sickapi\include\libs\smart_ptr\src\sp_debug_hooks.cpp" />
     <ClCompile Include="sickapi\src\AuthenticationLegacy.cpp" />
@@ -216,6 +219,7 @@
     <ClInclude Include="fmt\include\fmt\ranges.h" />
     <ClInclude Include="fmt\include\fmt\std.h" />
     <ClInclude Include="fmt\include\fmt\xchar.h" />
+    <ClInclude Include="headless\include\headless\camera_handler.h" />
     <ClInclude Include="headless\include\headless\filter_base.h" />
     <ClInclude Include="headless\include\headless\filters\bilateral_filter.h" />
     <ClInclude Include="headless\include\headless\filters\blur_filter.h" />
@@ -229,6 +233,8 @@
     <ClInclude Include="headless\include\headless\filter_factory.h" />
     <ClInclude Include="headless\include\headless\filter_parameter.h" />
     <ClInclude Include="headless\include\headless\filter_pipeline.h" />
+    <ClInclude Include="headless\include\headless\frame.h" />
+    <ClInclude Include="headless\include\headless\plc_handler.h" />
     <ClInclude Include="json\json.hpp" />
     <ClInclude Include="sickapi\src\AuthenticationLegacy.h" />
     <ClInclude Include="sickapi\src\AuthenticationSecure.h" />

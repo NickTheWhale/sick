@@ -17,7 +17,9 @@
 #include <ctime>
 #include <iostream>
 
+#ifdef SICKAPI_USE_SPDLOG
 #include <spdlog/spdlog.h>
+#endif
 
 namespace visionary 
 {
@@ -67,7 +69,11 @@ void VisionaryData::preCalcCamInfo(const ImageType& imgType)
   assert(imgType != UNKNOWN);     // Unknown image type for the point cloud transformation
   if(m_cameraParams.height < 1 || m_cameraParams.width < 1)
   {
-    spdlog::get("camera")->error("{}: Invalid Image size");
+#ifdef SICKAPI_USE_SPDLOG
+    spdlog::get("sickapi")->error("{}: Invalid Image size", __FUNCTION__);
+#else
+    std::cerr << __FUNCTION__ << ": Invalid Image size\n";
+#endif
   }
   assert(m_cameraParams.height > 0);
   assert(m_cameraParams.width > 0);
@@ -111,7 +117,12 @@ void VisionaryData::preCalcCamInfo(const ImageType& imgType)
         }
         else
         {
-          spdlog::get("camera")->error("Unknown image type for the point cloud transformation");
+#ifdef SICKAPI_USE_SPDLOG
+          spdlog::get("sickapi")->error("Unknown image type for the point cloud transformation");
+#else
+          std::cerr << "Unknown image type for the point cloud transformation\n";
+#endif
+
           assert(false);
         }
         PointXYZ point{};
