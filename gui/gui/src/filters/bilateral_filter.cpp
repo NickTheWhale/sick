@@ -26,9 +26,9 @@ const bool filter::bilateral_filter::apply(cv::Mat& mat) const
 	cv::Mat input_32F;
 	cv::Mat output_32F;
 	cv::Mat output;
-	mat.convertTo(input_32F, CV_32F);
+	mat.convertTo(input_32F, CV_32FC1);
 	cv::bilateralFilter(input_32F, output_32F, diameter.value(), sigma_color.value(), sigma_space.value());
-	output_32F.convertTo(output, CV_16U);
+	output_32F.convertTo(output, CV_16UC1);
 	mat = output;
 
 	return true;

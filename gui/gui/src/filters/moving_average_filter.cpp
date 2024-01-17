@@ -34,13 +34,13 @@ const bool filter::moving_average_filter::apply(cv::Mat& mat) const
 	// average
 	const cv::Mat first_mat = buffer.front();
 	const cv::Size size = first_mat.size();
-	cv::Mat accum_mat = cv::Mat::zeros(size, CV_64F);
+	cv::Mat accum_mat = cv::Mat::zeros(size, CV_64FC1);
 	size_t num_mats = buffer.size();
 
 	for (const cv::Mat& curr_mat : buffer)
 	{
 		cv::Mat mat_64F;
-		curr_mat.convertTo(mat_64F, CV_64F);
+		curr_mat.convertTo(mat_64F, CV_64FC1);
 
 		accum_mat += mat_64F;
 	}
@@ -48,7 +48,7 @@ const bool filter::moving_average_filter::apply(cv::Mat& mat) const
 	const cv::Mat mean_mat = accum_mat / num_mats;
 
 	cv::Mat output;
-	mean_mat.convertTo(output, CV_16U);
+	mean_mat.convertTo(output, CV_16UC1);
 
 	mat = output;
 

@@ -235,7 +235,7 @@ void window::filter_editor_window::handle_load_and_save()
 			{
 				nlohmann::json j = pipeline.to_json();
 				std::ofstream file(path);
-				file << j.dump(4);
+				file << j.dump(2);
 			}
 			else
 			{
@@ -244,7 +244,6 @@ void window::filter_editor_window::handle_load_and_save()
 		}
 		// close
 		ImGuiFileDialog::Instance()->Close();
-
 	}
 }
 

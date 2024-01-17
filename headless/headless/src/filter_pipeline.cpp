@@ -85,13 +85,13 @@ const bool filter::filter_pipeline::apply(cv::Mat& mat) const
 	}
 	catch (const std::exception& e)
 	{
-		spdlog::get("filter")->error(e.what());
+		spdlog::get("filter")->error("Exception applying filters: {}", e.what());
 
 		return false;
 	}
 	catch (...)
 	{
-		spdlog::get("filter")->error("Filter pipeline failed to apply");
+		spdlog::get("filter")->error("Unkown exception applying filters");
 
 		return false;
 	}

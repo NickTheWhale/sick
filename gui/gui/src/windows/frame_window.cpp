@@ -2,10 +2,12 @@
 
 #include <spdlog/spdlog.h>
 
+#include <opencv2/imgproc.hpp>
+
 namespace window
 {
     frame_window::frame_window(const char* name, bool* p_open, ImGuiWindowFlags flags)
-	    : window_base(name, p_open, flags), _need_to_generate(true), _texture(0)
+	    : window_base(name, p_open, flags), _need_to_generate(true), _texture(0), _apply_colormap(true)
     {
 	    glGenTextures(1, &_texture);
     }
@@ -26,11 +28,16 @@ namespace window
 
     void frame_window::render_content()
     {
-        if (_need_to_generate)
-            generate();
+        static int colormap_index = 0;
+        if (ImGui::Combo("Colormap", &colormap_index, colormap_names, num_colormaps))
+            _need_to_generate = true;
 
-        ImGui::Text("pointer = %p", _texture);
-        ImGui::Text("size = %d x %d", _frame.width, _frame.height);
+        ImGui::SameLine();
+        if (ImGui::Checkbox("Apply", &_apply_colormap))
+            _need_to_generate = true;
+
+        if (_need_to_generate)
+            generate(colormap_types[colormap_index]);
 
         const ImVec2 available_size = ImGui::GetContentRegionAvail();
         const float frame_aspect = frame::aspect(_frame);
@@ -44,15 +51,24 @@ namespace window
         ImGui::Image(reinterpret_cast<void*>(static_cast<intptr_t>(_texture)), texture_size);
     }
 
-    const bool frame_window::generate()
+    const bool frame_window::generate(const cv::ColormapTypes colormap)
     {
         const frame::Size frame_size = frame::size(_frame);
         if (frame_size.height == 0 || frame_size.width == 0)
-            return false;
+            return false;   
 
         _mat = frame::to_mat(_frame);
-        int _;
-        if (!frame::to_texture(_mat, _texture, _, _))
+
+        if (_apply_colormap)
+        {
+            _mat.convertTo(_mat, CV_8UC1, 0.00390625);
+
+            cv::applyColorMap(_mat, _mat, colormap);
+
+            _mat.convertTo(_mat, CV_16UC1, 256.0);
+        }
+
+        if (!frame::to_texture(_mat, _texture))
             return false;
     
         _need_to_generate = false;

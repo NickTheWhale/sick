@@ -12,13 +12,14 @@
 
 #define JSON_USE_IMPLICIT_CONVERSIONS 0
 #include <json.hpp>
+#include <nlohmann/json-schema.hpp>
 
 #include <headless/filter_pipeline.h>
 #include <headless/camera_handler.h>
 #include <headless/plc_handler.h>
 #include <headless/frame.h>
 
-#include <nlohmann/json-schema.hpp>
+#include <opencv2/core/utils/logger.hpp>
 
 static const nlohmann::json config_schema = R"(
 {
@@ -136,7 +137,8 @@ int main(int argc, char** argv)
 		return EXIT_FAILURE;
 	}
 
-	std::cout << config.dump(2) << "\n";
+	spdlog::get("app")->info("Using configuration:\n{}", config.dump(2));
+	spdlog::get("app")->info("Using filters:\n{}", pipeline.to_json().dump(2));
 
 	const std::string& plc_ip = config["plc"]["ip"].get<std::string>();
 	const int plc_rack = config["plc"]["rack"].get<int>();
@@ -186,6 +188,11 @@ int main(int argc, char** argv)
 					plc.connect();
 				}
 			}
+			else
+			{
+				spdlog::get("filter")->error("Failed to apply filters on frame #{}", raw_frame.number);
+				std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+			}
 		}
 	}
 
@@ -203,6 +210,7 @@ void setup_loggers()
 	auto app_logger = spdlog::stdout_color_mt("app");
 	spdlog::set_default_logger(app_logger);
 	spdlog::set_level(spdlog::level::trace);
+	cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_ERROR);
 }
 
 const bool parse_config(const std::string& path, nlohmann::json& config)

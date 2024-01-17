@@ -11,6 +11,16 @@ namespace frame
 {
     typedef tinycolormap::ColormapType colormap_type;
 
+    struct TextureOptions
+    {
+        colormap_type colormap;
+        bool auto_exposure;
+        uint16_t exposure_low;
+        uint16_t exposure_high;
+        bool invert;
+        bool logarithmic;
+    };
+
     struct Frame
     {
         std::vector<uint16_t> data;
@@ -48,5 +58,5 @@ namespace frame
 
     const Frame to_frame(const cv::Mat& mat);
 
-    bool to_texture(const cv::Mat& mat, GLuint& texture, int& texture_width, int& texture_height);
+    bool to_texture(const cv::Mat& mat, GLuint& texture);
 }

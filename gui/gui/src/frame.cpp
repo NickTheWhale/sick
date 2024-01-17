@@ -1,6 +1,6 @@
 #include <gui/frame.h>
 
-
+#include <limits>
 
 const frame::Size frame::size(const Frame& frame)
 {
@@ -19,7 +19,7 @@ const float frame::aspect(const Frame& frame)
 
 const cv::Mat frame::to_mat(const Frame& frame)
 {
-    cv::Mat mat(frame.height, frame.width, CV_16U);
+    cv::Mat mat(frame.height, frame.width, CV_16UC1);
     for (uint32_t y = 0; y < frame.height; ++y)
     {
         for (uint32_t x = 0; x < frame.width; ++x)
@@ -28,17 +28,16 @@ const cv::Mat frame::to_mat(const Frame& frame)
         }
     }
 
+    assert(mat.type() == CV_16UC1);
+
     return mat;
 }
 
 const frame::Frame frame::to_frame(const cv::Mat& mat)
 {
     Frame frame;
-    if (mat.channels() != 1 || mat.depth() != CV_16U)
-    {
-        assert(mat.channels() == 1 && mat.depth() == CV_16U);
-        return frame;
-    }
+
+    assert(mat.type() == CV_16UC1);
 
     frame.width = mat.cols;
     frame.height = mat.rows;
@@ -55,14 +54,27 @@ const frame::Frame frame::to_frame(const cv::Mat& mat)
     return frame;
 }
 
-bool frame::to_texture(const cv::Mat& mat, GLuint& texture, int& texture_width, int& texture_height)
+bool frame::to_texture(const cv::Mat& mat, GLuint& texture)
 {
     if (mat.empty())
         return false;
 
     cv::Mat in_mat = mat;
-    in_mat.convertTo(in_mat, CV_8U, 0.00390625);
-    cv::cvtColor(in_mat, in_mat, cv::COLOR_GRAY2RGBA);
+
+    assert(in_mat.depth() == CV_16U);
+
+    switch (in_mat.channels())
+    {
+    case 1:
+        in_mat.convertTo(in_mat, CV_8UC1, 0.00390625);
+        cv::cvtColor(in_mat, in_mat, cv::COLOR_GRAY2RGBA);
+        break;
+    case 3:
+        in_mat.convertTo(in_mat, CV_8UC3, 0.00390625);
+        cv::cvtColor(in_mat, in_mat, cv::COLOR_RGB2RGBA);
+        break;
+    }
+
 
     glBindTexture(GL_TEXTURE_2D, texture);
 
@@ -81,9 +93,6 @@ bool frame::to_texture(const cv::Mat& mat, GLuint& texture, int& texture_width, 
         GL_RGBA,
         GL_UNSIGNED_BYTE,
         in_mat.data);
-
-    texture_width = in_mat.cols;
-    texture_height = in_mat.rows;
 
     return true;
 }
