@@ -156,6 +156,24 @@
     <ClCompile Include="headless\src\plc_handler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="json_schema_validator\src\json-patch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="json_schema_validator\src\json-schema-draft7.json.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="json_schema_validator\src\json-uri.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="json_schema_validator\src\json-validator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="json_schema_validator\src\smtp-address-validator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="json_schema_validator\src\string-format-check.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sickapi\src\AuthenticationLegacy.h">
@@ -653,6 +671,15 @@
     <ClInclude Include="headless\include\headless\plc_handler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="json_schema_validator\src\nlohmann\json-schema.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="json_schema_validator\src\json-patch.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="json_schema_validator\src\smtp-address-validator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="snap7\snap7.exp" />
@@ -670,5 +697,6 @@
     <None Include="json\LICENSE.MIT" />
     <None Include="spdlog\LICENSE" />
     <None Include="fmt\LICENSE" />
+    <None Include="json_schema_validator\LICENSE" />
   </ItemGroup>
 </Project>

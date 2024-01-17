@@ -16,7 +16,7 @@ namespace plc
 		const int connect_to(const std::string& ip, const int rack, const int slot);
 		const int connect();
 		const int disconnect();
-		const int write_udint(const std::vector<uint32_t>& data, const int db_number, const int db_offset);
+		const int write_udint(const std::vector<uint32_t>& data, const int db_number, const int db_offset_bytes);
 
 	private:
 		TS7Client plc;

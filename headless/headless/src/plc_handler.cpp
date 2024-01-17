@@ -44,7 +44,7 @@ const int plc::plc_handler::disconnect()
 	return ret;
 }
 
-const int plc::plc_handler::write_udint(const std::vector<uint32_t>& data, const int db_number, const int db_offset)
+const int plc::plc_handler::write_udint(const std::vector<uint32_t>& data, const int db_number, const int db_offset_bytes)
 {
 	int ret;
 	std::vector<byte> buffer;
@@ -55,7 +55,7 @@ const int plc::plc_handler::write_udint(const std::vector<uint32_t>& data, const
 		SetDWordAt(buffer.data(), i * static_cast<int>(sizeof(uint32_t)), data[i]);
 	}
 
-	ret = plc.DBWrite(db_number, db_offset, static_cast<int>(buffer.size()), static_cast<void *>(buffer.data()));
+	ret = plc.DBWrite(db_number, db_offset_bytes, static_cast<int>(buffer.size()), static_cast<void *>(buffer.data()));
 	if (ret != 0)
 	{
 		spdlog::get("plc")->error("Failed to write to PLC: {}", CliErrorText(ret));

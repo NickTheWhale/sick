@@ -18,47 +18,93 @@
 #include <headless/plc_handler.h>
 #include <headless/frame.h>
 
-struct configuration
+#include <nlohmann/json-schema.hpp>
+
+static const nlohmann::json config_schema = R"(
 {
-	struct cam
-	{
-		std::string ip = "";
-		uint16_t port = 0;
-	} cam;
-	struct plc
-	{
-		std::string ip = "";
-		int rack = 0;
-		int slot = 0;
-		int db_number = 0;
-		int db_size_bytes = 0;
-		int db_offset = 0;
-	} plc;
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "complete configuration",
+  "type": "object",
+  "properties": {
+    "configuration": {
+      "type": "object",
+      "properties": {
+        "camera": {
+          "type": "object",
+          "properties": {
+            "ip": {
+              "type": "string"
+            },
+            "port": {
+              "type": "number"
+            },
+            "frame": {
+              "type": "object",
+              "properties": {
+                "width": {
+                  "type": "number"
+                },
+                "height": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "width",
+                "height"
+              ]
+            }
+          },
+          "required": [
+            "ip",
+            "port",
+            "frame"
+          ]
+        },
+        "plc": {
+          "type": "object",
+          "properties": {
+            "ip": {
+              "type": "string"
+            },
+            "rack": {
+              "type": "number"
+            },
+            "slot": {
+              "type": "number"
+            },
+            "db_number": {
+              "type": "number"
+            },
+            "db_offset_bytes": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "ip",
+            "rack",
+            "slot",
+            "db_number",
+            "db_offset_bytes"
+          ]
+        }
+      },
+      "required": [
+        "camera",
+        "plc"
+      ]
+    }
+  },
+  "required": [
+    "configuration"
+  ]
+}
+)"_json;
 
-	void print()
-	{
-		std::cout
-			<< "cam:\n"
-			<< "\tip:\t\t" << cam.ip << "\n"
-			<< "\tport:\t\t" << cam.port << "\n"
-			<< "plc:\n"
-			<< "\tip:\t\t" << plc.ip << "\n"
-			<< "\tslot:\t\t" << plc.slot << "\n"
-			<< "\track:\t\t" << plc.rack << "\n"
-			<< "\tdb_num:\t\t" << plc.db_number << "\n"
-			<< "\tdb_size_bytes:\t" << plc.db_size_bytes << "\n"
-			<< "\tdb_offset:\t" << plc.db_offset << "\n";
-	}
-};
-
-configuration config;
-filter::filter_pipeline pipeline;
 volatile std::atomic_bool done = false;
 
 void setup_loggers();
-const int parse_args(int argc, char** argv);	
-const bool parse_config(const std::string& path);
-const bool parse_filters(const std::string& path);
+const bool parse_config(const std::string& path, nlohmann::json& config);
+const bool parse_filters(const std::string& path, filter::filter_pipeline& pipeline);
 void signal_handler(int signum);
 
 int main(int argc, char** argv)
@@ -67,26 +113,53 @@ int main(int argc, char** argv)
 	// register signal_handler as the ctrl+c callback
 	signal(SIGINT, signal_handler);
 
-	int ret;
-	ret = parse_args(argc, argv);
-	if (ret != 0)
+	CLI::App app;
+
+	std::string config_path = "";
+	app.add_option("config", config_path, "Path to configuration file")->required(true);
+
+	std::string filter_path = "";
+	app.add_option("--filters", filter_path, "Path to filter file")->expected(1);
+
+	CLI11_PARSE(app, argc, argv);
+
+	nlohmann::json configuration_root;
+	if (!parse_config(config_path, configuration_root))
 	{
-		return ret;
+		return EXIT_FAILURE;
+	}
+	nlohmann::json config = configuration_root["configuration"];
+
+	filter::filter_pipeline pipeline;
+	if (app.count("--filters") > 0 && !parse_filters(filter_path, pipeline))
+	{
+		return EXIT_FAILURE;
 	}
 
+	std::cout << config.dump(2) << "\n";
+
+	const std::string& plc_ip = config["plc"]["ip"].get<std::string>();
+	const int plc_rack = config["plc"]["rack"].get<int>();
+	const int plc_slot = config["plc"]["slot"].get<int>();
 	plc::plc_handler plc;
-	while (!done && 0 != plc.connect_to(config.plc.ip, config.plc.rack, config.plc.slot))
+	while (!done && 0 != plc.connect_to(plc_ip, plc_rack, plc_slot))
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 	}
 
+	const std::string& cam_ip = config["camera"]["ip"].get<std::string>();
+	const uint16_t cam_port = config["camera"]["port"].get<uint16_t>();
 	camera::camera_handler camera;
-	while (!done && !camera.open(config.cam.ip, config.cam.port, 1000))
+	while (!done && !camera.open(cam_ip, cam_port, 1000))
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 	}
 
 	// loop indefinitely, filtering and sending frames to the plc
+	const int db_number = config["plc"]["db_number"].get<int>();
+	const int db_offset_bytes = config["plc"]["db_offset_bytes"].get<int>();
+	const int frame_width = config["camera"]["frame"]["width"].get<int>();
+	const int frame_height = config["camera"]["frame"]["height"].get<int>();
 	while (!done)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -97,12 +170,14 @@ int main(int argc, char** argv)
 			cv::Mat raw_mat = frame::to_mat(raw_frame);
 			if (pipeline.apply(raw_mat))
 			{
-				frame::Frame filtered_frame = frame::to_frame(raw_mat);
+				cv::Mat filtered_mat;
+				cv::resize(raw_mat, filtered_mat, cv::Size(frame_width, frame_height), 0.0, 0.0, cv::InterpolationFlags::INTER_AREA);
+				frame::Frame filtered_frame = frame::to_frame(filtered_mat);
 
 				std::vector<uint16_t> distance_map_16 = filtered_frame.data;
-				std::vector<uint32_t> distance_map(distance_map_16.begin(), distance_map_16.begin() + (config.plc.db_size_bytes / sizeof(uint32_t)));
+				std::vector<uint32_t> distance_map(distance_map_16.begin(), distance_map_16.end());
 
-				ret = plc.write_udint(distance_map, config.plc.db_number, config.plc.db_offset);
+				const int ret = plc.write_udint(distance_map, db_number, db_offset_bytes);
 				if (ret != 0)
 				{
 					spdlog::error("Failed to write frame #{} to PLC: {}", filtered_frame.number, CliErrorText(ret));
@@ -116,7 +191,7 @@ int main(int argc, char** argv)
 
 	plc.disconnect();
 
-	return 0;
+	return EXIT_SUCCESS;
 }
 
 void setup_loggers()
@@ -130,104 +205,17 @@ void setup_loggers()
 	spdlog::set_level(spdlog::level::trace);
 }
 
-const int parse_args(int argc, char** argv)
-{
-	CLI::App app;
-
-	std::vector<CLI::Option*> req_with_no_config;
-
-	// configuration file
-	app.set_config("--config, config", "", "Path to configuration file");
-
-	// camera options
-	req_with_no_config.push_back(app.add_option("--cam-ip", config.cam.ip, "Camera IP address"));
-	app.add_option("--cam-port", config.cam.port, "Camera control port");
-
-	// plc options
-	req_with_no_config.push_back(app.add_option("--plc-ip", config.plc.ip, "PLC IP address"));
-	req_with_no_config.push_back(app.add_option("--plc-db", config.plc.db_number, "PLC DB number"));
-	req_with_no_config.push_back(app.add_option("--plc-db-size", config.plc.db_size_bytes, "PLC DB size in bytes"));
-	app.add_option("--plc-db-offset", config.plc.db_offset, "PLC DB start offset");
-	app.add_option("--plc-rack", config.plc.rack, "PLC rack number");
-	app.add_option("--plc-slot", config.plc.slot, "PLC slot number");
-
-	// filtering options
-	app.add_option("--filters", "Path to filter file")->each([](const std::string& file) { parse_filters(file); })->expected(1);
-
-	try
-	{
-		app.parse(argc, argv);
-
-		if (app.count("config") > 0)
-		{
-			const std::string config_path = app["config"]->as<std::string>();
-			return parse_config(config_path) ? 0 : 1;
-		}
-		else
-		{
-			std::vector<CLI::Option*> missing;
-			for (const auto& option : req_with_no_config)
-			{
-				if (app.count(option->get_name()) < 1)
-				{
-					missing.push_back(option);
-				}
-			}
-			if (!missing.empty())
-			{
-				std::cerr << "Missing required option(s): ";
-				int i;
-				for (i = 0; i < missing.size() - 1; ++i)
-				{
-					std::cerr << missing[i]->get_name() << ", ";
-				}
-				std::cerr << missing[i]->get_name() << "\n";
-				std::cerr << "\n";
-
-				std::cerr << app.help();
-
-				return -1;
-			}
-		}
-	}
-	catch (const CLI::ParseError& e)
-	{
-		int ret = app.exit(e);
-		return ret == 0 ? 1 : ret;
-	}
-	catch (...)
-	{
-		std::cerr << "Unkown exception parsing arguments\n";
-		return -1;
-	}
-
-	return 0;
-}
-
-const bool parse_config(const std::string& path)
+const bool parse_config(const std::string& path, nlohmann::json& config)
 {
 	try
 	{
-		nlohmann::json json = nlohmann::json::parse(std::ifstream(path));
-		nlohmann::json cam = json["configuration"]["camera"];
-		nlohmann::json plc = json["configuration"]["plc"];
+		nlohmann::json json = nlohmann::json::parse(std::ifstream(path));		
+		nlohmann::json_schema::json_validator validator;
+		validator.set_root_schema(config_schema);
 
-		if (cam.is_null())
-			throw std::exception{"Missing camera configuration"};
+		validator.validate(json);
 
-		if (plc.is_null())
-			throw std::exception{"Missing PLC configuration"};
-
-		config.cam.ip = cam.value("ip", config.cam.ip);
-		config.cam.port = cam.value("port", config.cam.port);
-
-		config.plc.ip = plc.value("ip", config.plc.ip);
-		config.plc.db_number = plc.value("db_number", config.plc.db_number);
-		config.plc.db_size_bytes = plc.value("db_size_bytes", config.plc.db_size_bytes);
-		config.plc.db_offset = plc.value("db_offset", config.plc.db_offset);
-		config.plc.rack = plc.value("rack", config.plc.rack);
-		config.plc.slot = plc.value("slot", config.plc.slot);
-		
+		config = json;
 	}
 	catch (const nlohmann::detail::exception& e)
 	{
@@ -248,7 +236,7 @@ const bool parse_config(const std::string& path)
 	return true;
 }
 
-const bool parse_filters(const std::string& path)
+const bool parse_filters(const std::string& path, filter::filter_pipeline& pipeline)
 {
 	try
 	{

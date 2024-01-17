@@ -110,7 +110,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;SPDLOG_COMPILED_LIB;NOMINMAX;FMT_HEADER_ONLY;SPDLOG_FMT_EXTERNAL;SICKAPI_USE_SPDLOG</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\sickapi\src;$(ProjectDir)\snap7;$(BOOST_DIR);$(ProjectDir)\cli11;$(ProjectDir)\spdlog\include;$(ProjectDir)\json;$(OPENCV_DIR)\build\include;$(ProjectDir)\headless\include;$(ProjectDir)\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\sickapi\src;$(ProjectDir)\snap7;$(BOOST_DIR);$(ProjectDir)\cli11;$(ProjectDir)\spdlog\include;$(ProjectDir)\json;$(OPENCV_DIR)\build\include;$(ProjectDir)\headless\include;$(ProjectDir)\fmt\include;$(ProjectDir)\json_schema_validator\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -135,7 +135,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;SPDLOG_COMPILED_LIB;NOMINMAX;FMT_HEADER_ONLY;SPDLOG_FMT_EXTERNAL;SICKAPI_USE_SPDLOG</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\sickapi\src;$(ProjectDir)\snap7;$(BOOST_DIR);$(ProjectDir)\cli11;$(ProjectDir)\spdlog\include;$(ProjectDir)\json;$(OPENCV_DIR)\build\include;$(ProjectDir)\headless\include;$(ProjectDir)\fmt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\sickapi\src;$(ProjectDir)\snap7;$(BOOST_DIR);$(ProjectDir)\cli11;$(ProjectDir)\spdlog\include;$(ProjectDir)\json;$(OPENCV_DIR)\build\include;$(ProjectDir)\headless\include;$(ProjectDir)\fmt\include;$(ProjectDir)\json_schema_validator\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -169,6 +169,12 @@
     <ClCompile Include="headless\src\frame.cpp" />
     <ClCompile Include="headless\src\main.cpp" />
     <ClCompile Include="headless\src\plc_handler.cpp" />
+    <ClCompile Include="json_schema_validator\src\json-patch.cpp" />
+    <ClCompile Include="json_schema_validator\src\json-schema-draft7.json.cpp" />
+    <ClCompile Include="json_schema_validator\src\json-uri.cpp" />
+    <ClCompile Include="json_schema_validator\src\json-validator.cpp" />
+    <ClCompile Include="json_schema_validator\src\smtp-address-validator.cpp" />
+    <ClCompile Include="json_schema_validator\src\string-format-check.cpp" />
     <ClCompile Include="sickapi\include\libs\smart_ptr\src\sp_collector.cpp" />
     <ClCompile Include="sickapi\include\libs\smart_ptr\src\sp_debug_hooks.cpp" />
     <ClCompile Include="sickapi\src\AuthenticationLegacy.cpp" />
@@ -236,6 +242,9 @@
     <ClInclude Include="headless\include\headless\frame.h" />
     <ClInclude Include="headless\include\headless\plc_handler.h" />
     <ClInclude Include="json\json.hpp" />
+    <ClInclude Include="json_schema_validator\src\json-patch.hpp" />
+    <ClInclude Include="json_schema_validator\src\nlohmann\json-schema.hpp" />
+    <ClInclude Include="json_schema_validator\src\smtp-address-validator.hpp" />
     <ClInclude Include="sickapi\src\AuthenticationLegacy.h" />
     <ClInclude Include="sickapi\src\AuthenticationSecure.h" />
     <ClInclude Include="sickapi\src\CoLa2ProtocolHandler.h" />
@@ -389,6 +398,7 @@
   <ItemGroup>
     <None Include="fmt\LICENSE" />
     <None Include="json\LICENSE.MIT" />
+    <None Include="json_schema_validator\LICENSE" />
     <None Include="spdlog\LICENSE" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
