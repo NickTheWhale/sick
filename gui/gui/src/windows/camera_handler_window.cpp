@@ -1,6 +1,6 @@
-#include <gui/windows/camera_handler_window.h>
+#include "gui/windows/camera_handler_window.h"
 
-#include <spdlog/spdlog.h>
+#include "spdlog/spdlog.h"
 
 window::camera_handler_window::camera_handler_window(const char* name, bool* p_open, ImGuiWindowFlags flags)
 	: window_base(name, p_open, flags), _octets(), _port(0)

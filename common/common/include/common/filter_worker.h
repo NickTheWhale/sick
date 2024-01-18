@@ -4,9 +4,9 @@
 #include <mutex>
 #include <thread>
 
-#include <opencv2/core/mat.hpp>
+#include "opencv2/core/mat.hpp"
 
-#include <gui/filter_pipeline.h>
+#include "common/filter_pipeline.h"
 
 namespace filter
 {

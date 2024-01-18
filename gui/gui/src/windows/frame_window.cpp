@@ -1,8 +1,7 @@
-#include <gui/windows/frame_window.h>
-
-#include <spdlog/spdlog.h>
-
-#include <opencv2/imgproc.hpp>
+#include "gui/windows/frame_window.h"
+#include "spdlog/spdlog.h"
+#include "opencv2/imgproc.hpp"
+#include "gui/frame_helper.h"
 
 namespace window
 {
@@ -68,7 +67,7 @@ namespace window
             _mat.convertTo(_mat, CV_16UC1, 256.0);
         }
 
-        if (!frame::to_texture(_mat, _texture))
+        if (!frame::helper::to_texture(_mat, _texture))
             return false;
     
         _need_to_generate = false;

@@ -3,11 +3,11 @@
 #include <string>	
 #include <vector>
 
-#include <gui/windows/window_base.h>
-#include <gui/filter_pipeline.h>
-#include <gui/filter_graph.h>
-
-#include <json.hpp>
+#include "gui/windows/window_base.h"
+#include "common/filter_pipeline.h"
+#include "gui/filter_graph.h"
+		 
+#include "json.hpp"
 
 namespace window
 {

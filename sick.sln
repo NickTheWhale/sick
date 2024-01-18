@@ -9,8 +9,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gui", "gui\gui.vcxproj", "{
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dummy_plc", "dummy_plc\dummy_plc.vcxproj", "{F17350D3-52CF-4A6B-A335-8EDA112AB132}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "view_server", "view_server\view_server.vcxproj", "{378A2F46-2933-4BF3-95F9-8EAE73E27EFE}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common", "common\common.vcxitems", "{839FF925-0AE1-453E-B7DD-274EAC36E837}"
 EndProject
 Global
@@ -45,14 +43,6 @@ Global
 		{F17350D3-52CF-4A6B-A335-8EDA112AB132}.Release|x64.Build.0 = Release|x64
 		{F17350D3-52CF-4A6B-A335-8EDA112AB132}.Release|x86.ActiveCfg = Release|Win32
 		{F17350D3-52CF-4A6B-A335-8EDA112AB132}.Release|x86.Build.0 = Release|Win32
-		{378A2F46-2933-4BF3-95F9-8EAE73E27EFE}.Debug|x64.ActiveCfg = Debug|x64
-		{378A2F46-2933-4BF3-95F9-8EAE73E27EFE}.Debug|x64.Build.0 = Debug|x64
-		{378A2F46-2933-4BF3-95F9-8EAE73E27EFE}.Debug|x86.ActiveCfg = Debug|Win32
-		{378A2F46-2933-4BF3-95F9-8EAE73E27EFE}.Debug|x86.Build.0 = Debug|Win32
-		{378A2F46-2933-4BF3-95F9-8EAE73E27EFE}.Release|x64.ActiveCfg = Release|x64
-		{378A2F46-2933-4BF3-95F9-8EAE73E27EFE}.Release|x64.Build.0 = Release|x64
-		{378A2F46-2933-4BF3-95F9-8EAE73E27EFE}.Release|x86.ActiveCfg = Release|Win32
-		{378A2F46-2933-4BF3-95F9-8EAE73E27EFE}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -63,5 +53,6 @@ Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		common\common.vcxitems*{0ee0ee3f-68a0-4b2c-ac10-4218622c560e}*SharedItemsImports = 4
 		common\common.vcxitems*{839ff925-0ae1-453e-b7dd-274eac36e837}*SharedItemsImports = 9
+		common\common.vcxitems*{f99a975e-78e0-4653-85ce-dffffb0ab9ca}*SharedItemsImports = 4
 	EndGlobalSection
 EndGlobal

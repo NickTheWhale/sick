@@ -1,11 +1,11 @@
 #pragma once
 
-#include <gui/windows/window_base.h>
-#include <gui/frame.h>
+#include "gui/windows/window_base.h"
+#include "common/frame.h"
 
-#include <Framegrabber.h>	
-#include <VisionaryControl.h>
-#include <VisionaryTMiniData.h>
+#include "Framegrabber.h"
+#include "VisionaryControl.h"
+#include "VisionaryTMiniData.h"
 
 namespace window
 {

@@ -1,11 +1,11 @@
-#include <gui/windows/filter_editor_window.h>
-#include <gui/filter_factory.h>
-
-#include <spdlog/spdlog.h>
-
-#include <imnodes.h>
-
-#include <ImGuiFileDialog.h>
+#include "gui/windows/filter_editor_window.h"
+#include "common/filter_factory.h"
+		 
+#include "spdlog/spdlog.h"
+		 
+#include "imnodes.h"
+		 
+#include "ImGuiFileDialog.h"
 
 window::filter_editor_window::filter_editor_window(const char* name, bool* p_open, ImGuiWindowFlags flags)
 	: window_base(name, p_open, flags), curr_id(0), _graph({})

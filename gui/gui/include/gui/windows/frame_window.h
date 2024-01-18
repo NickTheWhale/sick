@@ -1,10 +1,9 @@
 #pragma once
 
-#include <gui/windows/window_base.h>
-#include <gui/frame.h>
-#include <opencv2/core/mat.hpp>
-
-#include <GL/glew.h>
+#include "gui/windows/window_base.h"
+#include "common/frame.h"
+#include "opencv2/core/mat.hpp"
+#include "GL/glew.h"
 
 namespace window
 {
@@ -24,9 +23,7 @@ namespace window
 		cv::Mat _mat;
 		frame::Frame _frame;
 		GLuint _texture;
-
 		static constexpr int num_colormaps = 22;
-
 		static constexpr char const* colormap_names[num_colormaps] = {
 			"AUTUMN",
 			"BONE",
@@ -51,7 +48,6 @@ namespace window
 			"TURBO",
 			"DEEPGREEN"
 		};
-
 		static constexpr cv::ColormapTypes colormap_types[num_colormaps] = {
 			cv::COLORMAP_AUTUMN,
 			cv::COLORMAP_BONE,

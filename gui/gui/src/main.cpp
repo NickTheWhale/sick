@@ -6,31 +6,31 @@
 #include <vector>
 #include <unordered_map>
 
-#include <GL/glew.h>
+#include "GL/glew.h"
 
-#include <opencv2/core/utils/logger.hpp>
+#include "opencv2/core/utils/logger.hpp"
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include <stdio.h>
 #define GL_SILENCE_DEPRECATION
-#include <GLFW/glfw3.h> // Will drag system OpenGL headers
+#include <GLFW/glfw3.h>
 
-#include <gui/frame.h>
-#include <gui/filter_pipeline.h>
-#include <gui/filter_worker.h>
+#include "common/frame.h"
+#include "common/filter_pipeline.h"
+#include "common/filter_worker.h"
 
-#include <json.hpp>
+#include "json.hpp"
 
-#include <imnodes.h>
+#include "imnodes.h"
 
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
 
-#include <gui/windows/frame_window.h>
-#include <gui/windows/filter_editor_window.h>
-#include <gui/windows/camera_handler_window.h>
+#include "gui/windows/frame_window.h"
+#include "gui/windows/filter_editor_window.h"
+#include "gui/windows/camera_handler_window.h"
 
 namespace ImGui
 {
@@ -43,8 +43,9 @@ int main(int, char**)
 {
     // create loggers
     auto filter_logger = spdlog::stdout_color_mt("filter");
-    auto ui_logger = spdlog::stdout_color_mt("ui");
     auto camera_logger = spdlog::stdout_color_mt("camera");
+    auto ui_logger = spdlog::stdout_color_mt("ui");
+    spdlog::set_default_logger(ui_logger);
 
 #ifdef _DEBUG
     filter_logger->set_level(spdlog::level::trace);
@@ -57,8 +58,12 @@ int main(int, char**)
 #endif // _DEBUG
 
     glfwSetErrorCallback(glfw_error_callback);
-    if (!glfwInit())
+    int ret = glfwInit();
+    if (ret != GLFW_TRUE)
+    {
+        spdlog::critical("GLFW failed to initialize: {}", ret);
         return 1;
+    }
 
     const char* glsl_version = "#version 130";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -67,7 +72,10 @@ int main(int, char**)
     GLFWwindow* window = glfwCreateWindow(640, 480, "Sick GUI", nullptr, nullptr);
     
     if (window == nullptr)
+    {
+        spdlog::critical("GLFW failed to create window");
         return 1;
+    }
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // Enable vsync
 

@@ -180,6 +180,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)common\include\common\filter_factory.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)common\include\common\filter_parameter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)common\include\common\filter_pipeline.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)common\include\common\filter_worker.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)common\include\common\frame.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)common\include\common\plc_handler.h" />
   </ItemGroup>
@@ -243,6 +244,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)common\src\common\filters\stack_blur_filter.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)common\src\common\filters\threshold_filter.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)common\src\common\filter_pipeline.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)common\src\common\filter_worker.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)common\src\common\frame.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)common\src\common\plc_handler.cpp" />
   </ItemGroup>

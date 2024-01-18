@@ -1,6 +1,6 @@
-#include <gui/filter_worker.h>
+#include "common/filter_worker.h"
 
-#include <spdlog/spdlog.h>
+#include "spdlog/spdlog.h"
 
 filter::filter_worker::filter_worker()
 	: _stop(false), _new_mat(false), _thread{&filter::filter_worker::run, this}
