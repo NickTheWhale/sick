@@ -9,6 +9,7 @@
 
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
+#include "spdlog/sinks/daily_file_sink.h"
 
 #define JSON_USE_IMPLICIT_CONVERSIONS 0
 #include "json.hpp"
@@ -174,41 +175,58 @@ int main(int argc, char** argv)
 	const int frame_height = config["camera"]["frame"]["height"].get<int>();
 	while (!done)
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-
-		frame::Frame raw_frame;
-		// get the next frame (blocking with timeout)
-		if (camera.get_next_frame(raw_frame, 5000/*ms*/))
+		try
 		{
-			cv::Mat raw_mat = frame::to_mat(raw_frame);
-			// apply filters
-			if (pipeline.apply(raw_mat))
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+			frame::Frame raw_frame;
+			// get the next frame (blocking with timeout)
+			if (camera.get_next_frame(raw_frame, 5000/*ms*/))
 			{
-				cv::Mat filtered_mat;
-				// resize to desired frame dimensions from configuration file
-				cv::resize(raw_mat, filtered_mat, cv::Size(frame_width, frame_height), 0.0, 0.0, cv::InterpolationFlags::INTER_AREA);
-				const frame::Frame filtered_frame = frame::to_frame(filtered_mat);
-
-				const std::vector<uint16_t> distance_map_16 = filtered_frame.data;
-				// convert to uint32_t (UDint in TIA Portal world)
-				const std::vector<uint32_t> distance_map(distance_map_16.begin(), distance_map_16.end());
-
-				// write frame to plc
-				const int ret = plc.write_udint(distance_map, db_number, db_offset_bytes);
-				// if writing fails, assume the plc connection was lost and try to reconnect
-				if (ret != 0)
+				cv::Mat raw_mat = frame::to_mat(raw_frame);
+				// apply filters
+				if (pipeline.apply(raw_mat))
 				{
-					spdlog::error("Failed to write frame #{} to PLC: {}", filtered_frame.number, CliErrorText(ret));
-					plc.disconnect();
-					std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-					plc.connect();
+					cv::Mat filtered_mat;
+					// resize to desired frame dimensions from configuration file
+					cv::resize(raw_mat, filtered_mat, cv::Size(frame_width, frame_height), 0.0, 0.0, cv::InterpolationFlags::INTER_AREA);
+					const frame::Frame filtered_frame = frame::to_frame(filtered_mat);
+
+					const std::vector<uint16_t> distance_map_16 = filtered_frame.data;
+					// convert to uint32_t (UDint in TIA Portal world)
+					const std::vector<uint32_t> distance_map(distance_map_16.begin(), distance_map_16.end());
+
+					// write frame to plc
+					const int ret = plc.write_udint(distance_map, db_number, db_offset_bytes);
+					// if writing fails, assume the plc connection was lost and try to reconnect
+					if (ret != 0)
+					{
+						spdlog::error("Failed to write frame #{} to PLC: {}", filtered_frame.number, CliErrorText(ret));
+						plc.disconnect();
+						std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+						plc.connect();
+					}
+				}
+				else
+				{
+					spdlog::get("filter")->error("Failed to apply filters on frame #{}", raw_frame.number);
+					std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 				}
 			}
-			else
-			{
-				spdlog::get("filter")->error("Failed to apply filters on frame #{}", raw_frame.number);
-				std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-			}
+		}
+		catch (const spdlog::spdlog_ex& e)
+		{
+			std::cerr << "Logging exception: " << e.what() << ". Ignoring\n";
+		}
+		catch (const std::exception& e)
+		{
+			spdlog::error("Exception in main loop: {}", e.what());
+			return EXIT_FAILURE;
+		}
+		catch (...)
+		{
+			spdlog::error("Unkown exception in main loop");
+			return EXIT_FAILURE;
 		}
 	}
 
@@ -221,12 +239,24 @@ int main(int argc, char** argv)
  */
 void setup_loggers()
 {
-	auto camera_logger = spdlog::stdout_color_mt("camera");
-	auto plc_logger = spdlog::stdout_color_mt("plc");
-	auto sickapi_logger = spdlog::stdout_color_mt("sickapi");
-	auto filter_logger = spdlog::stdout_color_mt("filter");
-	auto app_logger = spdlog::stdout_color_mt("app");
-	spdlog::set_default_logger(app_logger);
+	std::vector<spdlog::sink_ptr> sinks;
+	sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
+	sinks.push_back(std::make_shared<spdlog::sinks::daily_file_sink_mt>("logs/daily_logger", 2, 30));
+
+	static constexpr char const* log_names[] = {
+		"camera",
+		"plc",
+		"sickapi",
+		"filter",
+		"app"
+	};
+
+	for (const char* log_name : log_names)
+	{
+		spdlog::register_logger(std::make_shared<spdlog::logger>((log_name), sinks.begin(), sinks.end()));
+	}
+
+	spdlog::set_default_logger(spdlog::get(log_names[0]));
 	spdlog::set_level(spdlog::level::trace);
 	cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_ERROR);
 }

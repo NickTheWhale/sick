@@ -1,0 +1,84 @@
+[
+  {
+    "parameters": {
+      "buffer-size": 4
+    },
+    "type": "moving-average-filter"
+  },
+  {
+    "parameters": {
+      "kernel-size": {
+        "x": 5,
+        "y": 23
+      },
+      "sigma": {
+        "x": 0.2,
+        "y": 456.4
+      }
+    },
+    "type": "gaussian-blur-filter"
+  },
+  {
+    "parameters": {
+      "kernel-size": 5
+    },
+    "type": "median-filter"
+  },
+  {
+    "parameters": {
+      "center": {
+        "x": 0.6,
+        "y": 0.5
+      },
+      "size": {
+        "height": 0.67,
+        "width": 0.7
+      }
+    },
+    "type": "crop-filter"
+  },
+  {
+    "parameters": {
+      "kernel-size": {
+        "x": 7,
+        "y": 5
+      }
+    },
+    "type": "stack-blur-filter"
+  },
+  {
+    "parameters": {
+      "size": {
+        "x": 562,
+        "y": 354
+      }
+    },
+    "type": "resize-filter"
+  },
+  {
+    "parameters": {
+      "kernel-size": {
+        "x": 3,
+        "y": 7
+      }
+    },
+    "type": "blur-filter"
+  },
+  {
+    "parameters": {
+      "lower": 45,
+      "upper": 468654
+    },
+    "type": "threshold-filter"
+  },
+  {
+    "parameters": {
+      "diameter": 3,
+      "sigma": {
+        "color": 0.56,
+        "space": 48.6
+      }
+    },
+    "type": "bilateral-filter"
+  }
+]
