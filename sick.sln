@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dummy_plc", "dummy_plc\dumm
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "view_server", "view_server\view_server.vcxproj", "{378A2F46-2933-4BF3-95F9-8EAE73E27EFE}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common", "common\common.vcxitems", "{B1A59C57-A399-4122-B2BC-83AED3975608}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -57,5 +59,9 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1DF7543E-BDDB-470E-951C-2BB97787786A}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		common\common.vcxitems*{0ee0ee3f-68a0-4b2c-ac10-4218622c560e}*SharedItemsImports = 4
+		common\common.vcxitems*{b1a59c57-a399-4122-b2bc-83aed3975608}*SharedItemsImports = 9
 	EndGlobalSection
 EndGlobal
