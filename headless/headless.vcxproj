@@ -56,6 +56,7 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
+    <Import Project="..\common\common.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -110,7 +111,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;SPDLOG_COMPILED_LIB;NOMINMAX;FMT_HEADER_ONLY;SPDLOG_FMT_EXTERNAL;SICKAPI_USE_SPDLOG</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\sickapi\src;$(ProjectDir)\snap7;$(BOOST_DIR);$(ProjectDir)\cli11;$(ProjectDir)\spdlog\include;$(ProjectDir)\json;$(OPENCV_DIR)\build\include;$(ProjectDir)\headless\include;$(ProjectDir)\fmt\include;$(ProjectDir)\json_schema_validator\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\common\3pp\sickapi\src;$(SolutionDir)\common\3pp\snap7;$(BOOST_DIR);$(ProjectDir)\cli11;$(SolutionDir)\common\3pp\spdlog\include;$(SolutionDir)\common\3pp\json;$(OPENCV_DIR)\build\include;$(ProjectDir)\headless\include;$(SolutionDir)\common\3pp\fmt\include;$(SolutionDir)\common\3pp\json_schema_validator\src;$(SolutionDir)\common\common\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -135,7 +136,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;SPDLOG_COMPILED_LIB;NOMINMAX;FMT_HEADER_ONLY;SPDLOG_FMT_EXTERNAL;SICKAPI_USE_SPDLOG</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\sickapi\src;$(ProjectDir)\snap7;$(BOOST_DIR);$(ProjectDir)\cli11;$(ProjectDir)\spdlog\include;$(ProjectDir)\json;$(OPENCV_DIR)\build\include;$(ProjectDir)\headless\include;$(ProjectDir)\fmt\include;$(ProjectDir)\json_schema_validator\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\common\3pp\sickapi\src;$(SolutionDir)\common\3pp\snap7;$(BOOST_DIR);$(ProjectDir)\cli11;$(SolutionDir)\common\3pp\spdlog\include;$(SolutionDir)\common\3pp\json;$(OPENCV_DIR)\build\include;$(ProjectDir)\headless\include;$(SolutionDir)\common\3pp\fmt\include;$(SolutionDir)\common\3pp\json_schema_validator\src;$(SolutionDir)\common\common\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -155,251 +156,10 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="headless\src\camera_handler.cpp" />
-    <ClCompile Include="headless\src\filters\bilateral_filter.cpp" />
-    <ClCompile Include="headless\src\filters\blur_filter.cpp" />
-    <ClCompile Include="headless\src\filters\crop_filter.cpp" />
-    <ClCompile Include="headless\src\filters\gaussian_blur_filter.cpp" />
-    <ClCompile Include="headless\src\filters\median_filter.cpp" />
-    <ClCompile Include="headless\src\filters\moving_average_filter.cpp" />
-    <ClCompile Include="headless\src\filters\resize_filter.cpp" />
-    <ClCompile Include="headless\src\filters\stack_blur_filter.cpp" />
-    <ClCompile Include="headless\src\filters\threshold_filter.cpp" />
-    <ClCompile Include="headless\src\filter_pipeline.cpp" />
-    <ClCompile Include="headless\src\frame.cpp" />
-    <ClCompile Include="headless\src\main.cpp" />
-    <ClCompile Include="headless\src\plc_handler.cpp" />
-    <ClCompile Include="json_schema_validator\src\json-patch.cpp" />
-    <ClCompile Include="json_schema_validator\src\json-schema-draft7.json.cpp" />
-    <ClCompile Include="json_schema_validator\src\json-uri.cpp" />
-    <ClCompile Include="json_schema_validator\src\json-validator.cpp" />
-    <ClCompile Include="json_schema_validator\src\smtp-address-validator.cpp" />
-    <ClCompile Include="json_schema_validator\src\string-format-check.cpp" />
-    <ClCompile Include="sickapi\include\libs\smart_ptr\src\sp_collector.cpp" />
-    <ClCompile Include="sickapi\include\libs\smart_ptr\src\sp_debug_hooks.cpp" />
-    <ClCompile Include="sickapi\src\AuthenticationLegacy.cpp" />
-    <ClCompile Include="sickapi\src\AuthenticationSecure.cpp" />
-    <ClCompile Include="sickapi\src\CoLa2ProtocolHandler.cpp" />
-    <ClCompile Include="sickapi\src\CoLaBProtocolHandler.cpp" />
-    <ClCompile Include="sickapi\src\CoLaCommand.cpp" />
-    <ClCompile Include="sickapi\src\CoLaParameterReader.cpp" />
-    <ClCompile Include="sickapi\src\CoLaParameterWriter.cpp" />
-    <ClCompile Include="sickapi\src\ControlSession.cpp" />
-    <ClCompile Include="sickapi\src\FrameGrabberBase.cpp" />
-    <ClCompile Include="sickapi\src\IAuthentication.cpp" />
-    <ClCompile Include="sickapi\src\IProtocolHandler.cpp" />
-    <ClCompile Include="sickapi\src\MD5.cpp" />
-    <ClCompile Include="sickapi\src\PointCloudPlyWriter.cpp" />
-    <ClCompile Include="sickapi\src\SHA256.cpp" />
-    <ClCompile Include="sickapi\src\TcpSocket.cpp" />
-    <ClCompile Include="sickapi\src\UdpSocket.cpp" />
-    <ClCompile Include="sickapi\src\VisionaryAutoIPScan.cpp" />
-    <ClCompile Include="sickapi\src\VisionaryControl.cpp" />
-    <ClCompile Include="sickapi\src\VisionaryData.cpp" />
-    <ClCompile Include="sickapi\src\VisionaryDataStream.cpp" />
-    <ClCompile Include="sickapi\src\VisionarySData.cpp" />
-    <ClCompile Include="sickapi\src\VisionaryTData.cpp" />
-    <ClCompile Include="sickapi\src\VisionaryTMiniData.cpp" />
-    <ClCompile Include="snap7\snap7.cpp" />
-    <ClCompile Include="spdlog\src\async.cpp" />
-    <ClCompile Include="spdlog\src\bundled_fmtlib_format.cpp" />
-    <ClCompile Include="spdlog\src\cfg.cpp" />
-    <ClCompile Include="spdlog\src\color_sinks.cpp" />
-    <ClCompile Include="spdlog\src\file_sinks.cpp" />
-    <ClCompile Include="spdlog\src\spdlog.cpp" />
-    <ClCompile Include="spdlog\src\stdout_sinks.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="cli11\CLI11.hpp" />
-    <ClInclude Include="fmt\include\fmt\args.h" />
-    <ClInclude Include="fmt\include\fmt\base.h" />
-    <ClInclude Include="fmt\include\fmt\chrono.h" />
-    <ClInclude Include="fmt\include\fmt\color.h" />
-    <ClInclude Include="fmt\include\fmt\compile.h" />
-    <ClInclude Include="fmt\include\fmt\core.h" />
-    <ClInclude Include="fmt\include\fmt\format-inl.h" />
-    <ClInclude Include="fmt\include\fmt\format.h" />
-    <ClInclude Include="fmt\include\fmt\os.h" />
-    <ClInclude Include="fmt\include\fmt\ostream.h" />
-    <ClInclude Include="fmt\include\fmt\printf.h" />
-    <ClInclude Include="fmt\include\fmt\ranges.h" />
-    <ClInclude Include="fmt\include\fmt\std.h" />
-    <ClInclude Include="fmt\include\fmt\xchar.h" />
-    <ClInclude Include="headless\include\headless\camera_handler.h" />
-    <ClInclude Include="headless\include\headless\filter_base.h" />
-    <ClInclude Include="headless\include\headless\filters\bilateral_filter.h" />
-    <ClInclude Include="headless\include\headless\filters\blur_filter.h" />
-    <ClInclude Include="headless\include\headless\filters\crop_filter.h" />
-    <ClInclude Include="headless\include\headless\filters\gaussian_blur_filter.h" />
-    <ClInclude Include="headless\include\headless\filters\median_filter.h" />
-    <ClInclude Include="headless\include\headless\filters\moving_average_filter.h" />
-    <ClInclude Include="headless\include\headless\filters\resize_filter.h" />
-    <ClInclude Include="headless\include\headless\filters\stack_blur_filter.h" />
-    <ClInclude Include="headless\include\headless\filters\threshold_filter.h" />
-    <ClInclude Include="headless\include\headless\filter_factory.h" />
-    <ClInclude Include="headless\include\headless\filter_parameter.h" />
-    <ClInclude Include="headless\include\headless\filter_pipeline.h" />
-    <ClInclude Include="headless\include\headless\frame.h" />
-    <ClInclude Include="headless\include\headless\plc_handler.h" />
-    <ClInclude Include="json\json.hpp" />
-    <ClInclude Include="json_schema_validator\src\json-patch.hpp" />
-    <ClInclude Include="json_schema_validator\src\nlohmann\json-schema.hpp" />
-    <ClInclude Include="json_schema_validator\src\smtp-address-validator.hpp" />
-    <ClInclude Include="sickapi\src\AuthenticationLegacy.h" />
-    <ClInclude Include="sickapi\src\AuthenticationSecure.h" />
-    <ClInclude Include="sickapi\src\CoLa2ProtocolHandler.h" />
-    <ClInclude Include="sickapi\src\CoLaBProtocolHandler.h" />
-    <ClInclude Include="sickapi\src\CoLaCommand.h" />
-    <ClInclude Include="sickapi\src\CoLaCommandType.h" />
-    <ClInclude Include="sickapi\src\CoLaError.h" />
-    <ClInclude Include="sickapi\src\CoLaParameterReader.h" />
-    <ClInclude Include="sickapi\src\CoLaParameterWriter.h" />
-    <ClInclude Include="sickapi\src\ControlSession.h" />
-    <ClInclude Include="sickapi\src\Framegrabber.h" />
-    <ClInclude Include="sickapi\src\FrameGrabberBase.h" />
-    <ClInclude Include="sickapi\src\IAuthentication.h" />
-    <ClInclude Include="sickapi\src\IProtocolHandler.h" />
-    <ClInclude Include="sickapi\src\ITransport.h" />
-    <ClInclude Include="sickapi\src\MD5.h" />
-    <ClInclude Include="sickapi\src\PointCloudPlyWriter.h" />
-    <ClInclude Include="sickapi\src\PointXYZ.h" />
-    <ClInclude Include="sickapi\src\SHA256.h" />
-    <ClInclude Include="sickapi\src\TcpSocket.h" />
-    <ClInclude Include="sickapi\src\UdpSocket.h" />
-    <ClInclude Include="sickapi\src\VisionaryAutoIPScan.h" />
-    <ClInclude Include="sickapi\src\VisionaryControl.h" />
-    <ClInclude Include="sickapi\src\VisionaryData.h" />
-    <ClInclude Include="sickapi\src\VisionaryDataStream.h" />
-    <ClInclude Include="sickapi\src\VisionaryEndian.h" />
-    <ClInclude Include="sickapi\src\VisionarySData.h" />
-    <ClInclude Include="sickapi\src\VisionaryTData.h" />
-    <ClInclude Include="sickapi\src\VisionaryTMiniData.h" />
-    <ClInclude Include="snap7\snap7.h" />
-    <ClInclude Include="spdlog\include\spdlog\async.h" />
-    <ClInclude Include="spdlog\include\spdlog\async_logger-inl.h" />
-    <ClInclude Include="spdlog\include\spdlog\async_logger.h" />
-    <ClInclude Include="spdlog\include\spdlog\cfg\argv.h" />
-    <ClInclude Include="spdlog\include\spdlog\cfg\env.h" />
-    <ClInclude Include="spdlog\include\spdlog\cfg\helpers-inl.h" />
-    <ClInclude Include="spdlog\include\spdlog\cfg\helpers.h" />
-    <ClInclude Include="spdlog\include\spdlog\common-inl.h" />
-    <ClInclude Include="spdlog\include\spdlog\common.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\backtracer-inl.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\backtracer.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\circular_q.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\console_globals.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\file_helper-inl.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\file_helper.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\fmt_helper.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\log_msg-inl.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\log_msg.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\log_msg_buffer-inl.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\log_msg_buffer.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\mpmc_blocking_q.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\null_mutex.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\os-inl.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\os.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\periodic_worker-inl.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\periodic_worker.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\registry-inl.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\registry.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\synchronous_factory.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\tcp_client-windows.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\tcp_client.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\thread_pool-inl.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\thread_pool.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\udp_client-windows.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\udp_client.h" />
-    <ClInclude Include="spdlog\include\spdlog\details\windows_include.h" />
-    <ClInclude Include="spdlog\include\spdlog\fmt\bin_to_hex.h" />
-    <ClInclude Include="spdlog\include\spdlog\fmt\bundled\args.h" />
-    <ClInclude Include="spdlog\include\spdlog\fmt\bundled\chrono.h" />
-    <ClInclude Include="spdlog\include\spdlog\fmt\bundled\color.h" />
-    <ClInclude Include="spdlog\include\spdlog\fmt\bundled\compile.h" />
-    <ClInclude Include="spdlog\include\spdlog\fmt\bundled\core.h" />
-    <ClInclude Include="spdlog\include\spdlog\fmt\bundled\format-inl.h" />
-    <ClInclude Include="spdlog\include\spdlog\fmt\bundled\format.h" />
-    <ClInclude Include="spdlog\include\spdlog\fmt\bundled\locale.h" />
-    <ClInclude Include="spdlog\include\spdlog\fmt\bundled\os.h" />
-    <ClInclude Include="spdlog\include\spdlog\fmt\bundled\ostream.h" />
-    <ClInclude Include="spdlog\include\spdlog\fmt\bundled\printf.h" />
-    <ClInclude Include="spdlog\include\spdlog\fmt\bundled\ranges.h" />
-    <ClInclude Include="spdlog\include\spdlog\fmt\bundled\std.h" />
-    <ClInclude Include="spdlog\include\spdlog\fmt\bundled\xchar.h" />
-    <ClInclude Include="spdlog\include\spdlog\fmt\chrono.h" />
-    <ClInclude Include="spdlog\include\spdlog\fmt\compile.h" />
-    <ClInclude Include="spdlog\include\spdlog\fmt\fmt.h" />
-    <ClInclude Include="spdlog\include\spdlog\fmt\ostr.h" />
-    <ClInclude Include="spdlog\include\spdlog\fmt\ranges.h" />
-    <ClInclude Include="spdlog\include\spdlog\fmt\std.h" />
-    <ClInclude Include="spdlog\include\spdlog\fmt\xchar.h" />
-    <ClInclude Include="spdlog\include\spdlog\formatter.h" />
-    <ClInclude Include="spdlog\include\spdlog\fwd.h" />
-    <ClInclude Include="spdlog\include\spdlog\logger-inl.h" />
-    <ClInclude Include="spdlog\include\spdlog\logger.h" />
-    <ClInclude Include="spdlog\include\spdlog\pattern_formatter-inl.h" />
-    <ClInclude Include="spdlog\include\spdlog\pattern_formatter.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\android_sink.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\ansicolor_sink-inl.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\ansicolor_sink.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\base_sink-inl.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\base_sink.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\basic_file_sink-inl.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\basic_file_sink.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\callback_sink.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\daily_file_sink.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\dist_sink.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\dup_filter_sink.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\hourly_file_sink.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\kafka_sink.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\mongo_sink.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\msvc_sink.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\null_sink.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\ostream_sink.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\qt_sinks.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\ringbuffer_sink.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\rotating_file_sink-inl.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\rotating_file_sink.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\sink-inl.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\sink.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\stdout_color_sinks-inl.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\stdout_color_sinks.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\stdout_sinks-inl.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\stdout_sinks.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\syslog_sink.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\systemd_sink.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\tcp_sink.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\udp_sink.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\wincolor_sink-inl.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\wincolor_sink.h" />
-    <ClInclude Include="spdlog\include\spdlog\sinks\win_eventlog_sink.h" />
-    <ClInclude Include="spdlog\include\spdlog\spdlog-inl.h" />
-    <ClInclude Include="spdlog\include\spdlog\spdlog.h" />
-    <ClInclude Include="spdlog\include\spdlog\stopwatch.h" />
-    <ClInclude Include="spdlog\include\spdlog\tweakme.h" />
-    <ClInclude Include="spdlog\include\spdlog\version.h" />
   </ItemGroup>
   <ItemGroup>
-    <CopyFileToFolders Include="snap7\snap7.dll">
-      <FileType>Document</FileType>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="snap7\snap7.exp">
-      <FileType>Document</FileType>
-    </CopyFileToFolders>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="sickapi\LICENSE.boost.txt" />
-    <Text Include="sickapi\LICENSE.md5.txt" />
-    <Text Include="sickapi\LICENSE.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="snap7\snap7.lib" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="fmt\LICENSE" />
-    <None Include="json\LICENSE.MIT" />
-    <None Include="json_schema_validator\LICENSE" />
-    <None Include="spdlog\LICENSE" />
+    <ClCompile Include="headless\src\main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -5,21 +5,21 @@
 #include <thread>
 #include <string>
 
-#include <CLI11.hpp>
+#include "CLI11.hpp"
 
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
 
 #define JSON_USE_IMPLICIT_CONVERSIONS 0
-#include <json.hpp>
-#include <nlohmann/json-schema.hpp>
+#include "json.hpp"
+#include "nlohmann/json-schema.hpp"
 
-#include <headless/filter_pipeline.h>
-#include <headless/camera_handler.h>
-#include <headless/plc_handler.h>
-#include <headless/frame.h>
+#include "common/filter_pipeline.h"
+#include "common/camera_handler.h"
+#include "common/plc_handler.h"
+#include "common/frame.h"
 
-#include <opencv2/core/utils/logger.hpp>
+#include "opencv2/core/utils/logger.hpp"
 
 static const nlohmann::json config_schema = R"(
 {
