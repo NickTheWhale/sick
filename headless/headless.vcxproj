@@ -121,7 +121,8 @@
       <AdditionalDependencies>opencv_world480d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d /f "$(OPENCV_DIR)\build\x64\vc16\bin\opencv_world480d.dll" "$(OutDir)"</Command>
+      <Command>xcopy /y /d /f "$(OPENCV_DIR)\build\x64\vc16\bin\opencv_world480d.dll" "$(OutDir)"
+xcopy /y /d /f "$(SolutionDir)\common\3pp\snap7\snap7.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>
@@ -148,7 +149,8 @@
       <AdditionalDependencies>opencv_world480.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d /f "$(OPENCV_DIR)\build\x64\vc16\bin\opencv_world480.dll" "$(OutDir)"</Command>
+      <Command>xcopy /y /d /f "$(OPENCV_DIR)\build\x64\vc16\bin\opencv_world480.dll" "$(OutDir)"
+xcopy /y /d /f "$(SolutionDir)\common\3pp\snap7\snap7.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>

@@ -109,7 +109,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SERCURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;GLEW_STATIC;SPDLOG_COMPILED_LIB;IMGUI_DEFINE_MATH_OPERATORS;FMT_HEADER_ONLY;SPDLOG_FMT_EXTERNAL</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SERCURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;GLEW_STATIC;SPDLOG_COMPILED_LIB;IMGUI_DEFINE_MATH_OPERATORS;FMT_HEADER_ONLY;SPDLOG_FMT_EXTERNAL;SICKAPI_USE_SPDLOG</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)\imgui;$(SolutionDir)\common\3pp\sickapi\src;$(BOOST_DIR);$(ProjectDir)\glfw\include;$(OPENCV_DIR)\build\include;$(ProjectDir)\glew\include;$(ProjectDir)\gui\include;$(SolutionDir)\common\3pp\json;$(SolutionDir)\common\3pp\spdlog\include;$(SolutionDir)\common\3pp\tinycolormap;$(ProjectDir)\imnodes;$(ProjectDir)\imguifiledialog;$(SolutionDir)\common\3pp\fmt\include;$(SolutionDir)\common\common\include;$(SolutionDir)\common\3pp\json_schema_validator\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -135,7 +135,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SERCURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;GLEW_STATIC;SPDLOG_COMPILED_LIB;IMGUI_DEFINE_MATH_OPERATORS;FMT_HEADER_ONLY;SPDLOG_FMT_EXTERNAL</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SERCURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;GLEW_STATIC;SPDLOG_COMPILED_LIB;IMGUI_DEFINE_MATH_OPERATORS;FMT_HEADER_ONLY;SPDLOG_FMT_EXTERNAL;SICKAPI_USE_SPDLOG</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)\imgui;$(SolutionDir)\common\3pp\sickapi\src;$(BOOST_DIR);$(ProjectDir)\glfw\include;$(OPENCV_DIR)\build\include;$(ProjectDir)\glew\include;$(ProjectDir)\gui\include;$(SolutionDir)\common\3pp\json;$(SolutionDir)\common\3pp\spdlog\include;$(SolutionDir)\common\3pp\tinycolormap;$(ProjectDir)\imnodes;$(ProjectDir)\imguifiledialog;$(SolutionDir)\common\3pp\fmt\include;$(SolutionDir)\common\common\include;$(SolutionDir)\common\3pp\json_schema_validator\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>

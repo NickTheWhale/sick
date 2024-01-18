@@ -60,6 +60,9 @@
     <ClCompile Include="gui\src\windows\camera_handler_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="gui\src\frame_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imgui.h">
@@ -107,9 +110,6 @@
     <ClInclude Include="glew\include\GL\wglew.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="tinycolormap\TinyColormap.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="gui\include\gui\filter_graph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -144,6 +144,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="gui\include\gui\windows\camera_handler_window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\include\gui\frame_helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
