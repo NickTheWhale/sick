@@ -18,7 +18,7 @@ namespace filter
 		const nlohmann::json to_json() const override;
 
 	private:
-		filter::filter_parameter<int, 1, std::numeric_limits<int>::max()> diameter;
+		filter::filter_parameter<int, 1, std::numeric_limits<int>::max(), true> diameter;
 		filter::filter_parameter<double, 0.0, std::numeric_limits<double>::max()> sigma_color;
 		filter::filter_parameter<double, 0.0, std::numeric_limits<double>::max()> sigma_space;
 	};

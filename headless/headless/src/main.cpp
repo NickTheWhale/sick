@@ -21,6 +21,9 @@
 
 #include "opencv2/core/utils/logger.hpp"
 
+/**
+ * @brief JSON Schema used to validate configuration file. Generated using https://transform.tools/json-to-json-schema.
+ */
 static const nlohmann::json config_schema = R"(
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -104,16 +107,17 @@ static const nlohmann::json config_schema = R"(
 volatile std::atomic_bool done = false;
 
 void setup_loggers();
-const bool parse_config(const std::string& path, nlohmann::json& config);
+const bool parse_and_validate_config(const std::string& path, nlohmann::json& config);
 const bool parse_filters(const std::string& path, filter::filter_pipeline& pipeline);
 void signal_handler(int signum);
 
 int main(int argc, char** argv)
 {
 	setup_loggers();
-	// register signal_handler as the ctrl+c callback
+	// register 'signal_handler' to catch ctrl+c signal for shutdown
 	signal(SIGINT, signal_handler);
 
+	// set program argument options
 	CLI::App app;
 
 	std::string config_path = "";
@@ -122,24 +126,29 @@ int main(int argc, char** argv)
 	std::string filter_path = "";
 	app.add_option("--filters", filter_path, "Path to filter file")->expected(1);
 
+	// parse options
 	CLI11_PARSE(app, argc, argv);
 
+	// check if a valid configuration file was given
 	nlohmann::json configuration_root;
-	if (!parse_config(config_path, configuration_root))
+	if (!parse_and_validate_config(config_path, configuration_root))
 	{
 		return EXIT_FAILURE;
 	}
 	nlohmann::json config = configuration_root["configuration"];
 
+	// if a filter file was given, check if its valid
 	filter::filter_pipeline pipeline;
 	if (app.count("--filters") > 0 && !parse_filters(filter_path, pipeline))
 	{
 		return EXIT_FAILURE;
 	}
 
+	// log parsed configuration and filters
 	spdlog::get("app")->info("Using configuration:\n{}", config.dump(2));
 	spdlog::get("app")->info("Using filters:\n{}", pipeline.to_json().dump(2));
 
+	// connect to plc. if unsuccessful, keep trying with a 5 second timeout
 	const std::string& plc_ip = config["plc"]["ip"].get<std::string>();
 	const int plc_rack = config["plc"]["rack"].get<int>();
 	const int plc_slot = config["plc"]["slot"].get<int>();
@@ -148,7 +157,8 @@ int main(int argc, char** argv)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 	}
-
+	
+	// connect to camera. if unsuccessful, keep trying with a 5 second timeout
 	const std::string& cam_ip = config["camera"]["ip"].get<std::string>();
 	const uint16_t cam_port = config["camera"]["port"].get<uint16_t>();
 	camera::camera_handler camera;
@@ -167,19 +177,25 @@ int main(int argc, char** argv)
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
 		frame::Frame raw_frame;
-		if (camera.get_next_frame(raw_frame))
+		// get the next frame (blocking with timeout)
+		if (camera.get_next_frame(raw_frame, 5000/*ms*/))
 		{
 			cv::Mat raw_mat = frame::to_mat(raw_frame);
+			// apply filters
 			if (pipeline.apply(raw_mat))
 			{
 				cv::Mat filtered_mat;
+				// resize to desired frame dimensions from configuration file
 				cv::resize(raw_mat, filtered_mat, cv::Size(frame_width, frame_height), 0.0, 0.0, cv::InterpolationFlags::INTER_AREA);
 				const frame::Frame filtered_frame = frame::to_frame(filtered_mat);
 
 				const std::vector<uint16_t> distance_map_16 = filtered_frame.data;
+				// convert to uint32_t (UDint in TIA Portal world)
 				const std::vector<uint32_t> distance_map(distance_map_16.begin(), distance_map_16.end());
 
+				// write frame to plc
 				const int ret = plc.write_udint(distance_map, db_number, db_offset_bytes);
+				// if writing fails, assume the plc connection was lost and try to reconnect
 				if (ret != 0)
 				{
 					spdlog::error("Failed to write frame #{} to PLC: {}", filtered_frame.number, CliErrorText(ret));
@@ -199,6 +215,10 @@ int main(int argc, char** argv)
 	return EXIT_SUCCESS;
 }
 
+/**
+ * @brief Creates logger objects and sets logging levels.
+ * 
+ */
 void setup_loggers()
 {
 	auto camera_logger = spdlog::stdout_color_mt("camera");
@@ -211,7 +231,14 @@ void setup_loggers()
 	cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_ERROR);
 }
 
-const bool parse_config(const std::string& path, nlohmann::json& config)
+/**
+ * @brief Reads JSON configuration from file and validates against a schema.
+ * 
+ * @param path Path to JSON configuration file
+ * @param config Output configuration JSON representation
+ * @return True if parsed & validated, false otherwise
+ */
+const bool parse_and_validate_config(const std::string& path, nlohmann::json& config)
 {
 	try
 	{
@@ -242,6 +269,13 @@ const bool parse_config(const std::string& path, nlohmann::json& config)
 	return true;
 }
 
+/**
+ * @brief Reads JSON filter file.
+ * 
+ * @param path Path to JSON file containing filter definitions
+ * @param pipeline Output filter pipeline constructed from parsed filters
+ * @return True if successful, false otherwise
+ */
 const bool parse_filters(const std::string& path, filter::filter_pipeline& pipeline)
 {
 	try
@@ -268,6 +302,13 @@ const bool parse_filters(const std::string& path, filter::filter_pipeline& pipel
 	return true;
 }
 
+/**
+ * @brief Handles ctrl+c and other signals.
+ * 
+ * Logs shutdown message and sets 'done' flag to true
+ * 
+ * @param signum Signal number
+ */
 void signal_handler(int signum)
 {
 	if (signum == SIGINT)
