@@ -170,7 +170,7 @@ int setup_imgui()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-    GLFWwindow* glfw_window = glfwCreateWindow(640, 480, "Sick GUI", nullptr, nullptr);
+    glfw_window = glfwCreateWindow(640, 480, "Sick GUI", nullptr, nullptr);
 
     if (glfw_window == nullptr)
     {
