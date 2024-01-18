@@ -174,10 +174,10 @@ int main(int argc, char** argv)
 			{
 				cv::Mat filtered_mat;
 				cv::resize(raw_mat, filtered_mat, cv::Size(frame_width, frame_height), 0.0, 0.0, cv::InterpolationFlags::INTER_AREA);
-				frame::Frame filtered_frame = frame::to_frame(filtered_mat);
+				const frame::Frame filtered_frame = frame::to_frame(filtered_mat);
 
-				std::vector<uint16_t> distance_map_16 = filtered_frame.data;
-				std::vector<uint32_t> distance_map(distance_map_16.begin(), distance_map_16.end());
+				const std::vector<uint16_t> distance_map_16 = filtered_frame.data;
+				const std::vector<uint32_t> distance_map(distance_map_16.begin(), distance_map_16.end());
 
 				const int ret = plc.write_udint(distance_map, db_number, db_offset_bytes);
 				if (ret != 0)
@@ -195,8 +195,6 @@ int main(int argc, char** argv)
 			}
 		}
 	}
-
-	plc.disconnect();
 
 	return EXIT_SUCCESS;
 }
