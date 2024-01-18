@@ -1,0 +1,19 @@
+{
+    "configuration": {
+        "camera": {
+            "ip": "127.0.0.1",
+            "port": 0,
+            "frame": {
+                "width": 1,
+                "height": 1
+            }
+        },
+        "plc": {
+            "ip": "127.0.0.1",
+            "rack": 0,
+            "slot": 0,
+            "db_number": 0,
+            "db_offset_bytes": 0
+        }
+    }
+}
