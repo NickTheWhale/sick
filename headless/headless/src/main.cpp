@@ -239,23 +239,26 @@ int main(int argc, char** argv)
  */
 void setup_loggers()
 {
+	// create stdout and a daily log file sink
 	std::vector<spdlog::sink_ptr> sinks;
 	sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
 	sinks.push_back(std::make_shared<spdlog::sinks::daily_file_sink_mt>("logs/daily_logger", 2, 30));
 
 	static constexpr char const* log_names[] = {
+		"app",
 		"camera",
-		"plc",
-		"sickapi",
 		"filter",
-		"app"
+		"plc",
+		"sickapi"
 	};
 
+	// create and register loggers in global registry
 	for (const char* log_name : log_names)
 	{
 		spdlog::register_logger(std::make_shared<spdlog::logger>((log_name), sinks.begin(), sinks.end()));
 	}
 
+	// sets 'app' logger as default logger (i.e. spdlog::info() is functionally equivalent to spdlog::get("app")->info())
 	spdlog::set_default_logger(spdlog::get(log_names[0]));
 	spdlog::set_level(spdlog::level::trace);
 	cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_ERROR);
@@ -341,6 +344,36 @@ const bool parse_filters(const std::string& path, filter::filter_pipeline& pipel
  */
 void signal_handler(int signum)
 {
+#ifdef _DEBUG
+	std::string sig_type = "unknown";
+	switch (signum)
+	{
+	case SIGINT:
+		sig_type = "SIGINT";
+		break;
+	case SIGILL:
+		sig_type = "SIGILL";
+		break;
+	case SIGFPE:
+		sig_type = "SIGFPE";
+		break;
+	case SIGSEGV:
+		sig_type = "SIGSEGV";
+		break;
+	case SIGTERM:
+		sig_type = "SIGTERM";
+		break;
+	case SIGBREAK:
+		sig_type = "SIGBREAK";
+		break;
+	case SIGABRT_COMPAT:
+	case SIGABRT:
+		sig_type = "SIGABRT";
+		break;
+	}
+	spdlog::debug("caught signal {} : {}", signum, sig_type);
+#endif // _DEBUG
+
 	if (signum == SIGINT)
 	{
 		spdlog::info("Quitting...");

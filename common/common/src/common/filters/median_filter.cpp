@@ -19,15 +19,25 @@ std::unique_ptr<filter::filter_base> filter::median_filter::clone() const
 
 const bool filter::median_filter::apply(cv::Mat& mat) const
 {
-	if (mat.empty())
+	try
+	{
+		if (mat.empty())
+			return false;
+
+		cv::Mat output;
+		cv::medianBlur(mat, output, size.value());
+
+		mat = output;
+
+		return true;
+	}
+	catch (const cv::Exception& e)
+	{
+		spdlog::get("filter")->error("'{}' failed to apply with exception {}. Filter parameters:\n{}",
+			type(), e.what(), to_json()["parameters"].dump(2));
+
 		return false;
-
-	cv::Mat output;
-	cv::medianBlur(mat, output, size.value());
-
-	mat = output;
-
-	return true;
+	}
 }
 
 const bool filter::median_filter::load_json(const nlohmann::json& filter)

@@ -27,6 +27,7 @@
 
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
+#include "spdlog/sinks/basic_file_sink.h"
 
 #include "gui/windows/frame_window.h"
 #include "gui/windows/filter_editor_window.h"
@@ -71,6 +72,11 @@ int main(int, char**)
         ImGui::NewFrame();
 
         // application specific loop
+#ifdef _DEBUG
+        ImGui::ShowDemoWindow();
+#endif // _DEBUG
+
+        ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
         editor_window.render();
         camera_handler_window.render();
         
@@ -128,27 +134,51 @@ void glfw_error_callback(int error, const char* description)
  */
 void setup_logging()
 {
-    // create loggers
-    auto filter_logger = spdlog::stdout_color_mt("filter");
-    auto camera_logger = spdlog::stdout_color_mt("camera");
-    auto ui_logger = spdlog::stdout_color_mt("ui");
-    spdlog::set_default_logger(ui_logger);
+    // create stdout and a daily log file sink
+    std::vector<spdlog::sink_ptr> sinks;
+    sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
+    sinks.push_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/log"));
 
-    // set levels based on debug/release
+    static constexpr char const* log_names[] = {
+        "ui",
+        "camera",
+        "filter",
+        "sickapi",
+        "opencv"
+    };
+
+    // create and register loggers in global registry
+    for (const char* log_name : log_names)
+    {
+        std::shared_ptr<spdlog::logger> logger = std::make_shared<spdlog::logger>((log_name), sinks.begin(), sinks.end());
 #ifdef _DEBUG
-    filter_logger->set_level(spdlog::level::trace);
-    ui_logger->set_level(spdlog::level::trace);
-    camera_logger->set_level(spdlog::level::trace);
+        logger->set_level(spdlog::level::trace);
 #else
-    filter_logger->set_level(spdlog::level::info);
-    camera_logger->set_level(spdlog::level::info);
-    ui_logger->set_level(spdlog::level::info);
+        logger->set_level(spdlog::level::info);
 #endif // _DEBUG
+        spdlog::register_logger(logger);
+    }
+
+    // sets 'ui' logger as default logger (i.e. spdlog::info() is functionally equivalent to spdlog::get("ui")->info())
+    spdlog::set_default_logger(spdlog::get(log_names[0]));
 
     // get rid of annoying opencv messages
-#ifndef _DEBUG
-    cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_FATAL);
+#ifdef _DEBUG
+    cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_DEBUG);
+#else
+    cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_WARNING);
 #endif // _DEBUG
+    
+    auto cv_error_callback = [](int status, const char* func_name,
+        const char* err_msg, const char* file_name,
+        int line, void* userdata) -> int {
+        spdlog::get("opencv")->error("{} {} {} {} {} {}", 
+            status, func_name, err_msg, file_name, line, userdata);
+
+        return 0;
+    };
+    
+    cv::redirectError(cv_error_callback);
 }
 
 /**
@@ -190,9 +220,9 @@ int setup_imgui()
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
 
-    // Setup Dear ImGui style
-    //ImGui::StyleColorsDark();
+    // Setup  style
     ImGui::StyleColorsLight();
+    ImNodes::StyleColorsLight();
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(glfw_window, true);

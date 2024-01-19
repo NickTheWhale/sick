@@ -19,37 +19,50 @@ std::unique_ptr<filter::filter_base> filter::crop_filter::clone() const
 
 const bool filter::crop_filter::apply(cv::Mat& mat) const
 {
-	if (mat.empty())
+	try
+	{
+		if (mat.empty())
+			return false;
+
+		cv::Mat output;
+
+		// crop start
+
+		int x = static_cast<int>(mat.cols * center_x.value() - width.value() * mat.cols / 2);
+		int y = static_cast<int>(mat.rows * center_y.value() - height.value() * mat.rows / 2);
+		int crop_width = static_cast<int>(mat.cols * width.value());
+		int crop_height = static_cast<int>(mat.rows * height.value());
+
+		// ensure the crop region is within the image bounds
+		x = std::max(x, 0);
+		y = std::max(y, 0);
+		crop_width = std::min(crop_width, mat.cols - x);
+		crop_height = std::min(crop_height, mat.rows - y);
+
+		// limit smallest roi
+		crop_width = std::max(1, crop_width);
+		crop_height = std::max(1, crop_height);
+
+		cv::Rect roi(x, y, crop_width, crop_height);
+
+		spdlog::debug("roi.x: {}, roi.y: {}, roi.width: {}, roi.height: {}, m.cols: {}, m.rows: {}",
+			roi.x, roi.y, roi.width, roi.height, mat.cols, mat.rows);
+
+		output = mat(roi);
+
+		// crop end
+
+		mat = output;
+
+		return true;
+	}
+	catch (const cv::Exception& e)
+	{
+		spdlog::get("filter")->error("'{}' failed to apply with exception {}. Filter parameters:\n{}",
+			type(), e.what(), to_json()["parameters"].dump(2));
+
 		return false;
-
-	cv::Mat output;
-
-	// crop start
-
-	int x = static_cast<int>(mat.cols * center_x.value() - width.value() * mat.cols / 2);
-	int y = static_cast<int>(mat.rows * center_y.value() - height.value() * mat.rows / 2);
-	int crop_width = static_cast<int>(mat.cols * width.value());
-	int crop_height = static_cast<int>(mat.rows * height.value());
-
-	// ensure the crop region is within the image bounds
-	x = std::max(x, 0);
-	y = std::max(y, 0);
-	crop_width = std::min(crop_width, mat.cols - x);
-	crop_height = std::min(crop_height, mat.rows - y);
-
-	// limit smallest roi
-	crop_width = std::max(1, crop_width);
-	crop_height = std::max(1, crop_height);
-	
-	cv::Rect roi(x, y, crop_width, crop_height);
-	output = mat(roi);
-
-
-	// crop end
-
-	mat = output;
-
-	return true;
+	}
 }
 
 const bool filter::crop_filter::load_json(const nlohmann::json& filter)

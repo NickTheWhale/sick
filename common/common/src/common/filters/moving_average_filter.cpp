@@ -19,40 +19,50 @@ std::unique_ptr<filter::filter_base> filter::moving_average_filter::clone() cons
 
 const bool filter::moving_average_filter::apply(cv::Mat& mat) const
 {
-	if (mat.empty())
-		return false;
-
-	// add to buffer
-	buffer.push_back(mat.clone());
-	while (buffer.size() > buffer_size.value())
-		buffer.pop_front();
-
-	for (const cv::Mat& curr_mat : buffer)
-		if (curr_mat.type() != mat.type() || curr_mat.size() != mat.size())
+	try
+	{
+		if (mat.empty())
 			return false;
 
-	// average
-	const cv::Mat first_mat = buffer.front();
-	const cv::Size size = first_mat.size();
-	cv::Mat accum_mat = cv::Mat::zeros(size, CV_64F);
-	size_t num_mats = buffer.size();
+		// add to buffer
+		buffer.push_back(mat.clone());
+		while (buffer.size() > buffer_size.value())
+			buffer.pop_front();
 
-	for (const cv::Mat& curr_mat : buffer)
-	{
-		cv::Mat mat_64F;
-		curr_mat.convertTo(mat_64F, CV_64F);
+		for (const cv::Mat& curr_mat : buffer)
+			if (curr_mat.type() != mat.type() || curr_mat.size() != mat.size())
+				return false;
 
-		accum_mat += mat_64F;
+		// average
+		const cv::Mat first_mat = buffer.front();
+		const cv::Size size = first_mat.size();
+		cv::Mat accum_mat = cv::Mat::zeros(size, CV_64F);
+		size_t num_mats = buffer.size();
+
+		for (const cv::Mat& curr_mat : buffer)
+		{
+			cv::Mat mat_64F;
+			curr_mat.convertTo(mat_64F, CV_64F);
+
+			accum_mat += mat_64F;
+		}
+
+		const cv::Mat mean_mat = accum_mat / num_mats;
+
+		cv::Mat output;
+		mean_mat.convertTo(output, CV_16U);
+
+		mat = output;
+
+		return true;
 	}
+	catch (const cv::Exception& e)
+	{
+		spdlog::get("filter")->error("'{}' failed to apply with exception {}. Filter parameters:\n{}",
+			type(), e.what(), to_json()["parameters"].dump(2));
 
-	const cv::Mat mean_mat = accum_mat / num_mats;
-
-	cv::Mat output;
-	mean_mat.convertTo(output, CV_16U);
-
-	mat = output;
-
-	return true;
+		return false;
+	}
 }
 
 const bool filter::moving_average_filter::load_json(const nlohmann::json& filter)

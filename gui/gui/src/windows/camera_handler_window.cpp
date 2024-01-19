@@ -9,25 +9,11 @@ window::camera_handler_window::camera_handler_window(const char* name, bool* p_o
 
 window::camera_handler_window::~camera_handler_window()
 {
-    if (_visionary_control)
-        _visionary_control->stopAcquisition();
 }
 
 const bool window::camera_handler_window::get_current_frame(frame::Frame& frame)
 {
-    if (!_frame_grabber)
-        return false;
-
-    if (!_frame_grabber->getCurrentFrame(_data_handler))
-        return false;
-
-    frame.data = _data_handler->getDistanceMap();
-    frame.height = _data_handler->getHeight();
-    frame.width = _data_handler->getWidth();
-    frame.number = _data_handler->getFrameNum();
-    frame.time_ms = _data_handler->getTimestampMS();
-
-    return true;
+    return _camera.get_current_frame(frame);
 }
 
 void window::camera_handler_window::render_content()
@@ -91,53 +77,6 @@ void window::camera_handler_window::render_content()
     {
         std::stringstream ip;
         ip << _octets[0] << "." << _octets[1] << "." << _octets[2] << "." << _octets[3];
-        open_camera(ip.str(), _port, 5000);
+        _camera.open(ip.str(), static_cast<uint16_t>(_port), 5000);
     }
-}
-
-const bool window::camera_handler_window::open_camera(const std::string& ip, const uint16_t& port, const uint32_t& timeout_ms)
-{
-    _frame_grabber.reset(new visionary::FrameGrabber<visionary::VisionaryTMiniData>(ip, htons(port), timeout_ms));
-    if (!_frame_grabber)
-    {
-        spdlog::get("camera")->error("Failed to create frame grabber");
-        return false;
-    }
-
-    _data_handler.reset(new visionary::VisionaryTMiniData);
-    if (!_data_handler)
-    {
-        spdlog::get("camera")->error("Failed to create frame data buffer");
-        return false;
-    }
-
-    _visionary_control.reset(new visionary::VisionaryControl);
-    if (!_visionary_control)
-    {
-        spdlog::get("camera")->error("Failed to create camera control channel");
-        return false;
-    }
-
-    if (!_visionary_control->open(visionary::VisionaryControl::ProtocolType::COLA_2, ip, timeout_ms))
-    {
-        spdlog::get("camera")->error("Failed to open camera control channel");
-        return false;
-    }
-
-    if (!_visionary_control->stopAcquisition())
-    {
-        spdlog::get("camera")->error("Failed to stop frame acquisition");
-        return false;
-    }
-
-    // start continuous acquisition
-    if (!_visionary_control->startAcquisition())
-    {
-        spdlog::get("camera")->error("Failed to start frame acquisition");
-        return false;
-    }
-
-    spdlog::get("camera")->info("Camera opened");
-
-    return true;
 }

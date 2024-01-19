@@ -20,18 +20,28 @@ std::unique_ptr<filter::filter_base> filter::bilateral_filter::clone() const
 
 const bool filter::bilateral_filter::apply(cv::Mat& mat) const
 {
-	if (mat.empty())
+	try
+	{
+		if (mat.empty())
+			return false;
+
+		cv::Mat input_32F;
+		cv::Mat output_32F;
+		cv::Mat output;
+		mat.convertTo(input_32F, CV_32F);
+		cv::bilateralFilter(input_32F, output_32F, diameter.value(), sigma_color.value(), sigma_space.value());
+		output_32F.convertTo(output, CV_16U);
+		mat = output;
+
+		return true;
+	}
+	catch (const cv::Exception& e)
+	{
+		spdlog::get("filter")->error("'{}' failed to apply with exception {}. Filter parameters:\n{}",
+			type(), e.what(), to_json()["parameters"].dump(2));
+
 		return false;
-
-	cv::Mat input_32F;
-	cv::Mat output_32F;
-	cv::Mat output;
-	mat.convertTo(input_32F, CV_32F);
-	cv::bilateralFilter(input_32F, output_32F, diameter.value(), sigma_color.value(), sigma_space.value());
-	output_32F.convertTo(output, CV_16U);
-	mat = output;
-
-	return true;
+	}
 }
 
 const bool filter::bilateral_filter::load_json(const nlohmann::json& filter)

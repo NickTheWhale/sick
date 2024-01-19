@@ -1,5 +1,12 @@
 #include "gui/frame_helper.h"
 
+/**
+ * @brief Convert the given cv::Mat to a opengl texture.
+ * 
+ * @param mat Input cv::Mat of type CV_16UC1 or CV_16UC3
+ * @param texture Output texture
+ * @return true if successful, false otherwise
+ */
 const bool frame::helper::to_texture(const cv::Mat& mat, GLuint& texture)
 {
     if (mat.empty())
@@ -9,6 +16,7 @@ const bool frame::helper::to_texture(const cv::Mat& mat, GLuint& texture)
 
     assert(in_mat.depth() == CV_16U);
 
+    // convert to 8 bit RGBA format
     switch (in_mat.channels())
     {
     case 1:
@@ -29,6 +37,7 @@ const bool frame::helper::to_texture(const cv::Mat& mat, GLuint& texture)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
+    // convert to texture
     glTexImage2D(
         GL_TEXTURE_2D,
         0,

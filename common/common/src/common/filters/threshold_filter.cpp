@@ -20,17 +20,27 @@ std::unique_ptr<filter::filter_base> filter::threshold_filter::clone() const
 
 const bool filter::threshold_filter::apply(cv::Mat& mat) const
 {
-    if (mat.empty())
-        return false;
+	try
+	{
+		if (mat.empty())
+			return false;
 
-    cv::Mat output;
-    cv::threshold(mat, output, upper.value(), 0, cv::THRESH_TOZERO_INV);
-    mat = output;
+		cv::Mat output;
+		cv::threshold(mat, output, upper.value(), 0, cv::THRESH_TOZERO_INV);
+		mat = output;
     
-    cv::threshold(mat, output, lower.value(), 0, cv::THRESH_TOZERO);
-    mat = output;
+		cv::threshold(mat, output, lower.value(), 0, cv::THRESH_TOZERO);
+		mat = output;
 
-    return true;
+		return true;
+	}
+	catch (const cv::Exception& e)
+	{
+		spdlog::get("filter")->error("'{}' failed to apply with exception {}. Filter parameters:\n{}",
+			type(), e.what(), to_json()["parameters"].dump(2));
+
+		return false;
+	}
 }
 
 const bool filter::threshold_filter::load_json(const nlohmann::json& filter)

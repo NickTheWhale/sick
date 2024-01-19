@@ -19,14 +19,24 @@ std::unique_ptr<filter::filter_base> filter::resize_filter::clone() const
 
 const bool filter::resize_filter::apply(cv::Mat& mat) const
 {
-	if (mat.empty())
+	try
+	{
+		if (mat.empty())
+			return false;
+
+		cv::Mat output;
+		cv::resize(mat, output, cv::Size(size_x.value(), size_y.value()), 0.0f, 0.0f, cv::InterpolationFlags::INTER_AREA);
+
+		mat = output;
+		return true;
+	}
+	catch (const cv::Exception& e)
+	{
+		spdlog::get("filter")->error("'{}' failed to apply with exception {}. Filter parameters:\n{}",
+			type(), e.what(), to_json()["parameters"].dump(2));
+
 		return false;
-
-	cv::Mat output;
-	cv::resize(mat, output, cv::Size(size_x.value(), size_y.value()), 0.0f, 0.0f, cv::InterpolationFlags::INTER_AREA);
-
-	mat = output;
-	return true;
+	}
 }
 
 const bool filter::resize_filter::load_json(const nlohmann::json& filter)

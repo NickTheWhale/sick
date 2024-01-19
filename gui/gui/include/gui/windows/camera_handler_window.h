@@ -2,6 +2,7 @@
 
 #include "gui/windows/window_base.h"
 #include "common/frame.h"
+#include "common/camera_handler.h"
 
 #include "Framegrabber.h"
 #include "VisionaryControl.h"
@@ -21,13 +22,8 @@ namespace window
 		void render_content() override;
 
 	private:
-		std::unique_ptr<visionary::FrameGrabber<visionary::VisionaryTMiniData>> _frame_grabber;
-		std::shared_ptr<visionary::VisionaryTMiniData> _data_handler;
-		std::unique_ptr<visionary::VisionaryControl> _visionary_control;
-
 		int _octets[4];
 		int _port;
-
-		const bool open_camera(const std::string& ip, const uint16_t& port, const uint32_t& timeout_ms);
+		camera::camera_handler _camera;
 	};
 }

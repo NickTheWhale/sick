@@ -35,6 +35,8 @@ namespace window
         if (ImGui::Checkbox("Apply", &_apply_colormap))
             _need_to_generate = true;
 
+        _need_to_generate = true;
+
         if (_need_to_generate)
             generate(colormap_types[colormap_index]);
 
@@ -60,10 +62,9 @@ namespace window
 
         if (_apply_colormap)
         {
+            cv::normalize(_mat, _mat, std::numeric_limits<uint16_t>::min(), std::numeric_limits<uint16_t>::max(), cv::NormTypes::NORM_MINMAX, -1, _mat > 0);
             _mat.convertTo(_mat, CV_8UC1, 0.00390625);
-
             cv::applyColorMap(_mat, _mat, colormap);
-
             _mat.convertTo(_mat, CV_16UC1, 256.0);
         }
 

@@ -103,9 +103,6 @@ const bool filter::filter_graph::traverse(std::vector<filter::Node>& nodes) cons
 		const auto* next_node = &_nodes_in_id.at(out_link_out_id);
 		next_node = &_nodes.at(next_node->id);
 		curr_node = next_node;
-
-		//curr_node = &_nodes_out_id.at(curr_node->out_link.in_id);
-		//curr_node = &_nodes.at(_nodes_in_id.at(curr_node->out_link.in_id).id);
 	}
 	node_path.push_back(*curr_node);
 

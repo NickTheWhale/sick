@@ -78,7 +78,9 @@ const bool filter::filter_pipeline::apply(cv::Mat& mat) const
 		for (const auto& filter : this->filters)
 		{
 			if (!filter->apply(mat))
+			{
 				return false;
+			}
 		}
 
 		return true;
@@ -95,4 +97,9 @@ const bool filter::filter_pipeline::apply(cv::Mat& mat) const
 
 		return false;
 	}
+}
+
+const bool filter::filter_pipeline::empty() const
+{
+	return this->filters.empty();
 }

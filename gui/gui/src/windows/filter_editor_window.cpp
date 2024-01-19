@@ -76,10 +76,19 @@ void window::filter_editor_window::handle_input()
 
 void window::filter_editor_window::render_nodes()
 {
+	int r, g, b, a;
 	for (const auto& [node_id, node] : _graph.nodes())
 	{
-		ImNodes::BeginNode(node_id);
+		std::hash<int> hasher;
+		const size_t hash = hasher(node_id);
 
+		r = static_cast<uint8_t>((hash & 0xFF0000) >> 16);
+		g = static_cast<uint8_t>((hash & 0x00FF00) >> 8);
+		b = static_cast<uint8_t>(hash & 0x0000FF);
+		a = 100;
+
+		ImNodes::PushColorStyle(ImNodesCol_TitleBar, IM_COL32(r, g, b, a));
+		ImNodes::BeginNode(node_id);
 		ImNodes::BeginNodeTitleBar();
 		ImGui::Text(node.filter->type().c_str());
 		ImNodes::EndNodeTitleBar();
@@ -102,6 +111,7 @@ void window::filter_editor_window::render_nodes()
 			node.filter->load_json(new_parameters);
 		}
 		ImNodes::EndNode();
+		ImNodes::PopColorStyle();
 	}
 }
 
@@ -216,31 +226,55 @@ void window::filter_editor_window::handle_node_changes()
 
 void window::filter_editor_window::handle_load_and_save()
 {
+	filter::filter_pipeline pipeline;
 	if (ImGui::Button("Save filters to file"))
 	{
-		IGFD::FileDialogConfig config;
-		config.path = ".";
-		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", "", config);
+		const bool pipeline_created = create_pipeline(pipeline);
+		if (!pipeline_created)
+		{
+			ImGui::OpenPopup("failed_to_create_pipeline_popup");
+		}
+		else if (pipeline.empty())
+		{
+			ImGui::OpenPopup("pipeline_empty_popup");
+		}
+		else
+		{
+			IGFD::FileDialogConfig config;
+			config.path = ".";
+			ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", "", config);
+		}
 	}
 
-	if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey"))
+	if (ImGui::BeginPopupModal("failed_to_create_pipeline_popup", (bool*)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar))
+	{
+		ImGui::Text("Unable to save filter pipeline, probably because some filters are not connected");
+		if (ImGui::Button("Ok"))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+
+	if (ImGui::BeginPopupModal("pipeline_empty_popup", (bool*)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar))
+	{
+		ImGui::Text("No filters to save!");
+		if (ImGui::Button("Ok"))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+	if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey", ImGuiWindowFlags_NoCollapse, (ImGui::GetWindowViewport()->WorkSize / 2)))
 	{
 		// action if OK
 		if (ImGuiFileDialog::Instance()->IsOk())
 		{
 			std::string path = ImGuiFileDialog::Instance()->GetFilePathName();
 			// action
-			filter::filter_pipeline pipeline;
-			if (create_pipeline(pipeline))
-			{
-				nlohmann::json j = pipeline.to_json();
-				std::ofstream file(path);
-				file << j.dump(2);
-			}
-			else
-			{
-				spdlog::get("ui")->error("Failed to save filters to file: invalid filter pipeline");
-			}
+			nlohmann::json j = pipeline.to_json();
+			std::ofstream file(path);
+			file << j.dump(2);
 		}
 		// close
 		ImGuiFileDialog::Instance()->Close();

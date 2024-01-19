@@ -22,7 +22,7 @@ namespace filter
 		const nlohmann::json to_json() const override;
 
 	private:
-		filter::filter_parameter<int, 2, 2000> buffer_size;
+		filter::filter_parameter<int, 2, 100> buffer_size;
 		mutable std::deque<cv::Mat> buffer;
 	};
 }
