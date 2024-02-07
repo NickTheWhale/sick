@@ -24,6 +24,7 @@ namespace window
 	private:
 		int curr_id;
 		filter::filter_graph _graph;
+		filter::filter_pipeline _last_pipeline;
 
 		void handle_input();
 		void render_nodes();

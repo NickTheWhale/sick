@@ -226,15 +226,14 @@ void window::filter_editor_window::handle_node_changes()
 
 void window::filter_editor_window::handle_load_and_save()
 {
-	filter::filter_pipeline pipeline;
 	if (ImGui::Button("Save filters to file"))
 	{
-		const bool pipeline_created = create_pipeline(pipeline);
+		const bool pipeline_created = create_pipeline(_last_pipeline);
 		if (!pipeline_created)
 		{
 			ImGui::OpenPopup("failed_to_create_pipeline_popup");
 		}
-		else if (pipeline.empty())
+		else if (_last_pipeline.empty())
 		{
 			ImGui::OpenPopup("pipeline_empty_popup");
 		}
@@ -265,6 +264,7 @@ void window::filter_editor_window::handle_load_and_save()
 		}
 		ImGui::EndPopup();
 	}
+
 	if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey", ImGuiWindowFlags_NoCollapse, (ImGui::GetWindowViewport()->WorkSize / 2)))
 	{
 		// action if OK
@@ -272,7 +272,7 @@ void window::filter_editor_window::handle_load_and_save()
 		{
 			std::string path = ImGuiFileDialog::Instance()->GetFilePathName();
 			// action
-			nlohmann::json j = pipeline.to_json();
+			nlohmann::json j = _last_pipeline.to_json();
 			std::ofstream file(path);
 			file << j.dump(2);
 		}
