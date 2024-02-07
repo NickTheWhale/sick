@@ -2,10 +2,10 @@
     "configuration": {
         "camera": {
             "ip": "127.0.0.1",
-            "port": 0,
+            "port": 2114,
             "frame": {
-                "width": 1,
-                "height": 1
+                "width": 10,
+                "height": 10
             }
         },
         "plc": {
