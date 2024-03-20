@@ -54,3 +54,8 @@ headless.exe <path_to_config> --filters <path_to_optional_filters>
 ## Prebuilt Binaries
 
 If you just want to download the latest version without building from source, you can do so [here](https://github.com/NickTheWhale/sick/releases).
+
+## Screenshots
+
+#### Filter node editor
+![filter_editor](./docs/images/filter_editor.png)
